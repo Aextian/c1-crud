@@ -1,0 +1,51 @@
+// auth.uid save in posts
+ Todo : save in posts
+//  Set Up Firebase Authentication: This handles user login and registration.
+// Differentiate Between Admins and Users: Store user roles (like admin or user) in Firestore, Realtime Database, or use Firebase's custom claims feature.
+// Restrict Access Based on Roles: Enforce role-based access control in your app (frontend) and using Firebase Security Rules (backend).
+
+// if users is already sign in redirect it in Home
+auth.onAuthStateChanged(user => {
+    if(user) {
+        NavigationPreloadManager.navigate('Home')
+    }
+})
+
+const user = userCredential.user;
+
+// Store the user in Firestore with their role (admin/user)
+await setDoc(doc(db, 'users', user.uid), {
+  email: user.email,
+  role: role, // role can be 'admin' or 'user'
+});
+
+
+
+import { getDocs, query, collection, where } from 'firebase/firestore';
+import { auth, db } from './firebase'; // Ensure you have your firebase setup
+
+const checkIfUserHasPosts = async () => {
+  try {
+    const user = auth.currentUser;
+    if (user) {
+      const userId = user.uid;
+
+      // Query the posts collection for posts by this user
+      const postsQuery = query(collection(db, "posts"), where("userId", "==", userId));
+      const querySnapshot = await getDocs(postsQuery);
+
+      if (!querySnapshot.empty) {
+        console.log('User has posts:', querySnapshot.docs.map(doc => doc.data()));
+        return querySnapshot.docs.map(doc => doc.data()); // Returns the list of posts
+      } else {
+        console.log('User has no posts.');
+        return [];
+      }
+    } else {
+      console.log('No user is logged in.');
+      return [];
+    }
+  } catch (error) {
+    console.error('Error checking user posts:', error);
+  }
+};
