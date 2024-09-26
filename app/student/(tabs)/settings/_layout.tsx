@@ -5,12 +5,12 @@ import { GestureHandlerRootView } from 'react-native-gesture-handler'
 const _layout = () => {
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
-      <Drawer>
+      <Drawer screenOptions={{ drawerPosition: 'right' }}>
         <Drawer.Screen
-          name="student/settings" // This is the name of the page and must match the url from root
+          name="index" // This is the name of the page and must match the url from root
           options={{
             drawerLabel: 'Settings',
-            title: 'overview',
+            title: 'Settings',
           }}
         />
       </Drawer>

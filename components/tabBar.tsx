@@ -65,9 +65,22 @@ const TabBar = ({ state, descriptors, navigation }: IProps) => {
             onPress={onPress}
             onLongPress={onLongPress}
           >
-            {icons[route.name as keyof typeof icons]({
+            {/* {icons[route.name as keyof typeof icons]({
               color: isFocused ? '#673ab7' : '#222',
-            })}
+            })} */}
+
+            {icons[route.name as keyof typeof icons] ? (
+              icons[route.name as keyof typeof icons]({
+                color: isFocused ? '#673ab7' : '#222',
+              })
+            ) : (
+              <Feather
+                name="alert-circle"
+                size={24}
+                color={isFocused ? '#673ab7' : '#222'}
+              />
+            )}
+
             {/* <Text>{label}</Text> */}
           </TouchableOpacity>
         )

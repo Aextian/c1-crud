@@ -1,3 +1,4 @@
+import LoadingScreen from '@/components/loadingScreen'
 import { auth } from '@/config'
 import { Stack, useRouter, useSegments } from 'expo-router'
 import React, { useEffect, useState } from 'react'
@@ -21,13 +22,16 @@ const _layout = () => {
   useEffect(() => {
     if (initializing) return
     const inAuthGroup = segments[0] == 'auth'
-    console.log(inAuthGroup)
     if (user && !inAuthGroup) {
-      router.replace('/student/(tabs)/posts')
-    } else {
+      router.replace('/student/posts')
+    } else if (!user && !inAuthGroup) {
       router.replace('/auth/login')
     }
   }, [user, initializing])
+
+  if (initializing) {
+    return <LoadingScreen />
+  }
 
   return (
     <Stack>

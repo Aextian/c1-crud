@@ -7,10 +7,17 @@ const _layout = () => {
     <GestureHandlerRootView style={{ flex: 1 }}>
       <Drawer>
         <Drawer.Screen
-          name="student/profile" // This is the name of the page and must match the url from root
+          name="index" // This is the name of the page and must match the url from root
           options={{
             drawerLabel: 'Home',
             title: 'overview',
+          }}
+        />
+        <Drawer.Screen
+          name="groupchat" // This is the name of the page and must match the url from root
+          options={{
+            drawerLabel: 'GC',
+            title: 'GC',
           }}
         />
       </Drawer>

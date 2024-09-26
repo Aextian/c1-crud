@@ -1,35 +1,47 @@
-import { View, Text, TextInput, StyleSheet, TouchableOpacity } from 'react-native'
-import React, {  useState } from 'react'
+import { auth } from '@/config'
 import { Link, useRouter } from 'expo-router'
-import { signInWithEmailAndPassword } from 'firebase/auth';
-import { auth } from '@/config';
+import { signInWithEmailAndPassword } from 'firebase/auth'
+import React, { useState } from 'react'
+import {
+  StyleSheet,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View,
+} from 'react-native'
 
 const login = () => {
+  const [email, setEmail] = useState('')
+  const [password, setPassword] = useState('')
 
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-
-  const router = useRouter();
+  const router = useRouter()
 
   const handleLogin = async () => {
     try {
-      await signInWithEmailAndPassword(auth, email, password);
-      alert('login success');
-      router.push('/(tabs)/posts');
-    } catch (error:any) {
-      console.error('Login error:', error.message);
-      alert(error.message);
+      await signInWithEmailAndPassword(auth, email, password)
+      alert('login success')
+      router.push('/student/posts')
+    } catch (error: any) {
+      console.error('Login error:', error.message)
+      alert(error.message)
     }
-  };
+  }
 
   return (
     <View style={styles.container}>
-      <TextInput value={email}
-        onChangeText={(text) => setEmail(text)} placeholder='Email' style={styles.loginInput} />
-      <TextInput value={password}
+      <TextInput
+        value={email}
+        onChangeText={(text) => setEmail(text)}
+        placeholder="Email"
+        style={styles.loginInput}
+      />
+      <TextInput
+        value={password}
         onChangeText={(text) => setPassword(text)}
-        placeholder='Password'
-        secureTextEntry style={styles.loginInput} />
+        placeholder="Password"
+        secureTextEntry
+        style={styles.loginInput}
+      />
 
       <TouchableOpacity style={styles.loginButton} onPress={handleLogin}>
         <Text style={styles.loginButtonText}>Login</Text>
@@ -42,11 +54,11 @@ const login = () => {
 }
 
 const styles = StyleSheet.create({
-  container:{
+  container: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    gap: 10
+    gap: 10,
   },
   loginInput: {
     height: 40,
@@ -80,7 +92,5 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
 })
-
-
 
 export default login
