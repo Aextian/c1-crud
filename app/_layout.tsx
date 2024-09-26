@@ -1,36 +1,44 @@
-import { View, Text, Button } from 'react-native'
-import React from 'react'
-import { Stack, useRouter } from 'expo-router'
+import { auth } from '@/config'
+import { Stack, useRouter, useSegments } from 'expo-router'
+import React, { useEffect, useState } from 'react'
 
 const _layout = () => {
+  const router = useRouter()
 
-    const router = useRouter()
-    return (
-        <Stack>
-            <Stack.Screen
-                name="index"
-                options={{ title: 'Home' }}
-            />
-            <Stack.Screen
-                name="register/index"
-                options={{ title: 'Register', headerRight: () => (<Button title='Login' onPress={() => router.push('/login')} />) }}
-            />
+  const [user, setUser] = useState<any>(null)
 
-            <Stack.Screen
-                name="login"
-                options={{ title: 'Login', presentation: 'modal' }}
+  const [initializing, setInitializing] = useState(true)
+  const segments = useSegments()
+  const onAuthStateChanged = (user: any | null) => {
+    setUser(user)
+    if (initializing) setInitializing(false)
+  }
+  useEffect(() => {
+    const subcriber = auth.onAuthStateChanged(onAuthStateChanged)
+    return subcriber
+  }, [])
 
-            />
-            <Stack.Screen
-                name="[missing]"
-                options={{ title: '404' }}
-            />
-            <Stack.Screen
-                name="(tabs)"
-                options={{ headerShown: false }}
-            />
-        </Stack>
-    )
+  useEffect(() => {
+    if (initializing) return
+    const inAuthGroup = segments[0] == 'auth'
+    console.log(inAuthGroup)
+    if (user && !inAuthGroup) {
+      router.replace('/student/(tabs)/posts')
+    } else {
+      router.replace('/auth/login')
+    }
+  }, [user, initializing])
+
+  return (
+    <Stack>
+      <Stack.Screen name="auth/login" options={{ headerShown: false }} />
+      <Stack.Screen
+        name="auth/register"
+        options={{ headerTitle: 'Register' }}
+      />
+      <Stack.Screen name="student" options={{ headerShown: false }} />
+    </Stack>
+  )
 }
 
 export default _layout

@@ -1,23 +1,40 @@
-import { View, Text, Button, TextInput, StyleSheet, TouchableOpacity } from 'react-native'
-import React, { useEffect, useState } from 'react'
-import { Link } from 'expo-router'
-import { addDoc, collection, deleteDoc, doc, getDocs, setDoc, updateDoc } from "firebase/firestore";
-import { db } from '../config'
-import { getAllUsers } from '@/services/firebase/users';
-import { FlatList } from 'react-native-reanimated/lib/typescript/Animated';
-const index = () => {
+import { View, Text, TextInput, StyleSheet, TouchableOpacity } from 'react-native'
+import React, {  useState } from 'react'
+import { Link, useRouter } from 'expo-router'
+import { signInWithEmailAndPassword } from 'firebase/auth';
+import { auth } from '@/config';
 
-  const [username, setName] = useState('');
+const login = () => {
+
   const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+
+  const router = useRouter();
+
+  const handleLogin = async () => {
+    try {
+      await signInWithEmailAndPassword(auth, email, password);
+      alert('login success');
+      router.push('/(tabs)/posts');
+    } catch (error:any) {
+      console.error('Login error:', error.message);
+      alert(error.message);
+    }
+  };
 
   return (
     <View style={styles.container}>
-      <TextInput value={username} onChangeText={(username) => { setName(username) }} placeholder='Email' style={styles.loginInput} />
-      <TextInput value={email} onChangeText={(email) => { setEmail(email) }} placeholder='Password' secureTextEntry style={styles.loginInput} />
-      <TouchableOpacity style={styles.loginButton}>
+      <TextInput value={email}
+        onChangeText={(text) => setEmail(text)} placeholder='Email' style={styles.loginInput} />
+      <TextInput value={password}
+        onChangeText={(text) => setPassword(text)}
+        placeholder='Password'
+        secureTextEntry style={styles.loginInput} />
+
+      <TouchableOpacity style={styles.loginButton} onPress={handleLogin}>
         <Text style={styles.loginButtonText}>Login</Text>
       </TouchableOpacity>
-      <Link href={'/auth/register'} style={styles.loginButton}>
+      <Link href="/auth/register" style={styles.loginButton}>
         <Text style={styles.loginButtonText}>Register</Text>
       </Link>
     </View>
@@ -53,15 +70,17 @@ const styles = StyleSheet.create({
     maxWidth: 300,
     minWidth: 200,
     alignItems: 'center', // Center the text inside the button
+    justifyContent: 'center',
     marginVertical: 10, // Add space between buttons
   },
   loginButtonText: {
     color: '#fff', // White text
     fontSize: 16,
     fontWeight: 'bold',
+    justifyContent: 'center',
   },
 })
 
 
 
-export default index
+export default login
