@@ -46,8 +46,9 @@ const login = () => {
       <TouchableOpacity style={styles.loginButton} onPress={handleLogin}>
         <Text style={styles.loginButtonText}>Login</Text>
       </TouchableOpacity>
-      <Link href="/auth/register" style={styles.loginButton}>
-        <Text style={styles.loginButtonText}>Register</Text>
+
+      <Link href="/auth/register" style={styles.registerButton}>
+        <Text style={styles.registerText}>Register</Text>
       </Link>
     </View>
   )
@@ -56,40 +57,51 @@ const login = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    gap: 10,
+    justifyContent: 'center', // Center content vertically
+    alignItems: 'center', // Center content horizontally
+    padding: 20,
+    backgroundColor: '#f0f0f0', // Light background for contrast
   },
   loginInput: {
-    height: 40,
-    borderColor: 'gray',
-    borderWidth: 1,
-    width: '80%', // Responsive width
-    maxWidth: 300, // Max width to limit the input size
-    minWidth: 200, // Minimum width to ensure it's not too small
-    borderRadius: 5, // Rounded corners
-    paddingHorizontal: 10, // Padding inside the input
-    fontSize: 16, // Better text size for readability
-    backgroundColor: '#fff', // Background color
-  },
-
-  loginButton: {
-    backgroundColor: '#007BFF', // Blue color for login
-    paddingVertical: 10,
-    paddingHorizontal: 20,
+    width: '80%', // Input width takes 80% of screen width
+    padding: 15, // Padding for touchable input area
+    marginVertical: 10, // Spacing between inputs
+    backgroundColor: '#fff', // White background for inputs
     borderRadius: 5,
-    width: '80%',
-    maxWidth: 300,
-    minWidth: 200,
-    alignItems: 'center', // Center the text inside the button
-    justifyContent: 'center',
-    marginVertical: 10, // Add space between buttons
+    borderWidth: 1,
+    borderColor: '#ddd', // Border color for input fields
+  },
+  loginButton: {
+    backgroundColor: '#007BFF', // Blue background for login button
+    paddingVertical: 12,
+    paddingHorizontal: 30,
+    borderRadius: 5,
+    marginVertical: 10, // Spacing below the button
+    width: '80%', // Button width should match input fields
+    alignItems: 'center', // Center text horizontally
+    justifyContent: 'center', // Center text vertically
   },
   loginButtonText: {
     color: '#fff', // White text
     fontSize: 16,
-    fontWeight: 'bold',
-    justifyContent: 'center',
+    fontWeight: 'bold', // Bold text for the button
+  },
+  registerButton: {
+    backgroundColor: '#6c757d', // Grey color for register button
+    paddingVertical: 12,
+    paddingHorizontal: 30,
+    borderRadius: 5,
+    marginVertical: 10,
+    textAlign: 'center',
+    width: '80%',
+    alignItems: 'center', // Center the text horizontally
+    justifyContent: 'center', // Center the text vertically
+  },
+  registerText: {
+    color: '#fff', // White text for the register button
+    fontSize: 16,
+    fontWeight: 'bold', // Bold text for the register button
+    textAlign: 'center', // Ensure text is centered
   },
 })
 

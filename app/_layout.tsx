@@ -25,6 +25,7 @@ const _layout = () => {
     if (user && !inAuthGroup) {
       router.replace('/student/posts')
     } else if (!user && !inAuthGroup) {
+      // router.replace('/auth/register')
       router.replace('/auth/login')
     }
   }, [user, initializing])
@@ -40,6 +41,7 @@ const _layout = () => {
         name="auth/register"
         options={{ headerTitle: 'Register' }}
       />
+
       <Stack.Screen name="student" options={{ headerShown: false }} />
     </Stack>
   )

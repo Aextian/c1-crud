@@ -1,4 +1,6 @@
-import React, { useState } from 'react'
+import { auth, db } from '@/config'
+import { addDoc, collection, getDocs, query, where } from 'firebase/firestore'
+import React, { useEffect, useState } from 'react'
 import {
   Button,
   Image,
@@ -9,6 +11,12 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native'
+
+interface Post {
+  id: string
+  uid: string
+  posts: string
+}
 
 const index = () => {
   const images = [
@@ -24,16 +32,92 @@ const index = () => {
   // State to manage likes and comments
   const [likes, setLikes] = useState(Array(cards.length).fill(false)) // To track likes
   const [comments, setComments] = useState(Array(cards.length).fill('')) // To track comments
+  const [post, addPost] = useState('')
+  const [user, setUser] = useState<any>(null)
+  const [userData, setUserData] = useState<any | null>(null)
+
+  const onAuthStateChanged = (user: any | null) => {
+    if (user) {
+      setUser(user)
+    } else {
+      setUser(null)
+    }
+  }
+
+  const getUserByUid = async () => {
+    if (user) {
+      const userQuery = query(
+        collection(db, 'users'),
+        where('uid', '==', user.uid),
+      )
+      try {
+        const querySnapshot = await getDocs(userQuery)
+        // Handle case where no user is found
+        if (querySnapshot.empty) {
+          setUserData(null)
+          return
+        }
+        // Get the first user's data
+        const userDoc = querySnapshot.docs[0]
+        setUserData({ id: userDoc.id, ...userDoc.data() })
+      } catch (error) {
+        console.error('Error getting user: ', error)
+      }
+    }
+  }
+
+  useEffect(() => {
+    const subcriber = auth.onAuthStateChanged(onAuthStateChanged)
+    return subcriber
+  }, [])
+
+  const handleSubmit = async () => {
+    try {
+      await addDoc(collection(db, `posts`), {
+        uid: user.uid,
+        posts: posts,
+        status: false,
+      })
+      console.log('Post added successfully')
+      alert('Post added successfully')
+    } catch (error) {
+      console.error('Error adding post: ', error)
+      alert('Post added error')
+    }
+  }
+
+  const [posts, setPosts] = useState<Post[]>([])
+
+  // Fetch posts from Firestore
+  const fetchPosts = async () => {
+    try {
+      const querySnapshot = await getDocs(collection(db, 'posts'))
+      const postsArray: Post[] = []
+      querySnapshot.forEach((doc) => {
+        // Push each document's data into the array
+        const q = postsArray.push({ id: doc.id, ...doc.data() } as Post)
+      })
+      setPosts(postsArray)
+    } catch (error) {
+      console.error('Error fetching posts: ', error)
+    }
+  }
+
+  // Use useEffect to fetch posts on component mount
+  useEffect(() => {
+    fetchPosts()
+    getUserByUid()
+  }, [user])
 
   // Function to toggle likes
-  const toggleLike = (index) => {
+  const toggleLike = (index: number) => {
     const newLikes = [...likes]
     newLikes[index] = !newLikes[index] // Toggle like status
     setLikes(newLikes)
   }
 
   // Function to handle comment change
-  const handleCommentChange = (text, index) => {
+  const handleCommentChange = (text: string, index: number) => {
     const newComments = [...comments]
     newComments[index] = text // Update the comment for the respective card
     setComments(newComments)
@@ -41,6 +125,19 @@ const index = () => {
 
   return (
     <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
+      <View>
+        <TextInput
+          editable
+          placeholder="Add a post..."
+          multiline
+          numberOfLines={4}
+          maxLength={40}
+          onChangeText={(post) => addPost(post)}
+          value={post}
+          style={{ padding: 10 }}
+        />
+        <Button title="Post" onPress={handleSubmit} />
+      </View>
       <ScrollView
         horizontal
         showsHorizontalScrollIndicator={false}
@@ -54,14 +151,12 @@ const index = () => {
       </ScrollView>
       {/* Your main content goes here */}
       <View style={styles.content}>
-        {cards.map((_, index) => (
+        {posts.map((post, index) => (
           <View key={index} style={styles.card}>
-            <Text style={styles.cardHeader}>Content Title {index + 1}</Text>
-            <Text style={styles.cardContent}>
-              This is a lot of content that should be scrollable vertically. You
-              can add more paragraphs or components here to see the effect of
-              scrolling.
+            <Text style={styles.cardHeader}>
+              Content Title {index + 1} {post.uid}
             </Text>
+            <Text style={styles.cardContent}>{post.posts}</Text>
 
             {/* Reaction (Like) Section */}
             <TouchableOpacity
@@ -123,6 +218,7 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
   carousel: {
+    marginTop: 15,
     flexDirection: 'row',
   },
   imageContainer: {
