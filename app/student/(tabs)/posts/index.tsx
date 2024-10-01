@@ -1,5 +1,12 @@
-import { auth, db } from '@/config'
-import { addDoc, collection, getDocs, query, where } from 'firebase/firestore'
+import { db } from '@/config'
+import useAuth from '@/hooks/useAuth'
+import {
+  addDoc,
+  collection,
+  onSnapshot,
+  orderBy,
+  query,
+} from 'firebase/firestore'
 import React, { useEffect, useState } from 'react'
 import {
   Button,
@@ -12,11 +19,11 @@ import {
   View,
 } from 'react-native'
 
-interface Post {
-  id: string
-  uid: string
-  posts: string
-}
+// interface Post {
+//   id: string
+//   uid: string
+//   posts: string
+// }
 
 const index = () => {
   const images = [
@@ -33,81 +40,43 @@ const index = () => {
   const [likes, setLikes] = useState(Array(cards.length).fill(false)) // To track likes
   const [comments, setComments] = useState(Array(cards.length).fill('')) // To track comments
   const [post, addPost] = useState('')
-  const [user, setUser] = useState<any>(null)
-  const [userData, setUserData] = useState<any | null>(null)
+  const [posts, setPosts] = useState<any>([])
 
-  const onAuthStateChanged = (user: any | null) => {
-    if (user) {
-      setUser(user)
-    } else {
-      setUser(null)
-    }
-  }
-
-  const getUserByUid = async () => {
-    if (user) {
-      const userQuery = query(
-        collection(db, 'users'),
-        where('uid', '==', user.uid),
-      )
-      try {
-        const querySnapshot = await getDocs(userQuery)
-        // Handle case where no user is found
-        if (querySnapshot.empty) {
-          setUserData(null)
-          return
-        }
-        // Get the first user's data
-        const userDoc = querySnapshot.docs[0]
-        setUserData({ id: userDoc.id, ...userDoc.data() })
-      } catch (error) {
-        console.error('Error getting user: ', error)
-      }
-    }
-  }
-
-  useEffect(() => {
-    const subcriber = auth.onAuthStateChanged(onAuthStateChanged)
-    return subcriber
-  }, [])
+  const { currentUser, loading } = useAuth()
 
   const handleSubmit = async () => {
     try {
-      await addDoc(collection(db, `posts`), {
-        uid: user.uid,
-        posts: posts,
+      await addDoc(collection(db, 'posts'), {
+        createdAt: new Date().toISOString(),
+        authorId: currentUser.uid, // Store the UID of the author
+        authorName: currentUser.displayName || 'Anonymous', // Store the author's name
+        post: post,
+        likes: 0,
+        comment: 0,
         status: false,
       })
-      console.log('Post added successfully')
       alert('Post added successfully')
+      addPost('')
     } catch (error) {
       console.error('Error adding post: ', error)
       alert('Post added error')
     }
   }
 
-  const [posts, setPosts] = useState<Post[]>([])
-
   // Fetch posts from Firestore
-  const fetchPosts = async () => {
-    try {
-      const querySnapshot = await getDocs(collection(db, 'posts'))
-      const postsArray: Post[] = []
-      querySnapshot.forEach((doc) => {
-        // Push each document's data into the array
-        const q = postsArray.push({ id: doc.id, ...doc.data() } as Post)
-      })
-      setPosts(postsArray)
-    } catch (error) {
-      console.error('Error fetching posts: ', error)
-    }
-  }
-
-  // Use useEffect to fetch posts on component mount
   useEffect(() => {
-    fetchPosts()
-    getUserByUid()
-  }, [user])
+    const q = query(collection(db, 'posts'), orderBy('createdAt', 'desc'))
+    const unsubscribe = onSnapshot(q, (querySnapshot) => {
+      const postsData = querySnapshot.docs.map((doc) => ({
+        id: doc.id,
+        ...doc.data(),
+      }))
+      setPosts(postsData)
+      // setLoading(false);
+    })
+
+    return () => unsubscribe() // Cleanup the subscription on unmount
+  }, [])
 
   // Function to toggle likes
   const toggleLike = (index: number) => {
@@ -138,6 +107,7 @@ const index = () => {
         />
         <Button title="Post" onPress={handleSubmit} />
       </View>
+      {/* view carousel */}
       <ScrollView
         horizontal
         showsHorizontalScrollIndicator={false}
@@ -149,14 +119,12 @@ const index = () => {
           </View>
         ))}
       </ScrollView>
-      {/* Your main content goes here */}
+      {/* post content*/}
       <View style={styles.content}>
         {posts.map((post, index) => (
           <View key={index} style={styles.card}>
-            <Text style={styles.cardHeader}>
-              Content Title {index + 1} {post.uid}
-            </Text>
-            <Text style={styles.cardContent}>{post.posts}</Text>
+            <Text style={styles.cardHeader}>{post.authorName}</Text>
+            <Text style={styles.cardContent}>{post.post}</Text>
 
             {/* Reaction (Like) Section */}
             <TouchableOpacity
@@ -183,17 +151,6 @@ const index = () => {
             />
           </View>
         ))}
-
-        <Text style={styles.contentText}>
-          This is a lot of content that should be scrollable vertically. You can
-          add more paragraphs or components here to see the effect of scrolling.
-        </Text>
-        {/* Add more content to make it scrollable */}
-        <Text style={styles.contentText}>More content...</Text>
-        <Text style={styles.contentText}>More content...</Text>
-        <Text style={styles.contentText}>More content...</Text>
-        <Text style={styles.contentText}>More content...</Text>
-        <Text style={styles.contentText}>More content...</Text>
       </View>
     </ScrollView>
   )

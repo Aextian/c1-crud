@@ -1,9 +1,8 @@
-import { auth, db } from '@/config'
+import useSignUp from '@/hooks/useSignUp'
 import { Picker } from '@react-native-picker/picker'
-import { createUserWithEmailAndPassword } from 'firebase/auth'
-import { addDoc, collection } from 'firebase/firestore'
 import React, { useState } from 'react'
 import {
+  Alert,
   StyleSheet,
   Text,
   TextInput,
@@ -17,41 +16,17 @@ const register = () => {
   const [role, setRole] = useState('student')
   const [name, setName] = useState('')
 
-  const registerWithEmail = async (email: string, password: string) => {
-    try {
-      const userCredential = await createUserWithEmailAndPassword(
-        auth,
-        email,
-        password,
-      )
-      const user = userCredential.user
-      await addDoc(collection(db, 'users'), {
-        email: user.email,
-        uid: user.uid, // role can be 'admin' or 'user'
-        role: role,
-        fullName: name,
-        address: 'sds',
-      })
+  const { signUp, loading, error } = useSignUp() // Using the custom hook
 
-      console.log('User registered successfully:', user)
-      alert('Register successfully ')
-
-      // You can now use `user` object for further logic
-    } catch (error: any) {
-      switch (error.code) {
-        case 'auth/email-already-in-use':
-          alert('This email is already in use!')
-          break
-        case 'auth/invalid-email':
-          alert('The email address is not valid!')
-          break
-        case 'auth/weak-password':
-          alert('The password is too weak!')
-          break
-        default:
-          alert('Error registering: ' + error.message)
-      }
-      // Handle specific errors here, e.g. display error messages
+  const handleSignUp = async () => {
+    const user = await signUp(email, password, name, role)
+    if (user) {
+      Alert.alert('Success', 'Registered successfully!')
+      // Optionally, reset form fields
+      setEmail('')
+      setPassword('')
+      setName('')
+      setRole('user')
     }
   }
 
@@ -79,7 +54,7 @@ const register = () => {
         onChangeText={(name) => {
           setName(name)
         }}
-        placeholder="Full name"
+        placeholder="Name"
         style={styles.RegisterInput}
       />
       <View
@@ -106,10 +81,7 @@ const register = () => {
           <Picker.Item label="Teacher" value="teacher" />
         </Picker>
       </View>
-      <TouchableOpacity
-        style={styles.loginButton}
-        onPress={() => registerWithEmail(email, password)}
-      >
+      <TouchableOpacity style={styles.loginButton} onPress={handleSignUp}>
         <Text style={styles.RegisterButton}>Sign up</Text>
       </TouchableOpacity>
     </View>

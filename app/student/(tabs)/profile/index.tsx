@@ -1,3 +1,7 @@
+import { db } from '@/config'
+import useAuth from '@/hooks/useAuth'
+import { Feather } from '@expo/vector-icons'
+import { addDoc, collection } from 'firebase/firestore'
 import React, { useState } from 'react'
 import {
   Button,
@@ -8,7 +12,6 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native'
-import Icon from 'react-native-vector-icons/Feather' // Importing Feather icons
 
 const PersonalMessageScreen = () => {
   // State to manage messages
@@ -17,6 +20,7 @@ const PersonalMessageScreen = () => {
     { id: '2', text: 'I am fine, thank you! How about you?', sender: 'me' },
   ])
   const [newMessage, setNewMessage] = useState('')
+  const [chat, addChat] = useState('')
 
   // Function to handle sending a new message
   const sendMessage = () => {
@@ -28,6 +32,22 @@ const PersonalMessageScreen = () => {
     }
     setMessages((prevMessages) => [...prevMessages, newMsg]) // Add new message to the list
     setNewMessage('') // Clear the input field
+  }
+  const { currentUser, loading } = useAuth()
+
+  const handleCreateChat = async () => {
+    try {
+      await addDoc(collection(db, 'chatRoom'), {
+        createdAt: new Date().toISOString(),
+        authorId: currentUser.uid, // Store the UID of the author
+        authorName: currentUser.displayName,
+        name: chat,
+      })
+      alert('scuess')
+    } catch (error) {
+      console.error('Error adding post: ', error)
+      alert('Post added error')
+    }
   }
 
   // Render each message
@@ -44,11 +64,32 @@ const PersonalMessageScreen = () => {
 
   return (
     <View style={styles.container}>
+      <View
+        style={{
+          flexDirection: 'row',
+          justifyContent: 'space-around',
+          gap: 20,
+          alignItems: 'center',
+          borderColor: 'black',
+          borderWidth: 5,
+        }}
+      >
+        <Feather name="message-circle" />
+        <TextInput
+          style={{ width: '100%' }}
+          placeholder="Create a chat"
+          value={chat}
+          onChangeText={(chat) => addChat(chat)}
+        />
+        <Button title="Post" onPress={handleCreateChat} />
+        <Feather name="send" />
+      </View>
       <View style={styles.header}>
         <Text style={styles.headerText}>Conversation</Text>
-        <TouchableOpacity onPress={() => alert('Starting video call...')}>
-          <Icon name="video" size={24} color="#673ab7" />
-        </TouchableOpacity>
+
+        <TouchableOpacity
+          onPress={() => alert('Starting video call...')}
+        ></TouchableOpacity>
       </View>
       <FlatList
         data={messages}
