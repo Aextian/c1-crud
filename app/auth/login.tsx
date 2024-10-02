@@ -20,7 +20,6 @@ const login = () => {
   const { setUser } = useUserStore()
 
   const handleLogin = async () => {
-    console.log('userCred')
     try {
       const userCred = await signInWithEmailAndPassword(auth, email, password)
       if (userCred) {

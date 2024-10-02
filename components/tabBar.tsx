@@ -24,6 +24,7 @@ const TabBar = ({ state, descriptors, navigation }: IProps) => {
     <View style={styles.tabBar}>
       {state.routes.map((route, index) => {
         const { options } = descriptors[route.key]
+
         const label =
           options.tabBarLabel !== undefined
             ? options.tabBarLabel
@@ -51,8 +52,6 @@ const TabBar = ({ state, descriptors, navigation }: IProps) => {
             target: route.key,
           })
         }
-
-        console.log(route.name)
 
         return (
           <TouchableOpacity
@@ -93,6 +92,7 @@ const styles = StyleSheet.create({
   tabBar: {
     // position: 'absolute',
     // position: 'absolute',
+
     bottom: 25,
     flexDirection: 'row',
     justifyContent: 'space-between',

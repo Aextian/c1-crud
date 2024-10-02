@@ -15,6 +15,7 @@ import {
 } from 'firebase/firestore'
 import React, { useEffect, useState } from 'react'
 import {
+  SafeAreaView,
   ScrollView,
   StyleSheet,
   Text,
@@ -77,51 +78,53 @@ const PersonalMessageScreen = () => {
   }, [])
 
   return (
-    <View style={styles.container}>
-      <View
-        style={{
-          flexDirection: 'row',
-          justifyContent: 'space-around',
-          gap: 20,
-          alignItems: 'center',
-          borderColor: 'grey',
-          borderWidth: 1,
-          paddingHorizontal: 20,
-          borderRadius: 10,
-        }}
-      >
-        <Feather name="message-circle" size={24} />
-        <TextInput
+    <SafeAreaView style={styles.container}>
+      <View>
+        <View
           style={{
-            flex: 1,
-            padding: 10,
-            width: '100%',
-            outlineStyle: 'none',
+            flexDirection: 'row',
+            justifyContent: 'space-around',
+            gap: 20,
+            alignItems: 'center',
+            borderColor: 'grey',
+            borderWidth: 1,
+            paddingHorizontal: 20,
+            borderRadius: 10,
           }}
-          placeholder="Create a chat"
-          value={chat}
-          placeholderTextColor={'#999'}
-          onChangeText={(chat) => addChat(chat)}
-        />
-        <TouchableOpacity onPress={createNewChat}>
-          <Feather name="send" size={24} />
-        </TouchableOpacity>
+        >
+          <Feather name="message-circle" size={24} />
+          <TextInput
+            style={{
+              flex: 1,
+              padding: 10,
+              width: '100%',
+              outlineStyle: 'none',
+            }}
+            placeholder="Create a chat"
+            value={chat}
+            placeholderTextColor={'#999'}
+            onChangeText={(chat) => addChat(chat)}
+          />
+          <TouchableOpacity onPress={createNewChat}>
+            <Feather name="send" size={24} />
+          </TouchableOpacity>
+        </View>
+        <View style={{ paddingHorizontal: 10, marginVertical: 10 }}>
+          <Text>Message</Text>
+        </View>
+        <ScrollView contentContainerStyle={{ display: 'flex', gap: 30 }}>
+          {rooms && rooms?.length > 0 ? (
+            <>
+              {rooms?.map((room) => <MessageCard key={room._id} room={room} />)}
+            </>
+          ) : (
+            <>
+              <LoadingScreen />
+            </>
+          )}
+        </ScrollView>
       </View>
-      <View style={{ paddingHorizontal: 10, marginVertical: 10 }}>
-        <Text>Message</Text>
-      </View>
-      <ScrollView contentContainerStyle={{ display: 'flex', gap: 30 }}>
-        {rooms && rooms?.length > 0 ? (
-          <>
-            {rooms?.map((room) => <MessageCard key={room._id} room={room} />)}
-          </>
-        ) : (
-          <>
-            <LoadingScreen />
-          </>
-        )}
-      </ScrollView>
-    </View>
+    </SafeAreaView>
   )
 }
 
@@ -178,6 +181,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   container: {
+    paddingTop: 50,
     flex: 1,
     padding: 16,
     backgroundColor: '#fff',
