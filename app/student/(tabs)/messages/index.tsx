@@ -1,11 +1,13 @@
+import LoadingScreen from '@/components/loadingScreen'
 import { db } from '@/config'
 import useAuth from '@/hooks/useAuth'
 import { useUserStore } from '@/store/useUserStore'
 import { Feather } from '@expo/vector-icons'
+import { useRouter } from 'expo-router'
 import {
+  DocumentData,
   collection,
   doc,
-  DocumentData,
   onSnapshot,
   orderBy,
   query,
@@ -13,6 +15,7 @@ import {
 } from 'firebase/firestore'
 import React, { useEffect, useState } from 'react'
 import {
+  ScrollView,
   StyleSheet,
   Text,
   TextInput,
@@ -30,7 +33,8 @@ const PersonalMessageScreen = () => {
   const [chat, addChat] = useState('')
   const { currentUser, loading } = useAuth()
   const user = useUserStore((state) => state.user)
-  const [chatRoom, setChatRoom] = useState<DocumentData[] | undefined>()
+  const [rooms, setChatRoom] = useState<DocumentData[] | undefined>()
+
   // functio to create new chat
   const createNewChat = async () => {
     let id = `${Date.now()}`
@@ -47,16 +51,7 @@ const PersonalMessageScreen = () => {
     }
   }
   // Function to handle sending a new message
-  const sendMessage = () => {
-    if (newMessage.trim() === '') return // Prevent empty messages
-    const newMsg = {
-      id: (messages.length + 1).toString(),
-      text: newMessage,
-      sender: 'me',
-    }
-    setMessages((prevMessages) => [...prevMessages, newMsg]) // Add new message to the list
-    setNewMessage('') // Clear the input field
-  }
+
   // Render each message
   const renderMessage = ({ item }: any) => (
     <View
@@ -96,7 +91,6 @@ const PersonalMessageScreen = () => {
         }}
       >
         <Feather name="message-circle" size={24} />
-
         <TextInput
           style={{
             flex: 1,
@@ -111,60 +105,56 @@ const PersonalMessageScreen = () => {
         />
         <TouchableOpacity onPress={createNewChat}>
           <Feather name="send" size={24} />
-          <Text>{user?.name}</Text>
         </TouchableOpacity>
       </View>
-      {/* <FlatList
-        data={messages}
-        renderItem={renderMessage}
-        keyExtractor={(item) => item.id}
-        contentContainerStyle={styles.messageList}
-        inverted // To show the latest message at the bottom
-      /> */}
-
-      <MessageCard />
-      <MessageCard />
-      <MessageCard />
-      <MessageCard />
-      {/* <View style={styles.inputContainer}>
-        <TextInput
-          style={styles.input}
-          placeholder="Type a message..."
-          value={newMessage}
-          onChangeText={setNewMessage}
-        />
-        <Button title="Send" onPress={sendMessage} />
-      </View> */}
+      <View style={{ paddingHorizontal: 10, marginVertical: 10 }}>
+        <Text>Message</Text>
+      </View>
+      <ScrollView contentContainerStyle={{ display: 'flex', gap: 30 }}>
+        {rooms && rooms?.length > 0 ? (
+          <>
+            {rooms?.map((room) => <MessageCard key={room._id} room={room} />)}
+          </>
+        ) : (
+          <>
+            <LoadingScreen />
+          </>
+        )}
+      </ScrollView>
     </View>
   )
 }
 
-const MessageCard = () => {
+const MessageCard = ({ room }: DocumentData) => {
+  const router = useRouter()
   return (
-    <TouchableOpacity style={styles.messageCardContainer}>
+    <TouchableOpacity
+      style={styles.messageCardContainer}
+      onPress={() =>
+        router.push({
+          pathname: `/student/messages/[chat]`,
+          params: { roomId: room._id }, // Passing params as part of the object
+        })
+      }
+    >
       <View style={styles.messsageCardIcon}>
-        <Feather name="user" size={24} color="white" />
+        <Feather name="user" size={24} color="black" />
       </View>
       {/* content */}
       <View
         style={{
           flex: 1,
-          alignItems: 'center',
+          alignItems: 'flex-start',
           marginLeft: 1,
-          justifyContent: 'center',
+          justifyContent: 'flex-start',
         }}
       >
-        <Text style={{ color: '#333' }}>Message Title</Text>
-        <Text style={{ color: '#333', fontSize: 12 }}>
-          Lorem ipsum dolor sit amet consectetur adipisicing elit. Officiis,
-          iure.
-        </Text>
-        <Text
-          style={{ color: 'green', paddingVertical: 5, fontWeight: 'bold' }}
-        >
-          27 min
-        </Text>
+        <Text style={{ color: '#333' }}>{room.chatName}</Text>
+        <Text style={{ color: '#333', fontSize: 12 }}>{room._id}</Text>
       </View>
+      <Text style={{ color: 'green', paddingVertical: 5, fontWeight: 'bold' }}>
+        27 min
+      </Text>
     </TouchableOpacity>
   )
 }
@@ -178,11 +168,14 @@ const styles = StyleSheet.create({
     paddingHorizontal: 10,
   },
   messsageCardIcon: {
-    width: 50,
-    height: 50,
-    backgroundColor: 'green',
+    width: 45,
+    height: 45,
+    borderColor: 'green',
+    borderWidth: 2,
     borderRadius: 100,
     marginRight: 10,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   container: {
     flex: 1,

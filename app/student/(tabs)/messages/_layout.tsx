@@ -1,27 +1,12 @@
-import { Drawer } from 'expo-router/drawer'
+import { Stack } from 'expo-router'
 import React from 'react'
-import { GestureHandlerRootView } from 'react-native-gesture-handler'
 
 const _layout = () => {
   return (
-    <GestureHandlerRootView style={{ flex: 1 }}>
-      <Drawer>
-        <Drawer.Screen
-          name="index" // This is the name of the page and must match the url from root
-          options={{
-            drawerLabel: 'Home',
-            title: 'overview',
-          }}
-        />
-        <Drawer.Screen
-          name="groupchat" // This is the name of the page and must match the url from root
-          options={{
-            drawerLabel: 'GC',
-            title: 'GC',
-          }}
-        />
-      </Drawer>
-    </GestureHandlerRootView>
+    <Stack>
+      <Stack.Screen name="index" options={{ headerShown: false }} />
+      {/* <Stack.Screen name="[chat]" options={{ headerTitle: '' }} /> */}
+    </Stack>
   )
 }
 
