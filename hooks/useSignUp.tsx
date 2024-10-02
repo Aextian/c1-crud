@@ -24,15 +24,16 @@ const useSignUp = () => {
       )
       const user = userCredential.user
 
+      const data = {
+        _id: user.uid,
+        name: name,
+        email: email,
+        providerData: user.providerData[0],
+      }
       // Update user profile with display name
       await updateProfile(user, { displayName: name })
-
       // Add user data to Firestore
-      await setDoc(doc(db, 'users', user.uid), {
-        role: role, // Role: e.g. 'admin', 'user'
-        name: name, // User's display name
-        email: email, // Optionally store email
-      })
+      await setDoc(doc(db, 'users', user.uid), data)
 
       setLoading(false)
       return user

@@ -1,6 +1,8 @@
-import { auth } from '@/config'
+import { auth, db } from '@/config'
+import { useUserStore } from '@/store/useUserStore'
 import { Link, useRouter } from 'expo-router'
 import { signInWithEmailAndPassword } from 'firebase/auth'
+import { doc, getDoc } from 'firebase/firestore'
 import React, { useState } from 'react'
 import {
   StyleSheet,
@@ -15,12 +17,25 @@ const login = () => {
   const [password, setPassword] = useState('')
 
   const router = useRouter()
+  const { setUser } = useUserStore()
 
   const handleLogin = async () => {
+    console.log('userCred')
     try {
-      await signInWithEmailAndPassword(auth, email, password)
-      alert('login success')
-      router.push('/student/posts')
+      const userCred = await signInWithEmailAndPassword(auth, email, password)
+      if (userCred) {
+        const docSnap = await getDoc(doc(db, 'users', userCred.user.uid))
+        console.log(docSnap.data)
+        if (docSnap.exists()) {
+          const data = docSnap.data()
+          setUser(data)
+          if (data.role === 'admin') {
+            router.push('/admin')
+          } else {
+            router.push('/student/posts')
+          }
+        }
+      }
     } catch (error: any) {
       console.error('Login error:', error.message)
       alert(error.message)

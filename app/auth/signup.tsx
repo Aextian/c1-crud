@@ -10,7 +10,7 @@ import {
   View,
 } from 'react-native'
 
-const register = () => {
+const signup = () => {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [role, setRole] = useState('student')
@@ -124,4 +124,4 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
 })
-export default register
+export default signup

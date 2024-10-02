@@ -13,7 +13,7 @@ const TabBar = ({ state, descriptors, navigation }: IProps) => {
     posts: (props: any) => (
       <Feather name="home" size={24} color={props.color} {...props} />
     ),
-    profile: (props: any) => (
+    messages: (props: any) => (
       <Feather name="message-circle" size={24} color={props.color} {...props} />
     ),
     settings: (props: any) => (

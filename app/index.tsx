@@ -1,21 +1,37 @@
-import { View, Text, Button, TextInput, StyleSheet, TouchableOpacity } from 'react-native'
-import React, { useEffect, useState } from 'react'
 import { Link } from 'expo-router'
-import { addDoc, collection, deleteDoc, doc, getDocs, setDoc, updateDoc } from "firebase/firestore";
-import { db } from '../config'
-import { getAllUsers } from '@/services/firebase/users';
-import { FlatList } from 'react-native-reanimated/lib/typescript/Animated';
+import React, { useState } from 'react'
+import {
+  StyleSheet,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View,
+} from 'react-native'
 const index = () => {
-
-  const [username, setName] = useState('');
-  const [email, setEmail] = useState('');
+  const [username, setName] = useState('')
+  const [email, setEmail] = useState('')
 
   return (
     <View style={styles.container}>
-      <TextInput value={username} onChangeText={(username) => { setName(username) }} placeholder='Email' style={styles.loginInput} />
-      <TextInput value={email} onChangeText={(email) => { setEmail(email) }} placeholder='Password' secureTextEntry style={styles.loginInput} />
+      <TextInput
+        value={username}
+        onChangeText={(username) => {
+          setName(username)
+        }}
+        placeholder="Email"
+        style={styles.loginInput}
+      />
+      <TextInput
+        value={email}
+        onChangeText={(email) => {
+          setEmail(email)
+        }}
+        placeholder="Password"
+        secureTextEntry
+        style={styles.loginInput}
+      />
       <TouchableOpacity style={styles.loginButton}>
-        <Text style={styles.loginButtonText}>Login</Text>
+        <Text style={styles.loginButtonText}>Logsdin</Text>
       </TouchableOpacity>
       <Link href={'/auth/register'} style={styles.loginButton}>
         <Text style={styles.loginButtonText}>Register</Text>
@@ -25,11 +41,11 @@ const index = () => {
 }
 
 const styles = StyleSheet.create({
-  container:{
+  container: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    gap: 10
+    gap: 10,
   },
   loginInput: {
     height: 40,
@@ -61,7 +77,5 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
 })
-
-
 
 export default index

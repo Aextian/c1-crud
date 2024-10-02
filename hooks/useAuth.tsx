@@ -10,7 +10,6 @@ const useAuth = () => {
       setCurrentUser(user)
       setLoading(false)
     })
-
     // Cleanup subscription on unmount
     return () => unsubscribe()
   }, [])

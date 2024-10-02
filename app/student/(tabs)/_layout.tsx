@@ -7,7 +7,7 @@ const _layout = () => {
     // tabBar={(props) => <TabBar {...props} />}
     <Tabs tabBar={(props) => <TabBar {...props} />}>
       <Tabs.Screen name="posts" options={{ headerShown: false }} />
-      <Tabs.Screen name="profile" options={{ headerShown: false }} />
+      <Tabs.Screen name="messages" options={{ headerShown: false }} />
       <Tabs.Screen name="settings" options={{ headerShown: false }} />
     </Tabs>
   )
