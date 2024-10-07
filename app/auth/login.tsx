@@ -43,9 +43,9 @@ const login = () => {
 
   return (
     <View style={styles.container}>
-      <View
-        style={{ backgroundColor: 'green', height: 200, width: '100%' }}
-      ></View>
+      <View style={{ height: 200, width: '100%' }} className="bg-slate-500">
+        <Text className="text-white text-2xl">ajhsajs</Text>
+      </View>
       <TextInput
         value={email}
         onChangeText={(text) => setEmail(text)}

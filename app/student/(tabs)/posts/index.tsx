@@ -123,7 +123,9 @@ const index = () => {
       <View style={styles.content}>
         {posts.map((post, index) => (
           <View key={index} style={styles.card}>
-            <Text style={styles.cardHeader}>{post.authorName}</Text>
+            <Text className="text-2xl font-bold ">
+              {post.authorName} hahahah
+            </Text>
             <Text style={styles.cardContent}>{post.post}</Text>
 
             {/* Reaction (Like) Section */}

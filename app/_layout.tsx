@@ -2,6 +2,7 @@ import LoadingScreen from '@/components/loadingScreen'
 import useAuth from '@/hooks/useAuth'
 import { Stack, useRouter, useSegments } from 'expo-router'
 import React, { useEffect } from 'react'
+import '../global.css'
 
 const _layout = () => {
   const router = useRouter()
