@@ -4,10 +4,14 @@ import React from 'react'
 
 const _layout = () => {
   return (
-    // tabBar={(props) => <TabBar {...props} />}
     <Tabs
-      screenOptions={{ tabBarHideOnKeyboard: true }}
+      // screenOptions={{ tabBarHideOnKeyboard: true }}
       tabBar={(props) => <TabBar {...props} />}
+      screenOptions={({ route }) => ({
+        tabBarStyle: {
+          display: route.name === '/student/posts/add-post' ? 'none' : 'flex',
+        },
+      })}
     >
       <Tabs.Screen name="posts" options={{ headerShown: false }} />
       <Tabs.Screen

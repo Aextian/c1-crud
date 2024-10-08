@@ -1,5 +1,7 @@
 import { db } from '@/config'
 import useAuth from '@/hooks/useAuth'
+import { Feather } from '@expo/vector-icons'
+import { Link } from 'expo-router'
 import {
   addDoc,
   collection,
@@ -94,19 +96,26 @@ const index = () => {
 
   return (
     <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
-      <View>
-        <TextInput
-          editable
-          placeholder="Add a post..."
-          multiline
-          numberOfLines={4}
-          maxLength={40}
-          onChangeText={(post) => addPost(post)}
-          value={post}
-          style={{ padding: 10 }}
-        />
-        <Button title="Post" onPress={handleSubmit} />
-      </View>
+      <Link
+        href={'/student/posts/add-post'}
+        className="flex flex-row   items-center border-b border-b-slate-100  p-4 gap-5"
+      >
+        <View className="rounded-full border p-3">
+          <Feather name="user" size={12} />
+        </View>
+        <View className="gap-2">
+          <Text className="text-[10px] font-medium">Juan Dela Cruz</Text>
+          <TextInput
+            className="w-full items-center border-none outline-none"
+            editable
+            placeholder="What's new?"
+            placeholderTextColor={'gray'}
+            onChangeText={(post) => addPost(post)}
+            value={post}
+          />
+        </View>
+      </Link>
+
       {/* view carousel */}
       <ScrollView
         horizontal

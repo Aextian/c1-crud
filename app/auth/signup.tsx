@@ -19,14 +19,19 @@ const signup = () => {
   const { signUp, loading, error } = useSignUp() // Using the custom hook
 
   const handleSignUp = async () => {
-    const user = await signUp(email, password, name, role)
-    if (user) {
-      Alert.alert('Success', 'Registered successfully!')
-      // Optionally, reset form fields
-      setEmail('')
-      setPassword('')
-      setName('')
-      setRole('user')
+    alert('sign')
+    try {
+      const user = await signUp(email, password, name, role)
+      if (user) {
+        Alert.alert('Success', 'Registered successfully!')
+        // Optionally, reset form fields
+        setEmail('')
+        setPassword('')
+        setName('')
+        setRole('user')
+      }
+    } catch (error) {
+      alert(error)
     }
   }
 

@@ -24,13 +24,13 @@ const login = () => {
       const userCred = await signInWithEmailAndPassword(auth, email, password)
       if (userCred) {
         const docSnap = await getDoc(doc(db, 'users', userCred.user.uid))
-        console.log(docSnap.data)
         if (docSnap.exists()) {
           const data = docSnap.data()
           setUser(data)
           if (data.role === 'admin') {
             router.push('/admin')
           } else {
+            alert('success')
             router.push('/student/posts')
           }
         }
@@ -64,7 +64,7 @@ const login = () => {
         <Text style={styles.loginButtonText}>Login</Text>
       </TouchableOpacity>
 
-      <Link href="/auth/register" style={styles.registerButton}>
+      <Link href="/auth/signup" style={styles.registerButton}>
         <Text style={styles.registerText}>Register</Text>
       </Link>
     </View>
