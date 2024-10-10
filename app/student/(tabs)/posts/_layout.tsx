@@ -8,6 +8,7 @@ const _layout = () => {
       <Stack.Screen
         name="add-post"
         options={{
+          headerShown: false,
           presentation: 'modal',
         }}
       />

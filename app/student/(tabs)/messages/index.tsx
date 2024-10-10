@@ -79,6 +79,52 @@ const PersonalMessageScreen = () => {
 
   return (
     <SafeAreaView style={styles.container}>
+      <ScrollView
+        horizontal
+        showsHorizontalScrollIndicator={false}
+        className="flex flex-row max-h-fit mb-5 px-5"
+      >
+        <View className="item-center mr-5 justify-center border p-4 rounded-full">
+          <Feather name="user" size={24} />
+        </View>
+        <View className="item-center mr-5  justify-center border p-4 rounded-full">
+          <Feather name="user" size={24} />
+        </View>
+        <View className="item-center mr-5  justify-center border p-4 rounded-full">
+          <Feather name="user" size={24} />
+        </View>
+        <View className="item-center mr-5  justify-center border p-4 rounded-full">
+          <Feather name="user" size={24} />
+        </View>
+        <View className="item-center mr-5  justify-center border p-4 rounded-full">
+          <Feather name="user" size={24} />
+        </View>
+        <View className="item-center mr-5  justify-center border p-4 rounded-full">
+          <Feather name="user" size={24} />
+        </View>
+        <View className="item-center mr-5  justify-center border p-4 rounded-full">
+          <Feather name="user" size={24} />
+        </View>
+        <View className="item-center mr-5  justify-center border p-4 rounded-full">
+          <Feather name="user" size={24} />
+        </View>
+        <View className="item-center mr-5  justify-center border p-4 rounded-full">
+          <Feather name="user" size={24} />
+        </View>
+        <View className="item-center mr-5  justify-center border p-4 rounded-full">
+          <Feather name="user" size={24} />
+        </View>
+        <View className="item-center mr-5  justify-center border p-4 rounded-full">
+          <Feather name="user" size={24} />
+        </View>
+        <View className="item-center mr-5  justify-center border p-4 rounded-full">
+          <Feather name="user" size={24} />
+        </View>
+        <View className="item-center mr-5  justify-center border p-4 rounded-full">
+          <Feather name="user" size={24} />
+        </View>
+      </ScrollView>
+
       <View>
         <View
           style={{

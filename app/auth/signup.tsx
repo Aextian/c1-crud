@@ -19,7 +19,6 @@ const signup = () => {
   const { signUp, loading, error } = useSignUp() // Using the custom hook
 
   const handleSignUp = async () => {
-    alert('sign')
     try {
       const user = await signUp(email, password, name, role)
       if (user) {

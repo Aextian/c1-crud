@@ -1,31 +1,24 @@
 import { db } from '@/config'
-import useAuth from '@/hooks/useAuth'
 import { Feather } from '@expo/vector-icons'
-import { Link } from 'expo-router'
+import { useRouter } from 'expo-router'
 import {
-  addDoc,
   collection,
+  DocumentData,
   onSnapshot,
   orderBy,
   query,
 } from 'firebase/firestore'
 import React, { useEffect, useState } from 'react'
 import {
-  Button,
   Image,
+  Pressable,
+  SafeAreaView,
   ScrollView,
   StyleSheet,
   Text,
-  TextInput,
   TouchableOpacity,
   View,
 } from 'react-native'
-
-// interface Post {
-//   id: string
-//   uid: string
-//   posts: string
-// }
 
 const index = () => {
   const images = [
@@ -43,28 +36,6 @@ const index = () => {
   const [comments, setComments] = useState(Array(cards.length).fill('')) // To track comments
   const [post, addPost] = useState('')
   const [posts, setPosts] = useState<any>([])
-
-  const { currentUser, loading } = useAuth()
-
-  const handleSubmit = async () => {
-    try {
-      await addDoc(collection(db, 'posts'), {
-        createdAt: new Date().toISOString(),
-        authorId: currentUser.uid, // Store the UID of the author
-        authorName: currentUser.displayName || 'Anonymous', // Store the author's name
-        post: post,
-        likes: 0,
-        comment: 0,
-        status: false,
-      })
-      alert('Post added successfully')
-      addPost('')
-    } catch (error) {
-      console.error('Error adding post: ', error)
-      alert('Post added error')
-    }
-  }
-
   // Fetch posts from Firestore
   useEffect(() => {
     const q = query(collection(db, 'posts'), orderBy('createdAt', 'desc'))
@@ -87,37 +58,28 @@ const index = () => {
     setLikes(newLikes)
   }
 
-  // Function to handle comment change
-  const handleCommentChange = (text: string, index: number) => {
-    const newComments = [...comments]
-    newComments[index] = text // Update the comment for the respective card
-    setComments(newComments)
-  }
+  const router = useRouter()
 
   return (
-    <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
-      <Link
-        href={'/student/posts/add-post'}
-        className="flex flex-row   items-center border-b border-b-slate-100  p-4 gap-5"
-      >
-        <View className="rounded-full border p-3">
-          <Feather name="user" size={12} />
-        </View>
-        <View className="gap-2">
-          <Text className="text-[10px] font-medium">Juan Dela Cruz</Text>
-          <TextInput
-            className="w-full items-center border-none outline-none"
-            editable
-            placeholder="What's new?"
-            placeholderTextColor={'gray'}
-            onChangeText={(post) => addPost(post)}
-            value={post}
-          />
-        </View>
-      </Link>
+    <SafeAreaView style={{ flex: 1 }}>
+      <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
+        {/* navigate to post screen */}
+        <Pressable onPress={() => router.push('/student/add-post')}>
+          <View className="flex flex-row gap-5  border-b border-b-slate-100  p-4 ">
+            <View className="rounded-full border p-3 ">
+              <Feather name="user" size={12} />
+            </View>
+            <View className="gap-2">
+              <Text className="text-[12px] font-medium">Juan Dela Cruz</Text>
+              <Text className="text-[10px] text-gray-500 font-medium">
+                What's on your mind?
+              </Text>
+            </View>
+          </View>
+        </Pressable>
 
-      {/* view carousel */}
-      <ScrollView
+        {/* view carousel */}
+        {/* <ScrollView
         horizontal
         showsHorizontalScrollIndicator={false}
         style={styles.carousel}
@@ -127,60 +89,61 @@ const index = () => {
             <Image source={image} style={styles.image} resizeMode="cover" />
           </View>
         ))}
-      </ScrollView>
-      {/* post content*/}
-      <View style={styles.content}>
-        {posts.map((post, index) => (
-          <View key={index} style={styles.card}>
-            <Text className="text-2xl font-bold ">
-              {post.authorName} hahahah
-            </Text>
-            <Text style={styles.cardContent}>{post.post}</Text>
-
-            {/* Reaction (Like) Section */}
-            <TouchableOpacity
-              onPress={() => toggleLike(index)}
-              style={styles.likeButton}
-            >
-              <Text style={styles.likeText}>
-                {likes[index] ? '❤️ Liked' : '🤍 Like'}
-              </Text>
-            </TouchableOpacity>
-
-            {/* Comment Section */}
-            <TextInput
-              style={styles.input}
-              placeholder="Add a comment..."
-              value={comments[index]}
-              onChangeText={(text) => handleCommentChange(text, index)}
-            />
-            <Button
-              title="Submit Comment"
-              onPress={() =>
-                alert(`Comment on Card ${index + 1}: ${comments[index]}`)
-              }
-            />
+      </ScrollView> */}
+        {/* post content*/}
+        {posts.map((post: DocumentData, index: number) => (
+          <View key={index} className="border-b border-b-slate-200 p-4">
+            <View className="flex flex-row items-center justify-start gap-2">
+              <View className="rounded-full w-8 h-8 border p-3 items-center justify-center">
+                <Feather name="user" size={14} />
+              </View>
+              <View>
+                <Text className="font-semibold">{post.authorName}</Text>
+              </View>
+            </View>
+            <View className="px-9 pb-10">
+              <Text className="text-black leading-loose">{post.post} </Text>
+              {post.imageUrl && (
+                <Image
+                  source={{ uri: post.imageUrl }}
+                  className="h-72 w-64 rounded-md"
+                />
+              )}
+              {/* Reaction (Like) Section */}
+              <View className="flex flex-row items-center justify-start gap-5">
+                <TouchableOpacity
+                  onPress={() => toggleLike(index)}
+                  style={styles.likeButton}
+                >
+                  <Text className="text-lg ">
+                    {likes[index] ? '❤️1K ' : '🤍 '}
+                  </Text>
+                </TouchableOpacity>
+                <TouchableOpacity>
+                  <Feather name="message-circle" color={'gray'} size={28} />
+                </TouchableOpacity>
+              </View>
+            </View>
           </View>
         ))}
-      </View>
-    </ScrollView>
+      </ScrollView>
+    </SafeAreaView>
   )
 }
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
+    flexGrow: 1,
     padding: 5,
+    paddingTop: 35,
     backgroundColor: '#fff',
   },
+
   header: {
     fontSize: 24,
     marginBottom: 10,
   },
-  content: {
-    marginBottom: 20,
-    padding: 16,
-  },
+
   contentText: {
     fontSize: 18,
     marginBottom: 10,
@@ -199,25 +162,13 @@ const styles = StyleSheet.create({
     height: 150,
     borderRadius: 10,
   },
-  card: {
-    padding: 16,
-    backgroundColor: '#f9f9f9',
-    borderRadius: 10,
-    marginBottom: 20,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 3,
-  },
+
   cardHeader: {
     fontSize: 20,
     fontWeight: 'bold',
     marginBottom: 8,
   },
-  cardContent: {
-    fontSize: 16,
-    color: '#333',
-  },
+
   likeButton: {
     marginVertical: 10,
   },
