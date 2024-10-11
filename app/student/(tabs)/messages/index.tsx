@@ -1,9 +1,10 @@
+import MessageCard from '@/components/MessageCard'
+import UserList from '@/components/UserList'
 import LoadingScreen from '@/components/loadingScreen'
-import { db } from '@/config'
-import useAuth from '@/hooks/useAuth'
-import { useUserStore } from '@/store/useUserStore'
+// import MessageCard from '@/components/messageCard'
+import { auth, db } from '@/config'
+import { useChat } from '@/hooks/useChat'
 import { Feather } from '@expo/vector-icons'
-import { useRouter } from 'expo-router'
 import {
   DocumentData,
   collection,
@@ -24,17 +25,11 @@ import {
   View,
 } from 'react-native'
 
-const PersonalMessageScreen = () => {
-  // State to manage messages
-  const [messages, setMessages] = useState([
-    { id: '1', text: 'Hello! How are you?', sender: 'other' },
-    { id: '2', text: 'I am fine, thank you! How about you?', sender: 'me' },
-  ])
-  const [newMessage, setNewMessage] = useState('')
+const index = () => {
   const [chat, addChat] = useState('')
-  const { currentUser, loading } = useAuth()
-  const user = useUserStore((state) => state.user)
   const [rooms, setChatRoom] = useState<DocumentData[] | undefined>()
+  const { conversations } = useChat()
+  const currentUser = auth.currentUser
 
   // functio to create new chat
   const createNewChat = async () => {
@@ -42,7 +37,7 @@ const PersonalMessageScreen = () => {
     const _doc = {
       _id: id,
       chatName: chat,
-      user: currentUser.uid,
+      user: currentUser?.uid,
     }
     try {
       await setDoc(doc(db, 'chats', id), _doc)
@@ -64,10 +59,9 @@ const PersonalMessageScreen = () => {
       <Text style={styles.messageText}>{item.text}</Text>
     </View>
   )
-
+  // get all chat rooms
   useEffect(() => {
     const chatQuery = query(collection(db, 'chats'), orderBy('_id', 'desc'))
-
     const unsubscribe = onSnapshot(chatQuery, (querySnapshot) => {
       const chatRooms = querySnapshot.docs.map((doc) => doc.data())
       if (chatRooms.length > 0) {
@@ -79,52 +73,6 @@ const PersonalMessageScreen = () => {
 
   return (
     <SafeAreaView style={styles.container}>
-      <ScrollView
-        horizontal
-        showsHorizontalScrollIndicator={false}
-        className="flex flex-row max-h-fit mb-5 px-5"
-      >
-        <View className="item-center mr-5 justify-center border p-4 rounded-full">
-          <Feather name="user" size={24} />
-        </View>
-        <View className="item-center mr-5  justify-center border p-4 rounded-full">
-          <Feather name="user" size={24} />
-        </View>
-        <View className="item-center mr-5  justify-center border p-4 rounded-full">
-          <Feather name="user" size={24} />
-        </View>
-        <View className="item-center mr-5  justify-center border p-4 rounded-full">
-          <Feather name="user" size={24} />
-        </View>
-        <View className="item-center mr-5  justify-center border p-4 rounded-full">
-          <Feather name="user" size={24} />
-        </View>
-        <View className="item-center mr-5  justify-center border p-4 rounded-full">
-          <Feather name="user" size={24} />
-        </View>
-        <View className="item-center mr-5  justify-center border p-4 rounded-full">
-          <Feather name="user" size={24} />
-        </View>
-        <View className="item-center mr-5  justify-center border p-4 rounded-full">
-          <Feather name="user" size={24} />
-        </View>
-        <View className="item-center mr-5  justify-center border p-4 rounded-full">
-          <Feather name="user" size={24} />
-        </View>
-        <View className="item-center mr-5  justify-center border p-4 rounded-full">
-          <Feather name="user" size={24} />
-        </View>
-        <View className="item-center mr-5  justify-center border p-4 rounded-full">
-          <Feather name="user" size={24} />
-        </View>
-        <View className="item-center mr-5  justify-center border p-4 rounded-full">
-          <Feather name="user" size={24} />
-        </View>
-        <View className="item-center mr-5  justify-center border p-4 rounded-full">
-          <Feather name="user" size={24} />
-        </View>
-      </ScrollView>
-
       <View>
         <View
           style={{
@@ -155,13 +103,19 @@ const PersonalMessageScreen = () => {
             <Feather name="send" size={24} />
           </TouchableOpacity>
         </View>
+        <UserList />
         <View style={{ paddingHorizontal: 10, marginVertical: 10 }}>
-          <Text>Message</Text>
+          <Text>Messagesd</Text>
         </View>
         <ScrollView contentContainerStyle={{ display: 'flex', gap: 30 }}>
-          {rooms && rooms?.length > 0 ? (
+          {conversations && conversations?.length > 0 ? (
             <>
-              {rooms?.map((room) => <MessageCard key={room._id} room={room} />)}
+              {conversations?.map((conversation) => (
+                <MessageCard
+                  key={conversation.id}
+                  conversation={conversation}
+                />
+              ))}
             </>
           ) : (
             <>
@@ -174,58 +128,7 @@ const PersonalMessageScreen = () => {
   )
 }
 
-const MessageCard = ({ room }: DocumentData) => {
-  const router = useRouter()
-  return (
-    <TouchableOpacity
-      style={styles.messageCardContainer}
-      onPress={() =>
-        router.push({
-          pathname: `/student/messages/[chat]`,
-          params: { roomId: room._id }, // Passing params as part of the object
-        })
-      }
-    >
-      <View style={styles.messsageCardIcon}>
-        <Feather name="user" size={24} color="black" />
-      </View>
-      {/* content */}
-      <View
-        style={{
-          flex: 1,
-          alignItems: 'flex-start',
-          marginLeft: 1,
-          justifyContent: 'flex-start',
-        }}
-      >
-        <Text style={{ color: '#333' }}>{room.chatName}</Text>
-        <Text style={{ color: '#333', fontSize: 12 }}>{room._id}</Text>
-      </View>
-      <Text style={{ color: 'green', paddingVertical: 5, fontWeight: 'bold' }}>
-        27 min
-      </Text>
-    </TouchableOpacity>
-  )
-}
-
 const styles = StyleSheet.create({
-  messageCardContainer: {
-    width: '100%',
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'flex-start',
-    paddingHorizontal: 10,
-  },
-  messsageCardIcon: {
-    width: 45,
-    height: 45,
-    borderColor: 'green',
-    borderWidth: 2,
-    borderRadius: 100,
-    marginRight: 10,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
   container: {
     paddingTop: 50,
     flex: 1,
@@ -278,4 +181,4 @@ const styles = StyleSheet.create({
   },
 })
 
-export default PersonalMessageScreen
+export default index

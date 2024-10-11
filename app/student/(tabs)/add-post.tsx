@@ -76,8 +76,6 @@ const addPost = () => {
       alert('Post added error')
     }
   }
-
-  console.log(currentUser)
   return (
     <Animated.View entering={FadeIn} style={{ flex: 1, marginTop: 25 }}>
       <Animated.View entering={SlideInDown} style={{ flex: 1 }}>
