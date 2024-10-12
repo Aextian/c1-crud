@@ -105,7 +105,7 @@ const index = () => {
         </View>
         <UserList />
         <View style={{ paddingHorizontal: 10, marginVertical: 10 }}>
-          <Text>Messagesd</Text>
+          <Text>Messages</Text>
         </View>
         <ScrollView contentContainerStyle={{ display: 'flex', gap: 30 }}>
           {conversations && conversations?.length > 0 ? (

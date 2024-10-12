@@ -15,6 +15,7 @@ const _layout = () => {
       <Tabs.Screen
         name="posts"
         options={{
+          tabBarStyle: styles.tabBar,
           headerShown: false,
           tabBarIcon: ({ color }) => (
             <FontAwesome size={28} name="home" color={color} />

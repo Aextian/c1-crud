@@ -119,7 +119,9 @@ const index = () => {
                     {likes[index] ? '❤️1K ' : '🤍 '}
                   </Text>
                 </TouchableOpacity>
-                <TouchableOpacity>
+                <TouchableOpacity
+                  onPress={() => router.push('/student/(tabs)/posts/comments')}
+                >
                   <Feather name="message-circle" color={'gray'} size={28} />
                 </TouchableOpacity>
               </View>

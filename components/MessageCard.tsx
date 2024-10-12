@@ -1,45 +1,72 @@
-import { db } from '@/config'
+import { auth, db } from '@/config'
 import { Feather } from '@expo/vector-icons'
 import { useRouter } from 'expo-router'
-import { collection, DocumentData, getDocs, query } from 'firebase/firestore'
+import {
+  DocumentData,
+  collection,
+  doc,
+  getDoc,
+  limit,
+  onSnapshot,
+  orderBy,
+  query,
+} from 'firebase/firestore'
 import React, { useEffect, useState } from 'react'
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native'
 
 const MessageCard = ({ conversation }: { conversation: DocumentData }) => {
   const router = useRouter()
-
-  // Function to find the user
-
+  const currentUser = auth.currentUser
   const [user, setUser] = useState<DocumentData>()
+  const [lastMessage, setLastMessage] = useState<string | null>(null)
 
   useEffect(() => {
-    const fetchUser = async () => {
-      // if (!conversation.id) return // Early return if no conversation ID
+    const docRef = doc(db, 'conversations', conversation.id)
+    const messagesRef = collection(
+      db,
+      'conversations',
+      conversation.id,
+      'messages',
+    )
+    const fetchData = async () => {
       try {
-        // Query to find users in the conversation
-        const userIdCollection = query(
-          collection(db, 'conversations', conversation.id),
-        )
-        const querySnapshot = await getDocs(userIdCollection)
+        const docSnap = await getDoc(docRef) // Await the getDoc call
 
-        if (querySnapshot.empty) {
-          console.log('No users found in this conversation.')
-          return
+        if (docSnap.exists()) {
+          // Document data found
+          const usersId = docSnap.data().users
+          const userId = usersId.find((id: string) => id !== currentUser?.uid)
+          const userRef = doc(db, 'users', userId)
+          const userSnap = await getDoc(userRef) // Await the getDoc call
+          const userData = userSnap.data()
+          setUser(userData)
+        } else {
+          // Document not found
+          console.log('No such document!')
         }
-
-        // Access the first user document in the results
-        const userDoc = querySnapshot.docs[0]
-        console.log('User Document:', userDoc)
-        setUser(userDoc.data())
       } catch (error) {
-        console.error('Error fetching user:', error)
+        console.error('Error fetching document:', error)
       }
     }
-
-    fetchUser()
-  }, [])
-
-  // console.log('user', user)
+    const fetchLastMessage = () => {
+      const q = query(messagesRef, orderBy('createdAt', 'desc'), limit(1))
+      const unsubcribe = onSnapshot(q, (snapshot) => {
+        if (!snapshot.empty) {
+          const lastMessage = snapshot.docs[0].data()
+          setLastMessage(lastMessage.text)
+          console.log('Real-time last message:', lastMessage)
+        } else {
+          console.log('No messages found!')
+        }
+      })
+      return unsubcribe
+    }
+    fetchData() // Call the async function
+    const unsubscribeFromMessages = fetchLastMessage()
+    return () => {
+      unsubscribeFromMessages()
+    }
+  }, [conversation.id]) // Add conversation.id as a dependency
 
   return (
     <TouchableOpacity
@@ -63,7 +90,10 @@ const MessageCard = ({ conversation }: { conversation: DocumentData }) => {
           justifyContent: 'flex-start',
         }}
       >
-        <Text>{conversation?.id}</Text>
+        <Text>{user?.name}</Text>
+        <Text className="text-xs text-gray-500" numberOfLines={1}>
+          {lastMessage}{' '}
+        </Text>
       </View>
     </TouchableOpacity>
   )

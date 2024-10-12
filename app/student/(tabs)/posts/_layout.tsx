@@ -5,13 +5,10 @@ const _layout = () => {
   return (
     <Stack>
       <Stack.Screen name="index" options={{ headerShown: false }} />
-      {/* <Stack.Screen
-        name="add-post"
-        options={{
-          headerShown: false,
-          presentation: 'modal',
-        }}
-      /> */}
+      <Stack.Screen
+        name="comments"
+        options={{ headerShown: false, presentation: 'transparentModal' }}
+      />
     </Stack>
   )
 }

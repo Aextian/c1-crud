@@ -61,8 +61,8 @@ const addPost = () => {
 
       await addDoc(collection(db, 'posts'), {
         createdAt: new Date().toISOString(),
-        authorId: currentUser.uid, // Store the UID of the author
-        authorName: currentUser.displayName || 'Anonymous', // Store the author's name
+        authorId: currentUser?.uid, // Store the UID of the author
+        authorName: currentUser?.displayName || 'Anonymous', // Store the author's name
         post: post,
         likes: 0,
         comment: 0,
@@ -109,12 +109,12 @@ const addPost = () => {
                   />
                 </View>
 
-                <View className="flex flex-row gap-3 items-center ">
+                <View className="flex flex-row gap-5 items-center ">
                   <TouchableOpacity onPress={pickImage}>
-                    <Feather name="image" size={20} color={'gray'} />
+                    <Feather name="image" size={24} color={'gray'} />
                   </TouchableOpacity>
                   <TouchableOpacity onPress={takePhoto}>
-                    <Feather name="camera" size={20} color={'gray'} />
+                    <Feather name="camera" size={24} color={'gray'} />
                   </TouchableOpacity>
                   <Button title="Upload Image" onPress={handleSubmit} />
                 </View>
