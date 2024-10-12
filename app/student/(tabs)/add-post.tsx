@@ -69,7 +69,6 @@ const addPost = () => {
         status: false,
         imageUrl: imageUrl,
       })
-      alert('Post added successfully')
       addPost('')
     } catch (error) {
       console.error('Error adding post: ', error)

@@ -13,9 +13,9 @@ const _layout = () => {
     const inAuthGroup = segments[0] == 'auth'
     if (currentUser && !inAuthGroup) {
       // router.replace('/student/posts')
-      router.replace('/student/messages')
+      // router.replace('/student/messages')
     } else if (!currentUser && !inAuthGroup) {
-      router.replace('/auth/login')
+      // router.replace('/auth/login')
     }
   }, [currentUser, loading])
 

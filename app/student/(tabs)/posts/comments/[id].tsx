@@ -1,6 +1,17 @@
+import { auth, db } from '@/config'
 import { FontAwesome } from '@expo/vector-icons'
-import { useFocusEffect, useNavigation } from 'expo-router'
-import React from 'react'
+import {
+  useFocusEffect,
+  useLocalSearchParams,
+  useNavigation,
+} from 'expo-router'
+import {
+  DocumentData,
+  addDoc,
+  collection,
+  onSnapshot,
+} from 'firebase/firestore'
+import React, { useEffect, useState } from 'react'
 import {
   KeyboardAvoidingView,
   Platform,
@@ -11,10 +22,10 @@ import {
   View,
 } from 'react-native'
 import Animated, { FadeIn, SlideInDown } from 'react-native-reanimated'
-
 const comments = () => {
   const navigation = useNavigation()
-
+  const [comment, addComments] = useState('')
+  const [comments, setComments] = useState<DocumentData[]>()
   useFocusEffect(
     React.useCallback(() => {
       navigation.getParent()?.setOptions({ tabBarStyle: { display: 'none' } })
@@ -25,6 +36,49 @@ const comments = () => {
     }, [navigation]),
   )
 
+  const { id } = useLocalSearchParams()
+
+  const currentUser = auth.currentUser
+  // add comments
+  const submitComment = async () => {
+    // Ensure `id` exists and is valid
+    if (!id) {
+      console.error('Post ID is not defined')
+      return
+    }
+    const data = {
+      author: currentUser?.displayName || 'Anonymous',
+      comment: comment,
+      createdAt: new Date(),
+    }
+    try {
+      await addDoc(collection(db, 'posts', String(id), 'comments'), data)
+      addComments('')
+    } catch (error) {
+      console.error('Error adding comment: ', error)
+    }
+  }
+
+  //   get all comments
+  useEffect(() => {
+    const commentsCollectionRef = collection(
+      db,
+      'posts',
+      String(id),
+      'comments',
+    )
+    // Listen for real-time updates
+    const unsubscribe = onSnapshot(commentsCollectionRef, (commentSnapshot) => {
+      // Extract the comment data from each document
+      const comments = commentSnapshot.docs.map((doc) => ({
+        id: doc.id, // To keep track of individual comment IDs
+        ...doc.data(), // Spread the document data into the object
+      }))
+      setComments(comments) // Assuming `setComments` updates your component's state
+    })
+    return unsubscribe
+  }, [id])
+
   return (
     <Animated.View entering={FadeIn} style={{ flex: 1 }}>
       <Animated.View entering={SlideInDown} style={{ flex: 1 }}>
@@ -32,30 +86,17 @@ const comments = () => {
           className="px-10 rounded-lg"
           style={{ flex: 1, marginTop: 20, backgroundColor: 'white' }}
         >
-          <View className="flex flex-row gap-5 mt-10">
-            <View className="rounded-full h-12 w-12 bg-black"></View>
-            <View className="justify-center">
-              <Text className="font-bold text-xs">Kimjhan</Text>
-              <Text className="text-gray-500 pr-12" numberOfLines={1}>
-                Lorem ipsum dolor sit amet consectetur adipisicing elit. Ipsa,
-                soluta? Lorem ipsum dolor sit amet consectetur adipisicing elit.
-                Ipsa, soluta? Lorem ipsum dolor sit amet consectetur adipisicing
-                elit. Ipsa, soluta?
-              </Text>
+          {comments?.map((comment) => (
+            <View className="flex flex-row gap-5 mt-10">
+              <View className="rounded-full h-12 w-12 bg-black"></View>
+              <View className="justify-center">
+                <Text className="font-bold text-xs">{comment.author}</Text>
+                <Text className="text-gray-500 pr-12" numberOfLines={1}>
+                  {comment.comment}
+                </Text>
+              </View>
             </View>
-          </View>
-          <View className="flex flex-row gap-5 mt-10">
-            <View className="rounded-full h-12 w-12 bg-black"></View>
-            <View className="justify-center">
-              <Text className="font-bold text-xs">Kimjhan</Text>
-              <Text className="text-gray-500 pr-12" numberOfLines={1}>
-                Lorem ipsum dolor sit amet consectetur adipisicing elit. Ipsa,
-                soluta? Lorem ipsum dolor sit amet consectetur adipisicing elit.
-                Ipsa, soluta? Lorem ipsum dolor sit amet consectetur adipisicing
-                elit. Ipsa, soluta?
-              </Text>
-            </View>
-          </View>
+          ))}
         </View>
         <KeyboardAvoidingView
           style={{ flex: 1 }}
@@ -72,8 +113,10 @@ const comments = () => {
               placeholderTextColor={'#999'}
               placeholder="Write a message..."
               autoFocus
+              value={comment}
+              onChangeText={(text) => addComments(text)}
             />
-            <TouchableOpacity>
+            <TouchableOpacity onPress={submitComment}>
               <FontAwesome name="send" size={24} color="#555" />
             </TouchableOpacity>
           </View>

@@ -30,11 +30,8 @@ const index = () => {
   ]
 
   const cards = Array.from({ length: 5 })
-
   // State to manage likes and comments
   const [likes, setLikes] = useState(Array(cards.length).fill(false)) // To track likes
-  const [comments, setComments] = useState(Array(cards.length).fill('')) // To track comments
-  const [post, addPost] = useState('')
   const [posts, setPosts] = useState<any>([])
   // Fetch posts from Firestore
   useEffect(() => {
@@ -120,7 +117,10 @@ const index = () => {
                   </Text>
                 </TouchableOpacity>
                 <TouchableOpacity
-                  onPress={() => router.push('/student/(tabs)/posts/comments')}
+                  onPress={() =>
+                    // @ts-ignore
+                    router.push(`/student/posts/comments/${post.id}`)
+                  }
                 >
                   <Feather name="message-circle" color={'gray'} size={28} />
                 </TouchableOpacity>
