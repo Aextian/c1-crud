@@ -2,7 +2,7 @@ import { db, storage } from '@/config'
 import useAuth from '@/hooks/useAuth'
 import { Feather } from '@expo/vector-icons'
 import * as ImagePicker from 'expo-image-picker'
-import { Link } from 'expo-router'
+import { Link, useRouter } from 'expo-router'
 import { addDoc, collection } from 'firebase/firestore'
 import { getDownloadURL, ref, uploadBytes } from 'firebase/storage'
 import React, { useState } from 'react'
@@ -20,6 +20,8 @@ import Animated, { FadeIn, SlideInDown } from 'react-native-reanimated'
 
 const addPost = () => {
   const [image, setImage] = useState<string | null>(null)
+
+  const router = useRouter()
   // const [imageUrl, setImageUrl] = useState('')
   const [post, addPost] = useState('')
   const { currentUser, loading } = useAuth()
@@ -70,6 +72,7 @@ const addPost = () => {
         imageUrl: imageUrl,
       })
       addPost('')
+      router.push('/student/posts')
     } catch (error) {
       console.error('Error adding post: ', error)
       alert('Post added error')
@@ -115,7 +118,7 @@ const addPost = () => {
                   <TouchableOpacity onPress={takePhoto}>
                     <Feather name="camera" size={24} color={'gray'} />
                   </TouchableOpacity>
-                  <Button title="Upload Image" onPress={handleSubmit} />
+                  <Button title="Post" onPress={handleSubmit} />
                 </View>
               </View>
             </View>
