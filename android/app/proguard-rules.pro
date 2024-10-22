@@ -11,7 +11,4 @@
 -keep class com.swmansion.reanimated.** { *; }
 -keep class com.facebook.react.turbomodule.** { *; }
 
-# For webrtc
--keep class org.webrtc.** { *; }
-
 # Add any project specific keep options here:
