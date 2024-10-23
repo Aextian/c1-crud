@@ -14,7 +14,7 @@ import {
   RTCSessionDescription,
   mediaDevices,
 } from 'react-native-webrtc'
-import { db } from '../config'
+import { auth, db } from '../config'
 
 // Define the type for the PeerConnection
 type PeerConnection = RTCPeerConnection
@@ -24,7 +24,7 @@ const useWebRTC = () => {
   const [remoteStream, setRemoteStream] = useState<MediaStream | null>()
   const [callId, setCallId] = useState('')
   // const pc = useRef(null) // RTCPeerConnection reference
-  const pc = useRef<RTCPeerConnection | null>(new RTCPeerConnection({}))
+  const pc = useRef<RTCPeerConnection>(new RTCPeerConnection({}))
   const servers = {
     iceServers: [
       {
@@ -94,7 +94,14 @@ const useWebRTC = () => {
         type: offerDescription.type,
       }
       // Save the offer to Firestore
-      await setDoc(callDoc, { offer })
+      // await setDoc(callDoc, { offer })
+
+      // Include caller information in the call document
+      await setDoc(callDoc, {
+        offer,
+        caller: auth.currentUser?.displayName, // Save the caller's name
+        callerId: auth.currentUser?.uid, // Save the caller's UID
+      })
 
       // Listen for answer
       const unsubscribeAnswer = onSnapshot(callDoc, (snapshot) => {
@@ -201,8 +208,12 @@ const useWebRTC = () => {
         type: answerDescription.type,
       }
 
-      // Update Firestore with the answer
-      await updateDoc(callDoc, { answer })
+      // Update call document with answerer's information
+      await updateDoc(callDoc, {
+        answer,
+        answerer: auth.currentUser?.displayName, // Save the answerer's name
+        answererId: auth.currentUser?.uid, // Save the answerer's UID
+      })
 
       // Listen for ICE candidates from the offerer
       onSnapshot(offerCandidates, (snapshot) => {
