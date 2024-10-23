@@ -109,6 +109,12 @@ android {
     buildToolsVersion rootProject.ext.buildToolsVersion
     compileSdk rootProject.ext.compileSdkVersion
 
+    // FIXME: Remove this once the Android Gradle plugin is upgraded to 4.0.0+
+    compileOptions {
+	sourceCompatibility JavaVersion.VERSION_1_8
+	targetCompatibility JavaVersion.VERSION_1_8
+}
+
     namespace 'com.anonymous.C1'
     defaultConfig {
         applicationId 'com.anonymous.C1'
