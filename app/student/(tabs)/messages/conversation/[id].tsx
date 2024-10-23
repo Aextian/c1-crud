@@ -1,5 +1,6 @@
 import { auth, db } from '@/config'
 import useMessages from '@/hooks/useMessages'
+import { Ionicons } from '@expo/vector-icons'
 import {
   Stack,
   useFocusEffect,
@@ -8,7 +9,7 @@ import {
 } from 'expo-router'
 import { DocumentData, doc, getDoc } from 'firebase/firestore'
 import React, { useEffect, useState } from 'react'
-import { StyleSheet } from 'react-native'
+import { StyleSheet, TouchableOpacity } from 'react-native'
 import { GiftedChat } from 'react-native-gifted-chat'
 
 export default function ChatScreen() {
@@ -52,7 +53,23 @@ export default function ChatScreen() {
 
   return (
     <>
-      <Stack.Screen options={{ headerTitle: user?.name || '' }} />
+      <Stack.Screen
+        options={{
+          headerTitle: user?.name || '',
+          headerRight: () => (
+            <TouchableOpacity
+              style={{ marginRight: 10 }} // Adjust the margin if needed
+              onPress={() => {
+                // Handle video call press action here
+                console.log('Video call icon pressed')
+              }}
+            >
+              <Ionicons name="videocam" size={24} color="black" />
+            </TouchableOpacity>
+          ),
+        }}
+      />
+
       <GiftedChat
         messages={messages}
         onSend={(messages) => onSend(messages)}

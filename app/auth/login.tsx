@@ -1,4 +1,5 @@
 import { auth, db } from '@/config'
+import setUserOnlineFirestore from '@/hooks/useUserOnline'
 import { useUserStore } from '@/store/useUserStore'
 import { Link, useRouter } from 'expo-router'
 import { signInWithEmailAndPassword } from 'firebase/auth'
@@ -23,6 +24,7 @@ const login = () => {
     try {
       const userCred = await signInWithEmailAndPassword(auth, email, password)
       if (userCred) {
+        setUserOnlineFirestore()
         const docSnap = await getDoc(doc(db, 'users', userCred.user.uid))
         if (docSnap.exists()) {
           const data = docSnap.data()
