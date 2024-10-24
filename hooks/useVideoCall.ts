@@ -25,6 +25,7 @@ const useWebRTC = () => {
   const [callId, setCallId] = useState('')
   // const pc = useRef(null) // RTCPeerConnection reference
   const pc = useRef<RTCPeerConnection>(new RTCPeerConnection({}))
+
   const servers = {
     iceServers: [
       {
@@ -36,16 +37,23 @@ const useWebRTC = () => {
     ],
     iceCandidatePoolSize: 10,
   }
-  const getLocalStream = async () => {
-    const stream = await mediaDevices.getUserMedia({
-      video: true,
+
+  const startLocalStream = async () => {
+    const constraints = {
       audio: true,
-    })
+      video: {
+        mandatory: {
+          minWidth: 500, // Provide your own width, height and frame rate here
+          minHeight: 300,
+          minFrameRate: 30,
+        },
+      },
+    }
+    const stream = await mediaDevices.getUserMedia(constraints)
     setLocalStream(stream)
   }
 
   const startCall = async () => {
-    // getLocalStream()
     try {
       if (!localStream) {
         console.error('Local stream is not available')
@@ -273,7 +281,7 @@ const useWebRTC = () => {
     switchCamera,
     setCallId,
     callId,
-    getLocalStream,
+    startLocalStream,
   }
 }
 

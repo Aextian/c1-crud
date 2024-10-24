@@ -13,13 +13,12 @@ const VideoCall = () => {
     switchCamera,
     callId,
     setCallId,
-    getLocalStream,
+    startLocalStream,
   } = useWebRTC()
 
   useEffect(() => {
-    getLocalStream()
+    startLocalStream()
   }, [])
-
   return (
     <View>
       {localStream && (

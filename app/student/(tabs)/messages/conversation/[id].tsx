@@ -1,3 +1,4 @@
+import CallScreen from '@/components/CallScreen'
 import { auth, db } from '@/config'
 import useMessages from '@/hooks/useMessages'
 import { Ionicons } from '@expo/vector-icons'
@@ -10,7 +11,6 @@ import {
 import { DocumentData, doc, getDoc } from 'firebase/firestore'
 import React, { useEffect, useState } from 'react'
 import { StyleSheet, TouchableOpacity } from 'react-native'
-import { GiftedChat } from 'react-native-gifted-chat'
 
 export default function ChatScreen() {
   const navigation = useNavigation()
@@ -51,6 +51,11 @@ export default function ChatScreen() {
     fetchData()
   }, [id])
 
+  // const handleVideoCall = () => {
+  //   console.log('click')
+  //   return <CallScreen />
+  // }
+
   return (
     <>
       <Stack.Screen
@@ -59,25 +64,22 @@ export default function ChatScreen() {
           headerRight: () => (
             <TouchableOpacity
               style={{ marginRight: 10 }} // Adjust the margin if needed
-              onPress={() => {
-                // Handle video call press action here
-                console.log('Video call icon pressed')
-              }}
+              // onPress={() => handleVideoCall()}
             >
               <Ionicons name="videocam" size={24} color="black" />
             </TouchableOpacity>
           ),
         }}
       />
-
-      <GiftedChat
+      <CallScreen />
+      {/* <GiftedChat
         messages={messages}
         onSend={(messages) => onSend(messages)}
         user={{
           _id: currentUser?.uid ?? '',
           name: currentUser?.email ?? '',
         }}
-      />
+      /> */}
     </>
   )
 }

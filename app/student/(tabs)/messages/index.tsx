@@ -71,27 +71,21 @@ const index = () => {
     return unsubscribe
   }, [])
 
-  console.log(conversations)
-
-  const [onlineUsers, setOnlineUsers] = useState([])
-
-  useEffect(() => {
-    const usersRef = collection(db, 'status')
-
-    // Query for users who are online
-    const unsubscribe = usersRef
-      .where('state', '==', 'online')
-      .onSnapshot((querySnapshot) => {
-        const onlineUsersList = []
-        querySnapshot.forEach((doc) => {
-          onlineUsersList.push(doc.id) // doc.id is the user's UID
-        })
-        setOnlineUsers(onlineUsersList)
-      })
-
-    // Cleanup subscription on unmount
-    return () => unsubscribe()
-  }, [])
+  // const [onlineUsers, setOnlineUsers] = useState([])
+  // useEffect(() => {
+  //   const usersRef = collection(db, 'status')
+  //   // Query for users who are online
+  //   const unsubscribe = usersRef
+  //     .where('state', '==', 'online')
+  //     .onSnapshot((querySnapshot) => {
+  //       const onlineUsersList = []
+  //       querySnapshot.forEach((doc) => {
+  //         onlineUsersList.push(doc.id) // doc.id is the user's UID
+  //       })
+  //       setOnlineUsers(onlineUsersList)
+  //     })
+  //   return () => unsubscribe()
+  // }, [])
 
   return (
     <SafeAreaView style={styles.container}>
