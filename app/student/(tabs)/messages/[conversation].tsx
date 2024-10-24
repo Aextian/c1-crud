@@ -1,4 +1,3 @@
-import CallScreen from '@/components/CallScreen'
 import { auth, db } from '@/config'
 import useMessages from '@/hooks/useMessages'
 import { Ionicons } from '@expo/vector-icons'
@@ -7,16 +6,18 @@ import {
   useFocusEffect,
   useLocalSearchParams,
   useNavigation,
+  useRouter,
 } from 'expo-router'
 import { DocumentData, doc, getDoc } from 'firebase/firestore'
 import React, { useEffect, useState } from 'react'
 import { StyleSheet, TouchableOpacity } from 'react-native'
+import { GiftedChat } from 'react-native-gifted-chat'
 
 export default function ChatScreen() {
   const navigation = useNavigation()
   const currentUser = auth.currentUser
-  const { id } = useLocalSearchParams()
-  const { messages, onSend } = useMessages(id as string) // Pass the id to the custom hook
+  const { conversation } = useLocalSearchParams()
+  const { messages, onSend } = useMessages(conversation as string) // Pass the id to the custom hook
   const [user, setUser] = useState<DocumentData>()
   useFocusEffect(
     React.useCallback(() => {
@@ -27,7 +28,7 @@ export default function ChatScreen() {
     }, [navigation]),
   )
   useEffect(() => {
-    const docRef = doc(db, 'conversations', String(id))
+    const docRef = doc(db, 'conversations', String(conversation))
     const fetchData = async () => {
       try {
         const docSnap = await getDoc(docRef) // Await the getDoc call
@@ -49,12 +50,9 @@ export default function ChatScreen() {
     }
 
     fetchData()
-  }, [id])
+  }, [conversation])
 
-  // const handleVideoCall = () => {
-  //   console.log('click')
-  //   return <CallScreen />
-  // }
+  const router = useRouter()
 
   return (
     <>
@@ -64,22 +62,21 @@ export default function ChatScreen() {
           headerRight: () => (
             <TouchableOpacity
               style={{ marginRight: 10 }} // Adjust the margin if needed
-              // onPress={() => handleVideoCall()}
+              onPress={() => router.push('/student/(tabs)/messages/call')}
             >
               <Ionicons name="videocam" size={24} color="black" />
             </TouchableOpacity>
           ),
         }}
       />
-      <CallScreen />
-      {/* <GiftedChat
+      <GiftedChat
         messages={messages}
         onSend={(messages) => onSend(messages)}
         user={{
           _id: currentUser?.uid ?? '',
           name: currentUser?.email ?? '',
         }}
-      /> */}
+      />
     </>
   )
 }

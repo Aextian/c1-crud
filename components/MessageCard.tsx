@@ -73,8 +73,8 @@ const MessageCard = ({ conversation }: { conversation: DocumentData }) => {
       style={styles.messageCardContainer}
       onPress={() =>
         router.push({
-          pathname: `/student/messages/conversation/[id]`,
-          params: { id: conversation.id }, // Passing params as part of the object
+          pathname: `/student/messages/[conversation]`,
+          params: { conversation: conversation.id }, // Passing params as part of the object
         })
       }
     >

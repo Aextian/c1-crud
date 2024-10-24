@@ -31,7 +31,6 @@ const login = () => {
           if (data.role === 'admin') {
             router.push('/admin')
           } else {
-            alert('success')
             router.push('/student/posts')
           }
         }
