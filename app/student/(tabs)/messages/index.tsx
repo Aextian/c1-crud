@@ -77,6 +77,8 @@ const index = () => {
 
   const authorId = currentUser?.uid
 
+  const [show, setShow] = useState(false)
+
   const router = useRouter()
   useEffect(() => {
     const q = query(
@@ -86,15 +88,19 @@ const index = () => {
     )
     const unsubscribe = onSnapshot(q, (snapshot) => {
       if (!snapshot.empty) {
-        alert('incomming call')
         const callData = snapshot.docs[0].data()
-        const offer = callData.offer // This is the SDP you need to respond to
-        router.push('/student/messages/answerCalls/[callId]/[answerCallId]', {
-          query: {
-            callId: snapshot.docs[0].id, // Actual call ID
-            answerCallId: offer, // Actual offer
-          },
-        })
+        const offer = JSON.stringify(callData.offer)
+        if (!show) {
+          router.push({
+            pathname: '/student/messages/answer-calls/answer',
+            params: {
+              callId: snapshot.docs[0].id,
+              answer: offer,
+            },
+          })
+          setShow(true)
+        }
+
         setIncomingCall(callData)
       } else {
         setIncomingCall(null)

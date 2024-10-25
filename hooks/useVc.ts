@@ -101,7 +101,9 @@ const useVc = () => {
 
   const answerCall = async (callId: string, answer: RTCSessionDescription) => {
     try {
-      pc.current = new RTCPeerConnection(servers)
+      if (!pc.current) {
+        pc.current = new RTCPeerConnection(servers)
+      }
 
       // Add local stream tracks to the peer connection
       localStream?.getTracks().forEach((track) => {
@@ -109,10 +111,14 @@ const useVc = () => {
           pc.current.addTrack(track, localStream)
         }
       })
-      // Set remote description
-      if (answer) {
+
+      console.log('Answer:', answer)
+      if (answer && answer.type && answer.sdp) {
         await pc.current.setRemoteDescription(new RTCSessionDescription(answer))
+      } else {
+        console.error('Invalid answer format:', answer)
       }
+
       // Create and send the answer
       const answerDescription = await pc.current.createAnswer()
       await pc.current.setLocalDescription(answerDescription)
@@ -120,7 +126,11 @@ const useVc = () => {
       // Create a reference to the call document
       const callDocRef = doc(collection(db, 'calls'), callId) // Get a reference to the document
       await updateDoc(callDocRef, {
-        answer: answerDescription,
+        // answer: answerDescription,
+        answer: {
+          type: answerDescription.type,
+          sdp: answerDescription.sdp,
+        },
       })
 
       // Listen for ICE candidates and send them to Firestore

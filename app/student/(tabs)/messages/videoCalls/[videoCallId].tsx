@@ -4,7 +4,7 @@ import {
   useLocalSearchParams,
   useNavigation,
 } from 'expo-router'
-import React, { useEffect } from 'react'
+import React, { useEffect, useState } from 'react'
 import { StyleSheet, Text, View } from 'react-native'
 import { RTCView } from 'react-native-webrtc'
 
@@ -23,9 +23,14 @@ const CallScreen = () => {
 
   const { videoCallId } = useLocalSearchParams()
 
+  const [hasCall, setHasCalled] = useState(false)
+
   useEffect(() => {
     startLocalStream()
-    handleCallUser(videoCallId as string)
+    if (!hasCall) {
+      handleCallUser(videoCallId as string)
+      setHasCalled(true)
+    }
   }, [])
 
   const navigation = useNavigation()

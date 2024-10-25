@@ -55,8 +55,6 @@ export default function ChatScreen() {
 
   const router = useRouter()
 
-  console.log(user?._id)
-
   // const handleNavigation = () => {
   //   const conversationId = "123"; // Example conversation ID
   //   router.push({

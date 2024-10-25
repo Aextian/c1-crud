@@ -4,16 +4,26 @@ import {
   useLocalSearchParams,
   useNavigation,
 } from 'expo-router'
-import React, { useEffect } from 'react'
+import React, { useEffect, useState } from 'react'
 import { StyleSheet, Text, View } from 'react-native'
-import { RTCView } from 'react-native-webrtc'
+import { RTCSessionDescription, RTCView } from 'react-native-webrtc'
 
-const answerCall = () => {
-  const { callId, answerCallId } = useLocalSearchParams()
+const answer = () => {
+  const { callId, answer } = useLocalSearchParams<{
+    callId: string
+    answer: any
+  }>()
+
+  const [hasAnswered, setHasAnswered] = useState(false)
+
   useEffect(() => {
-    console.log('Call ID:', callId) // Should log the actual call ID
-    console.log('Answer Call ID:', answerCallId) // Should log the actual offer
-  }, [callId, answerCallId])
+    const sessionDescription = new RTCSessionDescription(JSON.parse(answer))
+    if (!hasAnswered) {
+      answerCalls(callId, sessionDescription)
+      setHasAnswered(true) // Prevent further calls
+      startLocalStream()
+    }
+  }, [callId, answer, hasAnswered]) // Add dependencies
 
   const navigation = useNavigation()
   useFocusEffect(
@@ -28,8 +38,11 @@ const answerCall = () => {
   const { localStream, remoteStream, startCall, answerCall, startLocalStream } =
     useVc()
 
-  const handleCallUser = async (videoCallId: string) => {
-    await startCall(videoCallId) // Start call to the specific user
+  const answerCalls = async (
+    callId: string,
+    sessionDescription: RTCSessionDescription,
+  ) => {
+    await answerCall(callId, sessionDescription) // Start call to the specific user
   }
 
   return (
@@ -92,4 +105,4 @@ const styles = StyleSheet.create({
   },
 })
 
-export default answerCall
+export default answer
