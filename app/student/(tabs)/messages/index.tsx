@@ -5,6 +5,7 @@ import LoadingScreen from '@/components/loadingScreen'
 import { auth, db } from '@/config'
 import { useChat } from '@/hooks/useChat'
 import { Feather } from '@expo/vector-icons'
+import { useRouter } from 'expo-router'
 import {
   DocumentData,
   collection,
@@ -13,6 +14,7 @@ import {
   orderBy,
   query,
   setDoc,
+  where,
 } from 'firebase/firestore'
 import React, { useEffect, useState } from 'react'
 import {
@@ -71,6 +73,36 @@ const index = () => {
     return unsubscribe
   }, [])
 
+  const [incomingCall, setIncomingCall] = useState<DocumentData | null>(null)
+
+  const authorId = currentUser?.uid
+
+  const router = useRouter()
+  useEffect(() => {
+    const q = query(
+      collection(db, 'calls'),
+      where('to', '==', authorId),
+      where('status', '==', 'incoming'),
+    )
+    const unsubscribe = onSnapshot(q, (snapshot) => {
+      if (!snapshot.empty) {
+        alert('incomming call')
+        const callData = snapshot.docs[0].data()
+        const offer = callData.offer // This is the SDP you need to respond to
+        router.push('/student/messages/answerCalls/[callId]/[answerCallId]', {
+          query: {
+            callId: snapshot.docs[0].id, // Actual call ID
+            answerCallId: offer, // Actual offer
+          },
+        })
+        setIncomingCall(callData)
+      } else {
+        setIncomingCall(null)
+      }
+    })
+    return () => unsubscribe() // Cleanup listener on unmount
+  }, [])
+
   // const [onlineUsers, setOnlineUsers] = useState([])
   // useEffect(() => {
   //   const usersRef = collection(db, 'status')
@@ -89,6 +121,7 @@ const index = () => {
 
   return (
     <SafeAreaView style={styles.container}>
+      {incomingCall && <Text>comming call</Text>}
       <View>
         <View
           style={{

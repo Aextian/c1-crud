@@ -27,6 +27,7 @@ const VideoCall = () => {
           style={{ width: '100%', height: 200 }}
         />
       )}
+
       {remoteStream && (
         <>
           <Text>Remote Stream</Text>

@@ -76,6 +76,7 @@ const useWebRTC = () => {
 
       // Create a new document reference for the call
       const callDoc = doc(collection(db, 'calls'), callId)
+
       const offerCandidates = collection(callDoc, 'offerCandidates')
       const answerCandidates = collection(callDoc, 'answerCandidates')
 

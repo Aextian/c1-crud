@@ -16,9 +16,10 @@ import { GiftedChat } from 'react-native-gifted-chat'
 export default function ChatScreen() {
   const navigation = useNavigation()
   const currentUser = auth.currentUser
-  const { conversation } = useLocalSearchParams()
-  const { messages, onSend } = useMessages(conversation as string) // Pass the id to the custom hook
+  const { conversationId } = useLocalSearchParams()
+  const { messages, onSend } = useMessages(conversationId as string) // Pass the id to the custom hook
   const [user, setUser] = useState<DocumentData>()
+
   useFocusEffect(
     React.useCallback(() => {
       navigation.getParent()?.setOptions({ tabBarStyle: { display: 'none' } })
@@ -28,7 +29,7 @@ export default function ChatScreen() {
     }, [navigation]),
   )
   useEffect(() => {
-    const docRef = doc(db, 'conversations', String(conversation))
+    const docRef = doc(db, 'conversations', String(conversationId))
     const fetchData = async () => {
       try {
         const docSnap = await getDoc(docRef) // Await the getDoc call
@@ -50,9 +51,19 @@ export default function ChatScreen() {
     }
 
     fetchData()
-  }, [conversation])
+  }, [conversationId])
 
   const router = useRouter()
+
+  console.log(user?._id)
+
+  // const handleNavigation = () => {
+  //   const conversationId = "123"; // Example conversation ID
+  //   router.push({
+  //     pathname: '/student/(tabs)/messages/videoCalls/callId/[conversationId]',
+  //     params: { conversationId }, // Pass dynamic conversationId
+  //   });
+  // };
 
   return (
     <>
@@ -62,7 +73,12 @@ export default function ChatScreen() {
           headerRight: () => (
             <TouchableOpacity
               style={{ marginRight: 10 }} // Adjust the margin if needed
-              onPress={() => router.push('/student/(tabs)/messages/call')}
+              onPress={() =>
+                router.push(
+                  // @ts-expect-error
+                  `/student/(tabs)/messages/videoCalls/${user._id}`,
+                )
+              }
             >
               <Ionicons name="videocam" size={24} color="black" />
             </TouchableOpacity>

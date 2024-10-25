@@ -1,25 +1,31 @@
-import CallActionBox from '@/components/CallActionBox'
-import useWebRTC from '@/hooks/useVideoCall'
-import { useFocusEffect, useNavigation } from 'expo-router'
+import useVc from '@/hooks/useVc'
+import {
+  useFocusEffect,
+  useLocalSearchParams,
+  useNavigation,
+} from 'expo-router'
 import React, { useEffect } from 'react'
 import { StyleSheet, Text, View } from 'react-native'
 import { RTCView } from 'react-native-webrtc'
 
 const CallScreen = () => {
-  const {
-    localStream,
-    remoteStream,
-    startCall,
-    answerCall,
-    endCall,
-    switchCamera,
-    callId,
-    setCallId,
-    startLocalStream,
-  } = useWebRTC()
+  // const {
+  //   localStream,
+  //   remoteStream,
+  //   startCall,
+  //   answerCall,
+  //   endCall,
+  //   switchCamera,
+  //   callId,
+  //   setCallId,
+  //   startLocalStream,
+  // } = useWebRTC()
+
+  const { videoCallId } = useLocalSearchParams()
 
   useEffect(() => {
     startLocalStream()
+    handleCallUser(videoCallId as string)
   }, [])
 
   const navigation = useNavigation()
@@ -33,6 +39,13 @@ const CallScreen = () => {
       }
     }, [navigation]),
   )
+
+  const { localStream, remoteStream, startCall, answerCall, startLocalStream } =
+    useVc()
+
+  const handleCallUser = async (videoCallId: string) => {
+    await startCall(videoCallId) // Start call to the specific user
+  }
 
   return (
     <View className="flex-1 ">
@@ -62,13 +75,13 @@ const CallScreen = () => {
               />
             </>
           )}
-          <View className="absolute bottom-0 w-full">
-            <CallActionBox
+          <View className="absolute bottom-0 w-full bg-red">
+            {/* <CallActionBox
               switchCamera={switchCamera}
-              //   toggleMute={toggleMute}
-              //   toggleCamera={toggleCamera}
+                toggleMute={toggleMute}
+                toggleCamera={toggleCamera}
               endCall={endCall}
-            />
+            /> */}
           </View>
         </>
       )}

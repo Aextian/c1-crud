@@ -1,38 +1,36 @@
-import CallActionBox from '@/components/CallActionBox'
-import useWebRTC from '@/hooks/useVideoCall'
-import { useFocusEffect, useNavigation } from 'expo-router'
+import useVc from '@/hooks/useVc'
+import {
+  useFocusEffect,
+  useLocalSearchParams,
+  useNavigation,
+} from 'expo-router'
 import React, { useEffect } from 'react'
 import { StyleSheet, Text, View } from 'react-native'
 import { RTCView } from 'react-native-webrtc'
 
-const CallScreen = () => {
-  const {
-    localStream,
-    remoteStream,
-    startCall,
-    answerCall,
-    endCall,
-    switchCamera,
-    callId,
-    setCallId,
-    startLocalStream,
-  } = useWebRTC()
-
+const answerCall = () => {
+  const { callId, answerCallId } = useLocalSearchParams()
   useEffect(() => {
-    startLocalStream()
-  }, [])
+    console.log('Call ID:', callId) // Should log the actual call ID
+    console.log('Answer Call ID:', answerCallId) // Should log the actual offer
+  }, [callId, answerCallId])
 
   const navigation = useNavigation()
-
   useFocusEffect(
     React.useCallback(() => {
       navigation.getParent()?.setOptions({ tabBarStyle: { display: 'none' } })
       return () => {
-        // Show the tab bar when leaving this screen
         navigation.getParent()?.setOptions({ tabBarStyle: styles.tabBar })
       }
     }, [navigation]),
   )
+
+  const { localStream, remoteStream, startCall, answerCall, startLocalStream } =
+    useVc()
+
+  const handleCallUser = async (videoCallId: string) => {
+    await startCall(videoCallId) // Start call to the specific user
+  }
 
   return (
     <View className="flex-1 ">
@@ -62,13 +60,13 @@ const CallScreen = () => {
               />
             </>
           )}
-          <View className="absolute bottom-0 w-full">
-            <CallActionBox
+          <View className="absolute bottom-0 w-full bg-red">
+            {/* <CallActionBox
               switchCamera={switchCamera}
-              //   toggleMute={toggleMute}
-              //   toggleCamera={toggleCamera}
+                toggleMute={toggleMute}
+                toggleCamera={toggleCamera}
               endCall={endCall}
-            />
+            /> */}
           </View>
         </>
       )}
@@ -94,4 +92,4 @@ const styles = StyleSheet.create({
   },
 })
 
-export default CallScreen
+export default answerCall

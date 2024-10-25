@@ -24,6 +24,7 @@ const login = () => {
       const userCred = await signInWithEmailAndPassword(auth, email, password)
       if (userCred) {
         // setUserOnlineFirestore()
+        console.log('Login successful:', userCred.user.uid)
         const docSnap = await getDoc(doc(db, 'users', userCred.user.uid))
         if (docSnap.exists()) {
           const data = docSnap.data()
@@ -31,7 +32,7 @@ const login = () => {
           if (data.role === 'admin') {
             router.push('/admin')
           } else {
-            router.push('/student/posts')
+            router.push('/student/messages')
           }
         }
       }
