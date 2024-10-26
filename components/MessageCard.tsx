@@ -54,7 +54,6 @@ const MessageCard = ({ conversation }: { conversation: DocumentData }) => {
         if (!snapshot.empty) {
           const lastMessage = snapshot.docs[0].data()
           setLastMessage(lastMessage.text)
-          console.log('Real-time last message:', lastMessage)
         } else {
           console.log('No messages found!')
         }

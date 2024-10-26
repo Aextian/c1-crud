@@ -1,10 +1,20 @@
-import { addDoc, collection, doc, setDoc, updateDoc } from 'firebase/firestore'
+import {
+  collection,
+  CollectionReference,
+  doc,
+  getDoc,
+  getDocs,
+  onSnapshot,
+  setDoc,
+  updateDoc,
+} from 'firebase/firestore'
 import { useRef, useState } from 'react'
 import {
+  mediaDevices,
   MediaStream,
+  RTCIceCandidate,
   RTCPeerConnection,
   RTCSessionDescription,
-  mediaDevices,
 } from 'react-native-webrtc'
 import { auth, db } from '../config'
 
@@ -14,7 +24,6 @@ type PeerConnection = RTCPeerConnection
 const useVc = () => {
   const [localStream, setLocalStream] = useState<MediaStream | null>()
   const [remoteStream, setRemoteStream] = useState<MediaStream | null>()
-  const [peerConnection, setPeerConnection] = useState<PeerConnection>()
   const [callId, setCallId] = useState('')
   // const pc = useRef(null) // RTCPeerConnection reference
   const pc = useRef<RTCPeerConnection>(new RTCPeerConnection({}))
@@ -31,122 +40,194 @@ const useVc = () => {
     iceCandidatePoolSize: 10,
   }
 
+  const checkCandidateExists = async (
+    candidateData: RTCIceCandidateInit,
+    offerCandidates: CollectionReference,
+  ) => {
+    const querySnapshot = await getDocs(offerCandidates)
+    return querySnapshot.docs.some((doc) => {
+      const existingCandidate = doc.data() as RTCIceCandidateInit
+      return (
+        existingCandidate.candidate === candidateData.candidate &&
+        existingCandidate.sdpMid === candidateData.sdpMid &&
+        existingCandidate.sdpMLineIndex === candidateData.sdpMLineIndex
+      )
+    })
+  }
+
   const startLocalStream = async () => {
     const constraints = {
       audio: true,
       video: {
         mandatory: {
-          minWidth: 500, // Provide your own width, height and frame rate here
+          minWidth: 500,
           minHeight: 300,
           minFrameRate: 30,
         },
       },
     }
-    const stream = await mediaDevices.getUserMedia(constraints)
-    setLocalStream(stream)
+
+    try {
+      const stream = await mediaDevices.getUserMedia(constraints)
+      setLocalStream(stream)
+      return stream // Return the stream to indicate it's ready
+    } catch (error) {
+      console.error('Error getting user media:', error)
+      throw error // Throw to handle potential errors downstream
+    }
   }
 
   const startCall = async (callId: string) => {
     try {
+      if (!localStream) {
+        console.error('Local stream is not available')
+        return // Exit if localStream is not initialized
+      }
+
       // Initialize the peer connection if it's not already initialized
       pc.current ||= new RTCPeerConnection(servers)
-      // Clear existing senders and add new tracks
-      pc.current.getSenders().forEach((sender) => {
-        if (sender.track) {
-          pc.current.removeTrack(sender) // Remove existing track
+
+      // Clear existing senders and add local stream tracks
+      pc.current
+        .getSenders()
+        .forEach((sender) => sender.track && pc.current.removeTrack(sender))
+      localStream
+        .getTracks()
+        .forEach((track) => pc.current.addTrack(track, localStream))
+
+      // Firestore references
+      const callDoc = doc(collection(db, 'calls'), callId)
+      const offerCandidates = collection(callDoc, 'offerCandidates')
+      const answerCandidates = collection(callDoc, 'answerCandidates')
+
+      // Handle ICE candidates
+      pc.current.addEventListener('icecandidate', (e) => {
+        if (e.candidate) {
+          setDoc(doc(offerCandidates), e.candidate.toJSON())
+        } else {
+          console.log('Got final candidate!')
         }
       })
-      // Add local stream tracks to the peer connection
-      localStream?.getTracks().forEach((track) => {
-        pc.current.addTrack(track, localStream)
+
+      // Stream remote tracks
+      pc.current.addEventListener('track', (event) => {
+        setRemoteStream(event.streams[0])
+        console.log('Remote stream added:', event.streams[0])
       })
 
       // Create and set local offer description
       const offerDescription = await pc.current.createOffer({})
       await pc.current.setLocalDescription(offerDescription)
 
-      const offer = {
-        sdp: offerDescription.sdp,
-        type: offerDescription.type,
-      }
-      const callDocRef = collection(db, 'calls')
-      const callDoc = await addDoc(callDocRef, {
-        offer: offer,
+      // Save offer and caller info to Firestore
+      await setDoc(callDoc, {
+        offer: {
+          sdp: offerDescription.sdp,
+          type: offerDescription.type,
+        },
         from: auth.currentUser?.uid,
         to: callId,
         status: 'incoming',
       })
 
-      const offerCandidates = collection(callDoc, 'offerCandidates')
-
-      // Listen for ICE candidates and send them to Firestore
-      pc.current.addEventListener('icecandidate', (e) => {
-        if (e.candidate) {
-          setDoc(doc(offerCandidates), {
-            candidate: e.candidate.toJSON(),
-            callId: callDoc.id,
-          })
-        } else {
-          console.log('Got final candidate!')
+      // Listen for answer
+      const unsubscribeAnswer = onSnapshot(callDoc, (snapshot) => {
+        const data = snapshot.data()
+        if (data?.answer && !pc.current.remoteDescription) {
+          const answerDescription = new RTCSessionDescription(data.answer)
+          pc.current
+            .setRemoteDescription(answerDescription)
+            .then(() => console.log('Remote description set successfully'))
+            .catch((error) =>
+              console.error('Error setting remote description:', error),
+            )
         }
       })
-      // Stream remote tracks
-      pc.current.addEventListener('track', (event) => {
-        setRemoteStream(event.streams[0])
+
+      // Listen for ICE candidates from the answerer
+      const unsubscribeCandidates = onSnapshot(answerCandidates, (snapshot) => {
+        snapshot.docChanges().forEach((change) => {
+          if (change.type === 'added') {
+            const candidate = new RTCIceCandidate(change.doc.data())
+            pc.current
+              .addIceCandidate(candidate)
+              .then(() => console.log('ICE candidate added successfully'))
+              .catch((error) =>
+                console.error('Error adding ICE candidate:', error),
+              )
+          }
+        })
       })
+
+      // Return cleanup function to unsubscribe from Firestore on unmount
+      return () => {
+        unsubscribeAnswer()
+        unsubscribeCandidates()
+      }
     } catch (error) {
       console.error('Error starting call:', error)
     }
   }
 
-  const answerCall = async (callId: string, answer: RTCSessionDescription) => {
+  const answerCall = async (callId: string) => {
     try {
-      if (!pc.current) {
-        pc.current = new RTCPeerConnection(servers)
-      }
+      // Firestore references
+      const callDoc = doc(collection(db, 'calls'), callId)
+      const offerCandidates = collection(callDoc, 'offerCandidates')
+      const answerCandidates = collection(callDoc, 'answerCandidates')
 
-      // Add local stream tracks to the peer connection
+      // Initialize peer connection
+      pc.current = new RTCPeerConnection(servers)
+
+      // Add local stream tracks
       localStream?.getTracks().forEach((track) => {
-        if (pc.current) {
-          pc.current.addTrack(track, localStream)
+        pc.current?.addTrack(track, localStream)
+      })
+
+      // Handle ICE candidates
+      pc.current.addEventListener('icecandidate', (e) => {
+        if (e.candidate) {
+          setDoc(doc(answerCandidates), e.candidate.toJSON())
+        } else {
+          console.log('Got final candidate!')
         }
       })
 
-      console.log('Answer:', answer)
-      if (answer && answer.type && answer.sdp) {
-        await pc.current.setRemoteDescription(new RTCSessionDescription(answer))
-      } else {
-        console.error('Invalid answer format:', answer)
+      // Stream remote tracks
+      pc.current.addEventListener('track', (event) => {
+        setRemoteStream(event.streams[0])
+      })
+
+      // Fetch and set remote offer description
+      const docSnapshot = await getDoc(callDoc)
+      if (!docSnapshot.exists()) {
+        console.error('No such document!')
+        return
+      }
+
+      const callData = docSnapshot.data()
+      if (callData.offer) {
+        await pc.current.setRemoteDescription(
+          new RTCSessionDescription(callData.offer),
+        )
       }
 
       // Create and send the answer
       const answerDescription = await pc.current.createAnswer()
       await pc.current.setLocalDescription(answerDescription)
 
-      // Create a reference to the call document
-      const callDocRef = doc(collection(db, 'calls'), callId) // Get a reference to the document
-      await updateDoc(callDocRef, {
-        // answer: answerDescription,
-        answer: {
-          type: answerDescription.type,
-          sdp: answerDescription.sdp,
-        },
+      await updateDoc(callDoc, {
+        answer: { sdp: answerDescription.sdp, type: answerDescription.type },
       })
 
-      // Listen for ICE candidates and send them to Firestore
-      pc.current.addEventListener('icecandidate', async (e) => {
-        if (!e.candidate) {
-          console.log('Got final candidate!')
-          return
-        }
-        const callDocRef = doc(collection(db, 'answerCandidates'))
-        await updateDoc(callDocRef, {
-          candidate: e.candidate,
-          callId: callId,
+      // Listen for ICE candidates from the offerer
+      onSnapshot(offerCandidates, (snapshot) => {
+        snapshot.docChanges().forEach((change) => {
+          if (change.type === 'added') {
+            const candidate = new RTCIceCandidate(change.doc.data())
+            pc.current?.addIceCandidate(candidate)
+          }
         })
-      })
-      pc.current.addEventListener('track', (event) => {
-        setRemoteStream(event.streams[0])
       })
     } catch (error) {
       console.error('Error answering call:', error)
@@ -188,35 +269,6 @@ const useVc = () => {
   const switchCamera = () => {
     localStream?.getVideoTracks().forEach((track) => track._switchCamera())
   }
-
-  // Handle ICE candidates
-
-  //   const calling = () => {
-  //     useEffect(() => {
-  //         const getOfferCandidates = async () => {
-  //           const q = query(collection(db, 'offerCandidates'), where('callId', '==', callId));
-  //           const candidatesSnapshot = await getDocs(q);
-  //           // Add each candidate to the peer connection
-  //           candidatesSnapshot.forEach((doc) => {
-  //             const candidate = doc.data();
-  //             peerConnection?.addIceCandidate(new RTCIceCandidate(candidate));
-  //           });
-  //         };
-
-  //         const getAnswerCandidates = async () => {
-  //           const q = query(collection(db, 'answerCandidates'), where('callId', '==', callId));
-  //           const candidatesSnapshot = await getDocs(q);
-  //           // Add each candidate to the peer connection
-  //           candidatesSnapshot.forEach((doc) => {
-  //             const candidate = doc.data();
-  //             peerConnection?.addIceCandidate(new RTCIceCandidate(candidate));
-  //           });
-  //         };
-
-  //         getOfferCandidates();
-  //         getAnswerCandidates();
-  //       }, [callId, peerConnection, db]);
-  //   }
 
   return {
     localStream,

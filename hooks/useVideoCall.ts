@@ -92,6 +92,7 @@ const useWebRTC = () => {
       // Stream remote tracks
       pc.current.addEventListener('track', (event) => {
         setRemoteStream(event.streams[0])
+        console.log('Remote stream added:', event.streams[0])
       })
 
       // Create and set local offer description

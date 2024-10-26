@@ -1,3 +1,4 @@
+import CallScreen from '@/components/CallScreen'
 import MessageCard from '@/components/MessageCard'
 import UserList from '@/components/UserList'
 import LoadingScreen from '@/components/loadingScreen'
@@ -5,7 +6,6 @@ import LoadingScreen from '@/components/loadingScreen'
 import { auth, db } from '@/config'
 import { useChat } from '@/hooks/useChat'
 import { Feather } from '@expo/vector-icons'
-import { useRouter } from 'expo-router'
 import {
   DocumentData,
   collection,
@@ -49,18 +49,6 @@ const index = () => {
     }
   }
   // Function to handle sending a new message
-
-  // Render each message
-  const renderMessage = ({ item }: any) => (
-    <View
-      style={[
-        styles.messageContainer,
-        item.sender === 'me' ? styles.myMessage : styles.otherMessage,
-      ]}
-    >
-      <Text style={styles.messageText}>{item.text}</Text>
-    </View>
-  )
   // get all chat rooms
   useEffect(() => {
     const chatQuery = query(collection(db, 'chats'), orderBy('_id', 'desc'))
@@ -77,9 +65,8 @@ const index = () => {
 
   const authorId = currentUser?.uid
 
-  const [show, setShow] = useState(false)
+  const [callId, setCallId] = useState('')
 
-  const router = useRouter()
   useEffect(() => {
     const q = query(
       collection(db, 'calls'),
@@ -89,18 +76,7 @@ const index = () => {
     const unsubscribe = onSnapshot(q, (snapshot) => {
       if (!snapshot.empty) {
         const callData = snapshot.docs[0].data()
-        const offer = JSON.stringify(callData.offer)
-        if (!show) {
-          router.push({
-            pathname: '/student/messages/answer-calls/answer',
-            params: {
-              callId: snapshot.docs[0].id,
-              answer: offer,
-            },
-          })
-          setShow(true)
-        }
-
+        setCallId(snapshot.docs[0].id)
         setIncomingCall(callData)
       } else {
         setIncomingCall(null)
@@ -127,7 +103,8 @@ const index = () => {
 
   return (
     <SafeAreaView style={styles.container}>
-      {incomingCall && <Text>comming call</Text>}
+      {incomingCall && <CallScreen callId={callId} />}
+
       <View>
         <View
           style={{

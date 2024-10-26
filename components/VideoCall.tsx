@@ -19,6 +19,7 @@ const VideoCall = () => {
   useEffect(() => {
     startLocalStream()
   }, [])
+
   return (
     <View>
       {localStream && (

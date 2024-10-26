@@ -4,57 +4,42 @@ import {
   useLocalSearchParams,
   useNavigation,
 } from 'expo-router'
-import React, { useEffect, useState } from 'react'
-import { StyleSheet, Text, View } from 'react-native'
-import { RTCSessionDescription, RTCView } from 'react-native-webrtc'
+import React, { useEffect } from 'react'
+import { StyleSheet, View } from 'react-native'
+import { RTCView } from 'react-native-webrtc'
 
-const answer = () => {
-  const { callId, answer } = useLocalSearchParams<{
-    callId: string
-    answer: any
-  }>()
+const videCallScreen = () => {
+  const { localStream, remoteStream, startCall, startLocalStream } = useVc()
 
-  const [hasAnswered, setHasAnswered] = useState(false)
+  const { callId } = useLocalSearchParams<{ callId: string }>()
 
   useEffect(() => {
-    const sessionDescription = new RTCSessionDescription(JSON.parse(answer))
-    if (!hasAnswered) {
-      answerCalls(callId, sessionDescription)
-      setHasAnswered(true) // Prevent further calls
-      startLocalStream()
+    startLocalStream()
+  }, [])
+
+  useEffect(() => {
+    if (localStream) {
+      startCall(callId)
     }
-  }, [callId, answer, hasAnswered]) // Add dependencies
+  }, [localStream])
 
   const navigation = useNavigation()
+
   useFocusEffect(
     React.useCallback(() => {
       navigation.getParent()?.setOptions({ tabBarStyle: { display: 'none' } })
       return () => {
+        // Show the tab bar when leaving this screen
         navigation.getParent()?.setOptions({ tabBarStyle: styles.tabBar })
       }
     }, [navigation]),
   )
 
-  const { localStream, remoteStream, startCall, answerCall, startLocalStream } =
-    useVc()
-
-  const answerCalls = async (
-    callId: string,
-    sessionDescription: RTCSessionDescription,
-  ) => {
-    await answerCall(callId, sessionDescription) // Start call to the specific user
-  }
-
   return (
     <View className="flex-1 ">
       {localStream && (
         <>
-          <Text>Local Stream {localStream.toURL()}</Text>
-          <RTCView
-            objectFit={'cover'}
-            streamURL={localStream?.toURL()}
-            style={{ flex: 1 }}
-          />
+          <RTCView streamURL={localStream?.toURL()} style={{ flex: 1 }} />
         </>
       )}
 
@@ -62,15 +47,22 @@ const answer = () => {
         <>
           <RTCView
             style={{ flex: 1 }}
-            streamURL={remoteStream && remoteStream.toURL()}
+            streamURL={remoteStream.toURL()}
             objectFit={'cover'}
           />
           {localStream && (
             <>
-              <RTCView
-                className="w-32 h-48 absolute right-6 top-8"
-                streamURL={localStream.toURL()}
-              />
+              <View className="absolute top-5 right-5 h-48 w-36 rounded-3xl bg-red-300 justify-center items-start">
+                <RTCView
+                  style={{
+                    borderRadius: 100,
+                    width: '100%',
+                    height: '100%',
+                  }}
+                  objectFit="cover"
+                  streamURL={localStream.toURL()}
+                />
+              </View>
             </>
           )}
           <View className="absolute bottom-0 w-full bg-red">
@@ -105,4 +97,4 @@ const styles = StyleSheet.create({
   },
 })
 
-export default answer
+export default videCallScreen
