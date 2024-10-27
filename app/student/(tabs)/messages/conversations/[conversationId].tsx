@@ -16,8 +16,8 @@ import { GiftedChat } from 'react-native-gifted-chat'
 export default function ChatScreen() {
   const navigation = useNavigation()
   const currentUser = auth.currentUser
-  const { conversationId } = useLocalSearchParams()
-  const { messages, onSend } = useMessages(conversationId as string) // Pass the id to the custom hook
+  const { conversationId } = useLocalSearchParams<{ conversationId: string }>()
+  const { messages, onSend } = useMessages(conversationId) // Pass the id to the custom hook
   const [user, setUser] = useState<DocumentData>()
 
   useFocusEffect(
@@ -72,10 +72,18 @@ export default function ChatScreen() {
             <TouchableOpacity
               style={{ marginRight: 10 }} // Adjust the margin if needed
               onPress={() =>
-                router.push(
-                  // @ts-expect-error
-                  `/student/(tabs)/messages/videoCalls/${user._id}`,
-                )
+                // router.push(
+                //   // @ts-expect-error
+                //   `/student/(tabs)/messages/video-calls/${user._id}`,
+                // )
+
+                router.push({
+                  pathname:
+                    '/student/(tabs)/messages/video-calls/video-call-screen',
+                  params: {
+                    callId: user?._id,
+                  },
+                })
               }
             >
               <Ionicons name="videocam" size={24} color="black" />

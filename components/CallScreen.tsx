@@ -17,7 +17,7 @@ const CallScreen = ({ callId }: any) => {
   const handleAnswer = () => {
     setIsModalVisible(false)
     router.push({
-      pathname: '/student/(tabs)/messages/answer-calls/answer-call-screen',
+      pathname: '/student/(tabs)/messages/video-calls/answer-call-screen',
       params: {
         callId: callId,
       },

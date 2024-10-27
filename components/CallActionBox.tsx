@@ -3,10 +3,10 @@ import React from 'react'
 import { StyleSheet, TouchableOpacity, View } from 'react-native'
 
 interface IProps {
-  switchCamera: () => void
+  switchCamera?: () => void
   toggleMute?: () => void
   toggleCamera?: () => void
-  endCall: () => void
+  endCall?: () => void
 }
 
 const CallActionBox = ({

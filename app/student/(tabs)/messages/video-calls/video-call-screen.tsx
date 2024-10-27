@@ -1,3 +1,4 @@
+import CallActionBox from '@/components/CallActionBox'
 import useVc from '@/hooks/useVc'
 import {
   useFocusEffect,
@@ -9,9 +10,10 @@ import { StyleSheet, View } from 'react-native'
 import { RTCView } from 'react-native-webrtc'
 
 const videCallScreen = () => {
-  const { localStream, remoteStream, startCall, startLocalStream } = useVc()
-
   const { callId } = useLocalSearchParams<{ callId: string }>()
+  console.log('sdsds', callId)
+
+  const { localStream, remoteStream, startCall, startLocalStream } = useVc()
 
   useEffect(() => {
     startLocalStream()
@@ -37,7 +39,7 @@ const videCallScreen = () => {
 
   return (
     <View className="flex-1 ">
-      {localStream && (
+      {localStream && !remoteStream && (
         <>
           <RTCView streamURL={localStream?.toURL()} style={{ flex: 1 }} />
         </>
@@ -52,10 +54,12 @@ const videCallScreen = () => {
           />
           {localStream && (
             <>
-              <View className="absolute top-5 right-5 h-48 w-36 rounded-3xl bg-red-300 justify-center items-start">
+              <View
+                style={{ zIndex: 1 }}
+                className="absolute top-5 right-5 h-48 w-36 rounded-3xl justify-center items-start overflow-hidden"
+              >
                 <RTCView
                   style={{
-                    borderRadius: 100,
                     width: '100%',
                     height: '100%',
                   }}
@@ -66,12 +70,12 @@ const videCallScreen = () => {
             </>
           )}
           <View className="absolute bottom-0 w-full bg-red">
-            {/* <CallActionBox
-              switchCamera={switchCamera}
-                toggleMute={toggleMute}
-                toggleCamera={toggleCamera}
-              endCall={endCall}
-            /> */}
+            <CallActionBox
+            // switchCamera={switchCamera}
+            //   toggleMute={toggleMute}
+            //   toggleCamera={toggleCamera}
+            // endCall={endCall}
+            />
           </View>
         </>
       )}

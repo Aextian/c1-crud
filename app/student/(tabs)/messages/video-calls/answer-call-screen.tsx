@@ -1,3 +1,4 @@
+import CallActionBox from '@/components/CallActionBox'
 import useVc from '@/hooks/useVc'
 import {
   useFocusEffect,
@@ -15,7 +16,7 @@ const answerCallScreen = () => {
 
   useEffect(() => {
     startLocalStream()
-  }, []) // Add dependencies
+  }, [])
 
   useEffect(() => {
     if (localStream) {
@@ -41,29 +42,48 @@ const answerCallScreen = () => {
             style={{ flex: 1 }}
             streamURL={remoteStream.toURL()}
             objectFit={'cover'}
+            zOrder={0}
           />
           {localStream && (
             <>
-              <View className="absolute top-5 right-5 h-48 w-36 rounded-3xl justify-center items-start">
+              <View
+                style={{
+                  borderColor: 'red',
+                  borderWidth: 1,
+                  height: 150,
+                  width: 100,
+                  position: 'absolute',
+                  right: 30,
+                  top: 60,
+                  borderRadius: 40,
+                  overflow: 'hidden',
+                  backgroundColor: 'red',
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                  zIndex: 1,
+                }}
+
+                // className="absolute top-5 right-5 h-48 w-36 rounded-3xl justify-center items-start overflow-hidden bg-red-300 "
+              >
                 <RTCView
                   style={{
-                    borderRadius: 100,
                     width: '100%',
                     height: '100%',
                   }}
                   objectFit="cover"
                   streamURL={localStream.toURL()}
+                  zOrder={1}
                 />
               </View>
             </>
           )}
           <View className="absolute bottom-0 w-full bg-red">
-            {/* <CallActionBox
-              switchCamera={switchCamera}
-                toggleMute={toggleMute}
-                toggleCamera={toggleCamera}
-              endCall={endCall}
-            /> */}
+            <CallActionBox
+            // switchCamera={switchCamera}
+            //   toggleMute={toggleMute}
+            //   toggleCamera={toggleCamera}
+            // endCall={endCall}
+            />
           </View>
         </>
       )}
