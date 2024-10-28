@@ -13,11 +13,12 @@ import React, { useEffect, useState } from 'react'
 import { StyleSheet, TouchableOpacity } from 'react-native'
 import { GiftedChat } from 'react-native-gifted-chat'
 
-export default function ChatScreen() {
+export default function conversation() {
+  const { id } = useLocalSearchParams<{ id: string }>()
+
   const navigation = useNavigation()
   const currentUser = auth.currentUser
-  const { conversationId } = useLocalSearchParams<{ conversationId: string }>()
-  const { messages, onSend } = useMessages(conversationId) // Pass the id to the custom hook
+  const { messages, onSend } = useMessages(id) // Pass the id to the custom hook
   const [user, setUser] = useState<DocumentData>()
 
   useFocusEffect(
@@ -29,7 +30,7 @@ export default function ChatScreen() {
     }, [navigation]),
   )
   useEffect(() => {
-    const docRef = doc(db, 'conversations', String(conversationId))
+    const docRef = doc(db, 'conversations', id)
     const fetchData = async () => {
       try {
         const docSnap = await getDoc(docRef) // Await the getDoc call
@@ -51,17 +52,9 @@ export default function ChatScreen() {
     }
 
     fetchData()
-  }, [conversationId])
+  }, [id])
 
   const router = useRouter()
-
-  // const handleNavigation = () => {
-  //   const conversationId = "123"; // Example conversation ID
-  //   router.push({
-  //     pathname: '/student/(tabs)/messages/videoCalls/callId/[conversationId]',
-  //     params: { conversationId }, // Pass dynamic conversationId
-  //   });
-  // };
 
   return (
     <>
@@ -72,16 +65,11 @@ export default function ChatScreen() {
             <TouchableOpacity
               style={{ marginRight: 10 }} // Adjust the margin if needed
               onPress={() =>
-                // router.push(
-                //   // @ts-expect-error
-                //   `/student/(tabs)/messages/video-calls/${user._id}`,
-                // )
-
                 router.push({
                   pathname:
                     '/student/(tabs)/messages/video-calls/video-call-screen',
                   params: {
-                    callId: user?._id,
+                    callId: id,
                   },
                 })
               }

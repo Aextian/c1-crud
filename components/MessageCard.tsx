@@ -71,10 +71,7 @@ const MessageCard = ({ conversation }: { conversation: DocumentData }) => {
     <TouchableOpacity
       style={styles.messageCardContainer}
       onPress={() =>
-        router.push({
-          pathname: `/student/(tabs)/messages/conversations/[conversationId]`,
-          params: { conversationId: conversation.id }, // Passing params as part of the object
-        })
+        router.push(`/student/messages/conversations/${conversation.id}`)
       }
     >
       <View style={styles.messsageCardIcon}>

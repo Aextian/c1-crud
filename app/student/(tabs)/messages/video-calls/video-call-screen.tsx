@@ -11,7 +11,6 @@ import { RTCView } from 'react-native-webrtc'
 
 const videCallScreen = () => {
   const { callId } = useLocalSearchParams<{ callId: string }>()
-  console.log('sdsds', callId)
 
   const { localStream, remoteStream, startCall, startLocalStream } = useVc()
 
@@ -54,10 +53,7 @@ const videCallScreen = () => {
           />
           {localStream && (
             <>
-              <View
-                style={{ zIndex: 1 }}
-                className="absolute top-5 right-5 h-48 w-36 rounded-3xl justify-center items-start overflow-hidden"
-              >
+              <View className="absolute top-5 right-5 h-48 w-36 rounded-3xl justify-center items-start overflow-hidden">
                 <RTCView
                   style={{
                     width: '100%',
@@ -71,10 +67,10 @@ const videCallScreen = () => {
           )}
           <View className="absolute bottom-0 w-full bg-red">
             <CallActionBox
-            // switchCamera={switchCamera}
-            //   toggleMute={toggleMute}
-            //   toggleCamera={toggleCamera}
-            // endCall={endCall}
+              // switchCamera={switchCamera}
+              //   toggleMute={toggleMute}
+              //   toggleCamera={toggleCamera}
+              callId={callId}
             />
           </View>
         </>

@@ -1,26 +1,28 @@
 import CallActionBox from '@/components/CallActionBox'
-import useWebRTC from '@/hooks/useVideoCall'
-import { useFocusEffect, useNavigation } from 'expo-router'
+import useVc from '@/hooks/useVc'
+import {
+  useFocusEffect,
+  useLocalSearchParams,
+  useNavigation,
+} from 'expo-router'
 import React, { useEffect } from 'react'
-import { StyleSheet, Text, View } from 'react-native'
+import { StyleSheet, View } from 'react-native'
 import { RTCView } from 'react-native-webrtc'
 
-const CallScreen = () => {
-  const {
-    localStream,
-    remoteStream,
-    startCall,
-    answerCall,
-    endCall,
-    switchCamera,
-    callId,
-    setCallId,
-    startLocalStream,
-  } = useWebRTC()
+const videCallScreen = () => {
+  const { callId } = useLocalSearchParams<{ callId: string }>()
+
+  const { localStream, remoteStream, startCall, startLocalStream } = useVc()
 
   useEffect(() => {
     startLocalStream()
   }, [])
+
+  useEffect(() => {
+    if (localStream) {
+      startCall(callId)
+    }
+  }, [localStream])
 
   const navigation = useNavigation()
 
@@ -36,14 +38,9 @@ const CallScreen = () => {
 
   return (
     <View className="flex-1 ">
-      {localStream && (
+      {localStream && !remoteStream && (
         <>
-          <Text>Local Stream {localStream.toURL()}</Text>
-          <RTCView
-            objectFit={'cover'}
-            streamURL={localStream?.toURL()}
-            style={{ flex: 1 }}
-          />
+          <RTCView streamURL={localStream?.toURL()} style={{ flex: 1 }} />
         </>
       )}
 
@@ -51,23 +48,29 @@ const CallScreen = () => {
         <>
           <RTCView
             style={{ flex: 1 }}
-            streamURL={remoteStream && remoteStream.toURL()}
+            streamURL={remoteStream.toURL()}
             objectFit={'cover'}
           />
           {localStream && (
             <>
-              <RTCView
-                className="w-32 h-48 absolute right-6 top-8"
-                streamURL={localStream.toURL()}
-              />
+              <View className="absolute top-5 right-5 h-48 w-36 rounded-3xl justify-center items-start overflow-hidden">
+                <RTCView
+                  style={{
+                    width: '100%',
+                    height: '100%',
+                  }}
+                  objectFit="cover"
+                  streamURL={localStream.toURL()}
+                />
+              </View>
             </>
           )}
-          <View className="absolute bottom-0 w-full">
+          <View className="absolute bottom-0 w-full bg-red">
             <CallActionBox
-              switchCamera={switchCamera}
+              // switchCamera={switchCamera}
               //   toggleMute={toggleMute}
               //   toggleCamera={toggleCamera}
-              endCall={endCall}
+              callId={callId}
             />
           </View>
         </>
@@ -94,4 +97,4 @@ const styles = StyleSheet.create({
   },
 })
 
-export default CallScreen
+export default videCallScreen

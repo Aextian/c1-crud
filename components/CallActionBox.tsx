@@ -1,41 +1,35 @@
+import useVc from '@/hooks/useVc'
 import { Feather } from '@expo/vector-icons'
 import React from 'react'
 import { StyleSheet, TouchableOpacity, View } from 'react-native'
 
 interface IProps {
-  switchCamera?: () => void
-  toggleMute?: () => void
-  toggleCamera?: () => void
-  endCall?: () => void
+  callId: string
 }
 
-const CallActionBox = ({
-  switchCamera,
-  toggleMute,
-  toggleCamera,
-  endCall,
-}: IProps) => {
+const CallActionBox = ({ callId }: IProps) => {
+  const { endCall } = useVc()
   return (
     <View style={styles.container}>
       {/* Switch Camera Button */}
-      <TouchableOpacity style={styles.button} onPress={switchCamera}>
+      <TouchableOpacity style={styles.button}>
         <Feather name="camera" size={30} color="#fff" />
       </TouchableOpacity>
 
       {/* Toggle Mute Button */}
-      <TouchableOpacity style={styles.button} onPress={toggleMute}>
+      <TouchableOpacity style={styles.button}>
         <Feather name="mic-off" size={30} color="#fff" />
       </TouchableOpacity>
 
       {/* Toggle Camera Button */}
-      <TouchableOpacity style={styles.button} onPress={toggleCamera}>
+      <TouchableOpacity style={styles.button}>
         <Feather name="camera-off" size={30} color="#fff" />
       </TouchableOpacity>
 
       {/* End Call Button */}
       <TouchableOpacity
         style={[styles.button, styles.endCallButton]}
-        onPress={endCall}
+        onPress={() => endCall(callId)}
       >
         <Feather name="phone" size={30} color="#fff" />
       </TouchableOpacity>
