@@ -28,10 +28,9 @@ const useVc = () => {
   const [remoteStream, setRemoteStream] = useState<MediaStream | null>()
   const [callId, setCallId] = useState('')
 
-  const currentUser = auth.currentUser
-  let callStartTime: number | null = null
+  const [startTime, setStartTime] = useState()
 
-  console.log('start callingggg', callStartTime)
+  const currentUser = auth.currentUser
 
   const router = useRouter()
   // const pc = useRef(null) // RTCPeerConnection reference
@@ -39,9 +38,11 @@ const useVc = () => {
 
   const formatDuration = (durationInMilliseconds: number) => {
     const totalSeconds = Math.floor(durationInMilliseconds / 1000) // Convert milliseconds to seconds
-    const minutes = Math.floor(totalSeconds / 60)
+    const hours = Math.floor(totalSeconds / 3600)
+    const minutes = Math.floor((totalSeconds % 3600) / 60)
     const seconds = totalSeconds % 60
-    return `Call Duration: ${minutes}m ${seconds}s`
+
+    return `Call Duration: ${hours}h ${minutes}m ${seconds}s`
   }
 
   const servers = {
@@ -203,7 +204,9 @@ const useVc = () => {
         return
       }
 
-      callStartTime = Date.now()
+      setStartTime(Date.now() as any)
+
+      console.log('callStartTimecallStartTime', startTime)
 
       // Initialize peer connection only if not already initialized
       if (!pc.current) {
@@ -298,7 +301,10 @@ const useVc = () => {
       }
 
       const callEndTime = Date.now()
-      const callDuration = formatDuration(callEndTime - callStartTime!)
+      const callDuration = formatDuration(callEndTime - startTime!)
+
+      console.log('callENdTIem', callEndTime)
+      console.log('callStartTime', startTime)
 
       // Close the peer connection
       if (pc.current) {
