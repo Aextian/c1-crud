@@ -13,7 +13,7 @@ import React, { useEffect, useState } from 'react'
 import { StyleSheet, TouchableOpacity } from 'react-native'
 import { GiftedChat } from 'react-native-gifted-chat'
 
-export default function conversation() {
+export default function userConversation() {
   const { id } = useLocalSearchParams<{ id: string }>()
 
   const navigation = useNavigation()

@@ -7,7 +7,7 @@ import {
   query,
 } from 'firebase/firestore'
 import { useCallback, useEffect, useState } from 'react'
-import { GiftedChat, IMessage } from 'react-native-gifted-chat' // Adjust import based on your project structure
+import { IMessage } from 'react-native-gifted-chat' // Adjust import based on your project structure
 
 const useMessages = (id: string) => {
   const [messages, setMessages] = useState<IMessage[]>([])
@@ -15,12 +15,7 @@ const useMessages = (id: string) => {
   useEffect(() => {
     if (!id) return // Check if conversationId is valid
 
-    const messagesCollection = collection(
-      db,
-      'conversations',
-      String(id),
-      'messages',
-    )
+    const messagesCollection = collection(db, 'conversations', id, 'messages')
     const messagesQuery = query(
       messagesCollection,
       orderBy('createdAt', 'desc'),
@@ -58,9 +53,9 @@ const useMessages = (id: string) => {
           text,
           user,
         })
-        setMessages((previousMessages) =>
-          GiftedChat.append(previousMessages, messages),
-        )
+        // setMessages((previousMessages) =>
+        //   GiftedChat.append(previousMessages, messages),
+        // )
       } catch (error) {
         console.error('Error sending message: ', error)
         alert(error)

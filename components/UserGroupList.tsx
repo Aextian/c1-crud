@@ -1,5 +1,6 @@
 import { auth, db } from '@/config'
 import { Feather } from '@expo/vector-icons'
+import Checkbox from 'expo-checkbox'
 import { useRouter } from 'expo-router'
 import {
   DocumentData,
@@ -11,9 +12,9 @@ import {
   where,
 } from 'firebase/firestore'
 import React, { useEffect, useState } from 'react'
-import { ScrollView, Text, TouchableOpacity, View } from 'react-native'
+import { ScrollView, Text, View } from 'react-native'
 
-const UserList = () => {
+const UserGroupList = () => {
   const [users, setUsers] = useState<DocumentData>([])
   const currentUser = auth.currentUser
   const router = useRouter() // Initialize the router
@@ -69,31 +70,44 @@ const UserList = () => {
     }
   }
 
+  const [isChecked, setChecked] = useState(false)
+
   return (
     <ScrollView
-      horizontal
       showsHorizontalScrollIndicator={false}
       contentContainerStyle={{
-        alignItems: 'center',
+        alignItems: 'flex-start',
+        justifyContent: 'flex-start',
         paddingHorizontal: 10,
-        paddingVertical: 5,
       }}
     >
       {users.map((user: DocumentData) => (
-        <TouchableOpacity
-          key={user.id}
-          style={{ marginRight: 10, alignItems: 'center' }}
-          activeOpacity={0.8}
-          onPress={() => handleSelectUser(user)}
-        >
-          <View className="item-center  h-16 w-16  justify-center border p-4 rounded-full">
-            <Feather name="user" size={24} />
+        <View className="flex justify-around" key={user.id}>
+          <View
+            className="flex flex-row items-center "
+            style={{ marginBottom: 10 }}
+          >
+            <View className="item-center  h-16 w-16  justify-center border p-4 rounded-full">
+              <Feather name="user" size={24} />
+            </View>
+            <Text
+              style={{ fontWeight: 'bold', marginLeft: 10 }}
+              className="text-[10px] text-center"
+            >
+              {user.name}
+            </Text>
           </View>
-          <Text className="text-[10px] text-center">{user.name}</Text>
-        </TouchableOpacity>
+
+          {/* add checkbox here */}
+          <Checkbox
+            // style={styles.checkbox}
+            value={isChecked}
+            onValueChange={setChecked}
+          />
+        </View>
       ))}
     </ScrollView>
   )
 }
 
-export default UserList
+export default UserGroupList

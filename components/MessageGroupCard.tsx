@@ -1,11 +1,9 @@
-import { auth, db } from '@/config'
+import { db } from '@/config'
 import { Feather } from '@expo/vector-icons'
 import { useRouter } from 'expo-router'
 import {
   DocumentData,
   collection,
-  doc,
-  getDoc,
   limit,
   onSnapshot,
   orderBy,
@@ -14,42 +12,14 @@ import {
 import React, { useEffect, useState } from 'react'
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native'
 
-const MessageCard = ({ conversation }: { conversation: DocumentData }) => {
+const MessageGroupCard = ({ group }: { group: DocumentData }) => {
   const router = useRouter()
-  const currentUser = auth.currentUser
-  const [user, setUser] = useState<DocumentData>()
   const [lastMessage, setLastMessage] = useState<string | null>(null)
 
   useEffect(() => {
-    const docRef = doc(db, 'conversations', conversation.id)
-    const messagesRef = collection(
-      db,
-      'conversations',
-      conversation.id,
-      'messages',
-    )
-    const fetchData = async () => {
-      try {
-        const docSnap = await getDoc(docRef) // Await the getDoc call
-
-        if (docSnap.exists()) {
-          // Document data found
-          const usersId = docSnap.data().users
-          const userId = usersId.find((id: string) => id !== currentUser?.uid)
-          const userRef = doc(db, 'users', userId)
-          const userSnap = await getDoc(userRef) // Await the getDoc call
-          const userData = userSnap.data()
-          setUser(userData)
-        } else {
-          // Document not found
-          console.log('No such document!')
-        }
-      } catch (error) {
-        console.error('Error fetching document:', error)
-      }
-    }
+    const groupRef = collection(db, 'groupChats', group.id, 'messages')
     const fetchLastMessage = () => {
-      const q = query(messagesRef, orderBy('createdAt', 'desc'), limit(1))
+      const q = query(groupRef, orderBy('createdAt', 'desc'), limit(1))
       const unsubcribe = onSnapshot(q, (snapshot) => {
         if (!snapshot.empty) {
           const lastMessage = snapshot.docs[0].data()
@@ -60,23 +30,22 @@ const MessageCard = ({ conversation }: { conversation: DocumentData }) => {
       })
       return unsubcribe
     }
-    fetchData() // Call the async function
     const unsubscribeFromMessages = fetchLastMessage()
     return () => {
       unsubscribeFromMessages()
     }
-  }, [conversation.id]) // Add conversation.id as a dependency
+  }, [group.id]) // Add conversation.id as a dependency
 
-  const CONVERSATION_USER_PATH = '/teacher/(tabs)/messages/conversations/user'
+  const CONVERSATION_GROUP_PATH = '/teacher/(tabs)/messages/conversations/group'
 
   return (
     <TouchableOpacity
       style={styles.messageCardContainer}
       onPress={() =>
         router.push({
-          pathname: CONVERSATION_USER_PATH,
+          pathname: CONVERSATION_GROUP_PATH,
           params: {
-            id: conversation.id,
+            id: group.id,
           },
         })
       }
@@ -93,7 +62,7 @@ const MessageCard = ({ conversation }: { conversation: DocumentData }) => {
           justifyContent: 'flex-start',
         }}
       >
-        <Text>{user?.name}</Text>
+        <Text>{group?.name}</Text>
         <Text className="text-xs text-gray-500" numberOfLines={1}>
           {lastMessage}{' '}
         </Text>
@@ -121,4 +90,4 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
 })
-export default MessageCard
+export default MessageGroupCard
