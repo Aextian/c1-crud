@@ -1,4 +1,5 @@
 import { auth, db } from '@/config'
+import useHideTabBarOnFocus from '@/hooks/useHideTabBarOnFocus'
 import useMessages from '@/hooks/useMessages'
 import { Ionicons } from '@expo/vector-icons'
 import {
@@ -16,19 +17,11 @@ import { GiftedChat } from 'react-native-gifted-chat'
 export default function userConversation() {
   const { id } = useLocalSearchParams<{ id: string }>()
 
-  const navigation = useNavigation()
   const currentUser = auth.currentUser
   const { messages, onSend } = useMessages(id) // Pass the id to the custom hook
   const [user, setUser] = useState<DocumentData>()
+  useHideTabBarOnFocus();
 
-  useFocusEffect(
-    React.useCallback(() => {
-      navigation.getParent()?.setOptions({ tabBarStyle: { display: 'none' } })
-      return () => {
-        navigation.getParent()?.setOptions({ tabBarStyle: styles.tabBar })
-      }
-    }, [navigation]),
-  )
   useEffect(() => {
     const docRef = doc(db, 'conversations', id)
     const fetchData = async () => {

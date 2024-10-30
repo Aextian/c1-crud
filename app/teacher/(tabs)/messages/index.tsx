@@ -24,7 +24,7 @@ const index = () => {
               className="bg-red-300 rounded-lg p-2 text-xs font-bold text-black"
               href="/teacher/messages"
             >
-              Chats s sd
+              Chats
             </Link>
             <Link
               href="/teacher/messages/group"

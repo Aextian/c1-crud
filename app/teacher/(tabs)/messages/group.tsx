@@ -3,37 +3,28 @@ import MessageGroupCard from '@/components/MessageGroupCard'
 import LoadingScreen from '@/components/loadingScreen'
 // import MessageCard from '@/components/messageCard'
 import { auth } from '@/config'
-import { useCreateGroup, useGetUserGroups } from '@/hooks/useGroupChat'
+import { useGetUserGroups } from '@/hooks/useGroupChat'
 import useIncomingCall from '@/hooks/useIncommingCall'
 import { Feather } from '@expo/vector-icons'
 import { Link, useRouter } from 'expo-router'
 import { DocumentData } from 'firebase/firestore'
 import React, { useEffect, useState } from 'react'
 import {
+  Pressable,
   SafeAreaView,
   ScrollView,
   StyleSheet,
   Text,
-  TextInput,
   TouchableOpacity,
   View,
 } from 'react-native'
 
 const group = () => {
-  const [groupChatName, setGroupChatName] = useState('')
   const currentUser = auth.currentUser
   const userId = currentUser?.uid as string
   const [userGroups, setUserGroups] = useState<DocumentData[]>()
-  const createGroup = useCreateGroup()
   const getUserGroups = useGetUserGroups()
-
   const router = useRouter()
-
-  const handleCreateGroup = async () => {
-    await createGroup(groupChatName, [currentUser?.uid])
-    setGroupChatName('')
-  }
-
   // get user groups
   useEffect(() => {
     const fetchUserGroups = async () => {
@@ -44,11 +35,13 @@ const group = () => {
   }, [userId, getUserGroups])
 
   const { incomingCall, callId } = useIncomingCall()
+
   return (
     <SafeAreaView style={styles.container}>
       {incomingCall && <CallScreen callId={callId} />}
       <View>
-        <View
+        <Pressable
+          onPress={() => router.push('/teacher/messages/create-group')}
           style={{
             flexDirection: 'row',
             justifyContent: 'space-around',
@@ -56,30 +49,19 @@ const group = () => {
             alignItems: 'center',
             borderColor: 'grey',
             borderWidth: 1,
+            paddingVertical: 10,
             paddingHorizontal: 20,
             borderRadius: 10,
           }}
         >
-          <Feather name="message-circle" size={24} />
-          <TextInput
-            style={{
-              flex: 1,
-              padding: 10,
-              width: '100%',
-              outlineStyle: 'none',
-            }}
-            placeholder="Create a group chat"
-            value={groupChatName}
-            placeholderTextColor={'#999'}
-            onChangeText={(groupChatName) => setGroupChatName(groupChatName)}
-          />
-          <TouchableOpacity onPress={handleCreateGroup}>
+          <View className="flex flex-row items-start gap-5 justify-start">
+            <Feather name="message-circle" size={24} />
+            <Text>Create a group chat</Text>
+          </View>
+          <TouchableOpacity disabled>
             <Feather name="send" size={24} />
           </TouchableOpacity>
-          <Link href="/teacher/(tabs)/messages/create-group">
-            <Text>Navigate Create </Text>
-          </Link>
-        </View>
+        </Pressable>
         <View style={{ paddingHorizontal: 10, marginVertical: 10 }}>
           <View className="flex flex-row items-center justify-center gap-5">
             <Link

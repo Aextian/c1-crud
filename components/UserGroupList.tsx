@@ -1,23 +1,19 @@
 import { auth, db } from '@/config'
 import { Feather } from '@expo/vector-icons'
 import Checkbox from 'expo-checkbox'
-import { useRouter } from 'expo-router'
-import {
-  DocumentData,
-  addDoc,
-  collection,
-  getDocs,
-  onSnapshot,
-  query,
-  where,
-} from 'firebase/firestore'
+import { DocumentData, collection, onSnapshot } from 'firebase/firestore'
 import React, { useEffect, useState } from 'react'
 import { ScrollView, Text, View } from 'react-native'
+import SkLoading from './SkLoading'
 
-const UserGroupList = () => {
+interface IProps {
+  setUserIds: (userIds: string[]) => void
+  userIds: string[]
+}
+const UserGroupList = ({ userIds, setUserIds }: IProps) => {
   const [users, setUsers] = useState<DocumentData>([])
+  //   const [userIds, setUserIds] = useState<string[]>([])
   const currentUser = auth.currentUser
-  const router = useRouter() // Initialize the router
 
   useEffect(() => {
     const usersCollection = collection(db, 'users')
@@ -33,46 +29,15 @@ const UserGroupList = () => {
     return unsubscribe
   }, [])
 
-  const handleSelectUser = async (selectedUser: DocumentData) => {
-    // Check if the conversation exists or create a new one
-    const conversationCollection = query(
-      collection(db, 'conversations'), // Use the db reference here
-      where('users', 'array-contains', currentUser?.uid),
+  const handleCheckboxChange = (isChecked: boolean, userId: string) => {
+    setUserIds(
+      isChecked
+        ? [...userIds, userId] // Add userId if checked
+        : userIds.filter((id) => id !== userId), // Remove userId if unchecked
     )
-    try {
-      const querySnapshot = await getDocs(conversationCollection) // Use await to get the documents
-      const conversation = querySnapshot.docs.find((doc) => {
-        const users = doc.data().users
-        // Check if the selected user is in the conversation
-        return users.includes(selectedUser.id)
-      })
-      if (conversation) {
-        router.push({
-          pathname: `/teacher/(tabs)/messages/conversations/user`,
-          params: {
-            id: conversation.id,
-          },
-        })
-      } else {
-        // Create a new conversation
-        const docRef = await addDoc(collection(db, 'conversations'), {
-          users: [currentUser?.uid, selectedUser.id], // Corrected document structure
-        })
-        router.push({
-          pathname: `/teacher/(tabs)/messages/conversations/user`,
-          params: {
-            id: docRef.id,
-          },
-        })
-      }
-    } catch (error) {
-      console.error('Error fetching or creating conversation: ', error)
-    }
   }
 
-  const [isChecked, setChecked] = useState(false)
-
-  return (
+  return users.length > 0 ? (
     <ScrollView
       showsHorizontalScrollIndicator={false}
       contentContainerStyle={{
@@ -82,7 +47,10 @@ const UserGroupList = () => {
       }}
     >
       {users.map((user: DocumentData) => (
-        <View className="flex justify-around" key={user.id}>
+        <View
+          className="flex flex-row justify-between w-full items-center "
+          key={user.id}
+        >
           <View
             className="flex flex-row items-center "
             style={{ marginBottom: 10 }}
@@ -97,16 +65,21 @@ const UserGroupList = () => {
               {user.name}
             </Text>
           </View>
-
-          {/* add checkbox here */}
-          <Checkbox
-            // style={styles.checkbox}
-            value={isChecked}
-            onValueChange={setChecked}
-          />
+          <View>
+            <Checkbox
+              value={userIds.includes(user.id)}
+              onValueChange={(isChecked) =>
+                handleCheckboxChange(isChecked, user.id)
+              }
+              color={userIds.includes(user.id) ? 'blue' : undefined}
+              style={{ marginLeft: 10 }}
+            />
+          </View>
         </View>
       ))}
     </ScrollView>
+  ) : (
+    <SkLoading />
   )
 }
 
