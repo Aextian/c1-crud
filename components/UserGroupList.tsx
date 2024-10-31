@@ -4,7 +4,7 @@ import Checkbox from 'expo-checkbox'
 import { DocumentData, collection, onSnapshot } from 'firebase/firestore'
 import React, { useEffect, useState } from 'react'
 import { ScrollView, Text, View } from 'react-native'
-import SkLoading from './SkLoading'
+import SkUserLoader from './SkLoader'
 
 interface IProps {
   setUserIds: (userIds: string[]) => void
@@ -79,7 +79,7 @@ const UserGroupList = ({ userIds, setUserIds }: IProps) => {
       ))}
     </ScrollView>
   ) : (
-    <SkLoading />
+    <SkUserLoader />
   )
 }
 

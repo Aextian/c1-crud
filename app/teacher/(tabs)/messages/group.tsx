@@ -1,7 +1,7 @@
 import CallScreen from '@/components/CallScreen'
 import MessageGroupCard from '@/components/MessageGroupCard'
-import LoadingScreen from '@/components/loadingScreen'
-// import MessageCard from '@/components/messageCard'
+import SkUserLoader from '@/components/SkLoader'
+
 import { auth } from '@/config'
 import { useGetUserGroups } from '@/hooks/useGroupChat'
 import useIncomingCall from '@/hooks/useIncommingCall'
@@ -26,6 +26,7 @@ const group = () => {
   const getUserGroups = useGetUserGroups()
   const router = useRouter()
   // get user groups
+
   useEffect(() => {
     const fetchUserGroups = async () => {
       const groups = await getUserGroups(userId)
@@ -88,7 +89,7 @@ const group = () => {
             </>
           ) : (
             <>
-              <LoadingScreen />
+              <SkUserLoader />
             </>
           )}
         </ScrollView>

@@ -1,7 +1,7 @@
 import CallScreen from '@/components/CallScreen'
 import MessageCard from '@/components/MessageCard'
+import SkUserLoader from '@/components/SkLoader'
 import UserList from '@/components/UserList'
-import LoadingScreen from '@/components/loadingScreen'
 import { useChat } from '@/hooks/useChat'
 import useIncomingCall from '@/hooks/useIncommingCall'
 import { Link } from 'expo-router'
@@ -47,7 +47,7 @@ const index = () => {
             </>
           ) : (
             <>
-              <LoadingScreen />
+              <SkUserLoader />
             </>
           )}
         </ScrollView>
