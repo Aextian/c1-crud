@@ -3,7 +3,13 @@ import React, { useState } from 'react'
 import { Button, Modal, StyleSheet, Text, View } from 'react-native'
 import Animated, { SlideInUp } from 'react-native-reanimated'
 
-const CallScreen = ({ callId }: any) => {
+interface IProps {
+  callId: string
+  type: string
+  isTeacher: boolean
+}
+
+const CallScreen = ({ callId, type, isTeacher }: IProps) => {
   const [isModalVisible, setIsModalVisible] = useState(true)
 
   const router = useRouter()
@@ -17,7 +23,13 @@ const CallScreen = ({ callId }: any) => {
   const handleAnswer = () => {
     setIsModalVisible(false)
     router.push({
-      pathname: '/student/(tabs)/messages/video-calls/answer-call-screen',
+      pathname: isTeacher
+        ? type === 'user'
+          ? '/teacher/(tabs)/messages/video-calls/answer-call-screen'
+          : '/teacher/(tabs)/messages/group-calls/answer-call-screen'
+        : type === 'user'
+          ? '/student/(tabs)/messages/video-calls/answer-call-screen'
+          : '/student/(tabs)/messages/video-calls/answer-call-screen',
       params: {
         callId: callId,
       },

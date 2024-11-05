@@ -25,7 +25,7 @@ export default function groupConversation() {
               onPress={() =>
                 router.push({
                   pathname:
-                    '/student/(tabs)/messages/video-calls/video-call-screen',
+                    '/teacher/(tabs)/messages/group-calls/video-call-screen',
                   params: {
                     callId: id,
                   },

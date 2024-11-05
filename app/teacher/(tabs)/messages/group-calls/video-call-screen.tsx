@@ -1,23 +1,16 @@
 import CallActionBox from '@/components/CallActionBox'
+import useGroupCall from '@/hooks/useGroupCall'
 import useHideTabBarOnFocus from '@/hooks/useHideTabBarOnFocus'
-import useVc from '@/hooks/useVc'
 import { useLocalSearchParams } from 'expo-router'
 import React, { useEffect } from 'react'
 import { View } from 'react-native'
 import { RTCView } from 'react-native-webrtc'
 
-const answerCallScreen = () => {
+const videCallScreen = () => {
   useHideTabBarOnFocus()
-
-  const {
-    localStream,
-    remoteStream,
-    startCall,
-    answerCall,
-    startLocalStream,
-    endCall,
-  } = useVc()
   const { callId } = useLocalSearchParams<{ callId: string }>()
+  const { localStream, remoteStream, startCall, startLocalStream } =
+    useGroupCall()
 
   useEffect(() => {
     startLocalStream()
@@ -25,12 +18,18 @@ const answerCallScreen = () => {
 
   useEffect(() => {
     if (localStream) {
-      answerCall(callId)
+      startCall(callId)
     }
-  }, [localStream, callId])
+  }, [localStream])
 
   return (
     <View className="flex-1 ">
+      {localStream && !remoteStream && (
+        <>
+          <RTCView streamURL={localStream?.toURL()} style={{ flex: 1 }} />
+        </>
+      )}
+
       {remoteStream && (
         <>
           <RTCView
@@ -40,7 +39,7 @@ const answerCallScreen = () => {
           />
           {localStream && (
             <>
-              <View className="absolute top-5 right-5 h-48 w-36 rounded-3xl justify-center items-start overflow-hidden bg-red-300 ">
+              <View className="absolute top-5 right-5 h-48 w-36 rounded-3xl justify-center items-start overflow-hidden">
                 <RTCView
                   style={{
                     width: '100%',
@@ -53,7 +52,12 @@ const answerCallScreen = () => {
             </>
           )}
           <View className="absolute bottom-0 w-full bg-red">
-            <CallActionBox callId={callId} />
+            <CallActionBox
+              // switchCamera={switchCamera}
+              //   toggleMute={toggleMute}
+              //   toggleCamera={toggleCamera}
+              callId={callId}
+            />
           </View>
         </>
       )}
@@ -61,4 +65,4 @@ const answerCallScreen = () => {
   )
 }
 
-export default answerCallScreen
+export default videCallScreen

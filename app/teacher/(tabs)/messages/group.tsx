@@ -1,7 +1,6 @@
 import CallScreen from '@/components/CallScreen'
 import MessageGroupCard from '@/components/MessageGroupCard'
 import SkUserLoader from '@/components/SkLoader'
-
 import { auth } from '@/config'
 import { useGetUserGroups } from '@/hooks/useGroupChat'
 import useIncomingCall from '@/hooks/useIncommingCall'
@@ -25,8 +24,8 @@ const group = () => {
   const [userGroups, setUserGroups] = useState<DocumentData[]>()
   const getUserGroups = useGetUserGroups()
   const router = useRouter()
+  const { incomingCall, groupId } = useIncomingCall()
   // get user groups
-
   useEffect(() => {
     const fetchUserGroups = async () => {
       const groups = await getUserGroups(userId)
@@ -35,11 +34,11 @@ const group = () => {
     fetchUserGroups()
   }, [userId, getUserGroups])
 
-  const { incomingCall, callId } = useIncomingCall()
-
   return (
     <SafeAreaView style={styles.container}>
-      {incomingCall && <CallScreen callId={callId} />}
+      {incomingCall && (
+        <CallScreen type="group" isTeacher={true} callId={groupId} />
+      )}
       <View>
         <Pressable
           onPress={() => router.push('/teacher/messages/create-group')}

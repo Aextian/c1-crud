@@ -11,7 +11,7 @@ import { auth, db } from '../config' // Adjust this import path as needed
 const useIncomingCall = () => {
   const [incomingCall, setIncomingCall] = useState<DocumentData | null>(null)
   const [callId, setCallId] = useState('')
-
+  const [groupId, setGroupId] = useState('')
   const userId = auth.currentUser?.uid
 
   useEffect(() => {
@@ -29,7 +29,24 @@ const useIncomingCall = () => {
     return () => unsubscribe() // Cleanup listener on unmount
   }, [userId])
 
-  return { incomingCall, callId }
+  useEffect(() => {
+    const q = query(
+      collection(db, 'calls'),
+      where('members', 'array-contains', userId),
+    )
+    const unsubscribe = onSnapshot(q, (snapshot) => {
+      if (!snapshot.empty) {
+        const callData = snapshot.docs[0].data()
+        setGroupId(snapshot.docs[0].id)
+        setIncomingCall(callData)
+      } else {
+        setIncomingCall(null)
+      }
+    })
+    return () => unsubscribe() // Cleanup listener on unmount
+  }, [userId])
+
+  return { incomingCall, callId, groupId }
 }
 
 export default useIncomingCall

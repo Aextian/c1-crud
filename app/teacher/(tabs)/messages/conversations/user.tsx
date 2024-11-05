@@ -2,25 +2,18 @@ import { auth, db } from '@/config'
 import useHideTabBarOnFocus from '@/hooks/useHideTabBarOnFocus'
 import useMessages from '@/hooks/useMessages'
 import { Ionicons } from '@expo/vector-icons'
-import {
-  Stack,
-  useFocusEffect,
-  useLocalSearchParams,
-  useNavigation,
-  useRouter,
-} from 'expo-router'
+import { Stack, useLocalSearchParams, useRouter } from 'expo-router'
 import { DocumentData, doc, getDoc } from 'firebase/firestore'
 import React, { useEffect, useState } from 'react'
 import { StyleSheet, TouchableOpacity } from 'react-native'
 import { GiftedChat } from 'react-native-gifted-chat'
 
 export default function userConversation() {
+  useHideTabBarOnFocus()
   const { id } = useLocalSearchParams<{ id: string }>()
-
   const currentUser = auth.currentUser
   const { messages, onSend } = useMessages(id) // Pass the id to the custom hook
   const [user, setUser] = useState<DocumentData>()
-  useHideTabBarOnFocus();
 
   useEffect(() => {
     const docRef = doc(db, 'conversations', id)
