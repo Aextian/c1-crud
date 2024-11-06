@@ -1,4 +1,3 @@
-import CallScreen from '@/components/CallScreen'
 import MessageGroupCard from '@/components/MessageGroupCard'
 import SkUserLoader from '@/components/SkLoader'
 import { auth } from '@/config'
@@ -9,6 +8,7 @@ import { Link, useRouter } from 'expo-router'
 import { DocumentData } from 'firebase/firestore'
 import React, { useEffect, useState } from 'react'
 import {
+  Button,
   Pressable,
   SafeAreaView,
   ScrollView,
@@ -24,7 +24,7 @@ const group = () => {
   const [userGroups, setUserGroups] = useState<DocumentData[]>()
   const getUserGroups = useGetUserGroups()
   const router = useRouter()
-  const { incomingCall, groupId } = useIncomingCall()
+  const { incomingCall, listenForIncomingCalls } = useIncomingCall()
   // get user groups
   useEffect(() => {
     const fetchUserGroups = async () => {
@@ -34,11 +34,30 @@ const group = () => {
     fetchUserGroups()
   }, [userId, getUserGroups])
 
+  useEffect(() => {
+    const unsubscribe = listenForIncomingCalls('WERv7Naf4VdEiyGq5rnE')
+    return () => unsubscribe()
+  }, [])
+
+  const handleAnswer = () => {
+    router.push({
+      pathname: '/teacher/(tabs)/messages/group-calls/answer-call-screen',
+      params: {
+        callId: 'WERv7Naf4VdEiyGq5rnE',
+      },
+    })
+    console.log('Call Answered')
+  }
   return (
     <SafeAreaView style={styles.container}>
-      {incomingCall && (
-        <CallScreen type="group" isTeacher={true} callId={groupId} />
-      )}
+      {/* {incomingCall && (
+        <CallScreen
+          type="group"
+          isTeacher={true}
+          callId={'WERv7Naf4VdEiyGq5rnE'}
+        />
+      )} */}
+      <Button title="Call" onPress={() => handleAnswer()} />
       <View>
         <Pressable
           onPress={() => router.push('/teacher/messages/create-group')}

@@ -20,9 +20,6 @@ import {
 } from 'react-native-webrtc'
 import { auth, db } from '../config'
 
-// Define the type for the PeerConnection
-type PeerConnection = RTCPeerConnection
-
 const useVc = () => {
   const [localStream, setLocalStream] = useState<MediaStream | null>()
   const [remoteStream, setRemoteStream] = useState<MediaStream | null>()
@@ -204,8 +201,6 @@ const useVc = () => {
       }
 
       setStartTime(Date.now() as any)
-
-      console.log('callStartTimecallStartTime', startTime)
 
       // Initialize peer connection only if not already initialized
       if (!pc.current) {

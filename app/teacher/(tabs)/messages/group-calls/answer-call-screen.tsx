@@ -68,29 +68,39 @@ const answerCallScreen = () => {
   //     )}
   //   </View>
   // )
+  remoteStreams.forEach((stream) => {
+    console.log('Stream ID:', stream.id)
+    console.log('Stream URL:', stream.toURL())
+    console.log('Track Details:', stream.getTracks())
+    stream.getTracks().forEach((track) => {
+      console.log(`Track kind: ${track.kind}`) // Log if it's a video or audio track
+    })
+  })
 
-  console.log('remoteStream count', remoteStreams.length)
   return (
     <View style={styles.container}>
       {localStream && (
         <RTCView streamURL={localStream.toURL()} style={styles.localVideo} />
       )}
       {/* Render remote streams */}
-      <Text>Remote Streams</Text>
+      {remoteStreams.length > 0 ? (
+        <View>
+          <RTCView
+            streamURL={remoteStreams[0].toURL()}
+            style={styles.localVideo}
+          />
+          <Text>There are {remoteStreams.length} remote streams</Text>
+        </View>
+      ) : (
+        <Text>No remote streams</Text>
+      )}
       {remoteStreams.map((stream, index) => (
         <RTCView
-          key={index}
+          key={stream._id}
           streamURL={stream.toURL()}
           style={styles.remoteVideo}
         />
       ))}
-
-      {/* <FlatList
-      style={{ flex: 1 }}
-        data={remoteStreams} // Convert object to array for FlatList
-        renderItem={renderRemoteStream}
-        keyExtractor={(item, index) => `${index}`}
-      /> */}
     </View>
   )
 }
@@ -108,6 +118,7 @@ const styles = StyleSheet.create({
   remoteVideo: {
     width: 50, // Adjust sizes as needed
     height: 50,
+    backgroundColor: 'red',
   },
 })
 
