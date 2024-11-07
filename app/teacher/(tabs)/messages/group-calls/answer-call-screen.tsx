@@ -11,7 +11,7 @@ const answerCallScreen = () => {
     localStream,
     remoteStreams,
     startCall,
-    answerCall,
+    joinCall,
     startLocalStream,
     endCall,
   } = useGroupCall()
@@ -23,7 +23,7 @@ const answerCallScreen = () => {
 
   useEffect(() => {
     if (localStream) {
-      answerCall(callId)
+      joinCall(callId)
     }
   }, [localStream, callId])
 

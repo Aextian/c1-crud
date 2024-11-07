@@ -25,12 +25,10 @@ const useGroupCall = () => {
   const [localStream, setLocalStream] = useState<MediaStream | null>()
   const [remoteStreams, setRemoteStreams] = useState<MediaStream[]>([])
   const [callId, setCallId] = useState('')
+
   const [startTime, setStartTime] = useState()
   const currentUser = auth.currentUser
   const router = useRouter()
-
-  // const pc = useRef<RTCPeerConnection | null>(new RTCPeerConnection({}))
-  // const peerConnections = useRef<Map<string, RTCPeerConnection>>(new Map())
 
   const peerConnections = useRef<Map<string, RTCPeerConnection>>(new Map())
 
@@ -78,7 +76,6 @@ const useGroupCall = () => {
   }
 
   const startCall = async (callId: string) => {
-    const pc = useRef<RTCPeerConnection | null>(null)
     try {
       // Ensure local stream is available
       if (!localStream) {
@@ -128,7 +125,6 @@ const useGroupCall = () => {
       }
 
       // Add local stream tracks to the peer connection
-      const tracks = localStream.getTracks()
 
       // Set up peer connections for each participant (excluding the current user)
       for (const participantId of userCallIds) {
@@ -136,15 +132,11 @@ const useGroupCall = () => {
 
         const pc = new RTCPeerConnection(servers) // Create a new peer connection for the participant
 
+        // Store the peer connection in the map
         peerConnections.current.set(participantId, pc)
 
-        // Handle ICE connection state change
-        pc.addEventListener('iceconnectionstatechange', () => {
-          console.log('ICE connection state:', pc.iceConnectionState)
-        })
-
         // Add tracks to the peer connection
-        tracks.forEach((track) => {
+        localStream.getTracks().forEach((track) => {
           console.log('Adding track', track)
           pc.addTrack(track, localStream)
         })
@@ -158,8 +150,6 @@ const useGroupCall = () => {
             return
           }
 
-          console.log('New Stream:', newStream)
-
           // Update state with the new stream if it's not already in the list
           setRemoteStreams((prevStreams) => {
             const streamExists = prevStreams.some(
@@ -169,7 +159,6 @@ const useGroupCall = () => {
           })
         })
 
-        // Handle ICE candidates for this peer connection
         pc.addEventListener('icecandidate', (e) => {
           if (e.candidate) {
             const candidateData = e.candidate.toJSON()
@@ -177,7 +166,6 @@ const useGroupCall = () => {
           }
         })
 
-        // Create offer for the participant
         const offerDescription = await pc.createOffer({
           offerToReceiveAudio: true,
           offerToReceiveVideo: true,
@@ -199,20 +187,25 @@ const useGroupCall = () => {
           if (change.type === 'added') {
             const candidateData = change.doc.data()
             const candidate = new RTCIceCandidate(candidateData)
-
             // Add ICE candidate to the correct peer connection
+            console.log('Adding ICE candidate:', candidate)
+
             userCallIds.forEach((participantId) => {
               const pc = peerConnections.current.get(participantId)
-              if (pc && pc.remoteDescription) {
-                pc.addIceCandidate(candidate)
-                  .then(() => console.log('ICE candidate added successfully'))
-                  .catch((error) =>
-                    console.error('Error adding ICE candidate:', error),
+              console.log('remoteDescription remote:', pc?.remoteDescription)
+              if (pc) {
+                // Ensure that remote description is set before adding candidate
+                if (pc.remoteDescription) {
+                  pc.addIceCandidate(candidate)
+                    .then(() => console.log('ICE candidate added successfully'))
+                    .catch((error) =>
+                      console.error('Error adding ICE candidate:', error),
+                    )
+                } else {
+                  console.log(
+                    'Remote description is not set yet, skipping candidate',
                   )
-              } else {
-                console.log(
-                  'Remote description not set yet, skipping candidate',
-                )
+                }
               }
             })
           }
@@ -278,7 +271,7 @@ const useGroupCall = () => {
         // Handle incoming tracks
         pc.addEventListener('track', (event) => {
           const newStream = event.streams[0]
-          console.log('Received remote stream:', newStream) // Debug log to check if stream is received
+          console.log('Received remote stream:', newStream)
           setRemoteStreams((prevStreams) => {
             const streamExists = prevStreams.some(
               (stream) => stream.id === newStream.id,
@@ -290,10 +283,15 @@ const useGroupCall = () => {
         // Set remote description and create an answer
         const offer = offers[participantId]
         if (offer) {
-          await pc.setRemoteDescription(new RTCSessionDescription(offer))
+          // Set the remote description with the offer received from the caller
+          const offerDescription = new RTCSessionDescription(offer)
+          await pc.setRemoteDescription(offerDescription)
+
+          // After setting remote description, create an answer
           const answerDescription = await pc.createAnswer()
           await pc.setLocalDescription(answerDescription)
 
+          // Send the answer back to the caller
           await updateDoc(callDoc, {
             [`answers.${participantId}`]: {
               sdp: answerDescription.sdp,
@@ -312,10 +310,10 @@ const useGroupCall = () => {
               const candidateData = change.doc.data()
               if (candidateData) {
                 const candidate = new RTCIceCandidate(candidateData)
-                // Now that participantId is captured inside the loop, use it here
+                // Match the participantId with the peer connection
                 peerConnections.current.forEach((pc, id) => {
                   if (id === change.doc.id) {
-                    // Match the id from Firestore with participantId
+                    // Add ICE candidate to the corresponding peer connection
                     pc.addIceCandidate(candidate)
                       .then(() => console.log(`ICE candidate added for ${id}`))
                       .catch((error) =>

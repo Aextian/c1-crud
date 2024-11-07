@@ -21,8 +21,6 @@ const videCallScreen = () => {
     }
   }, [localStream])
 
-  console.log('localStream', localStream)
-
   return (
     <View style={styles.container}>
       {localStream && (
