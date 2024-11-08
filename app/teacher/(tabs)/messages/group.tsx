@@ -29,8 +29,10 @@ const group = () => {
   useEffect(() => {
     const fetchUserGroups = async () => {
       const groups = await getUserGroups(userId)
+
       setUserGroups(groups)
     }
+
     fetchUserGroups()
   }, [userId, getUserGroups])
 
