@@ -80,7 +80,7 @@ const useVc = () => {
     try {
       if (!localStream) {
         console.error('Local stream is not available')
-        return // Exit if localStream is not initialized
+        return
       }
 
       // Initialize the peer connection if it's not already initialized
@@ -120,6 +120,7 @@ const useVc = () => {
 
       // Create and set local offer description
       const offerDescription = await pc.current.createOffer({})
+
       await pc.current.setLocalDescription(offerDescription)
 
       // Fetch userCallId
@@ -239,6 +240,14 @@ const useVc = () => {
         await pc.current.setRemoteDescription(
           new RTCSessionDescription(callData.offer),
         )
+      }
+
+      const conversationDoc = doc(db, 'conversations', callId)
+      const docSnap = await getDoc(conversationDoc) // Await the getDoc call
+      let userCallId = ''
+      if (docSnap.exists()) {
+        const usersId = docSnap.data().users
+        userCallId = usersId.find((id: string) => id !== currentUser?.uid)
       }
 
       // Create and send the answer
