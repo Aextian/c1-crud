@@ -1,5 +1,6 @@
 import { useRouter } from 'expo-router'
 import {
+  addDoc,
   collection,
   doc,
   getDoc,
@@ -8,7 +9,7 @@ import {
   setDoc,
   updateDoc,
 } from 'firebase/firestore'
-import { useState } from 'react'
+import { useCallback, useState } from 'react'
 import {
   MediaStream,
   RTCIceCandidate,
@@ -19,24 +20,27 @@ import {
 import { auth, db } from '../config'
 
 const useGroupCall = () => {
-  const [localStream, setLocalStream] = useState<MediaStream | null>()
-  const [remoteStreams, setRemoteStreams] = useState<MediaStream[]>([])
-  const [callId, setCallId] = useState('')
 
-  const [startTime, setStartTime] = useState()
-  const currentUser = auth.currentUser
-  const router = useRouter()
+  const [roomId, setRoomId] = useState('')
+  const [localStream, setLocalStream] = useState<MediaStream | undefined>()
+  const [userName, setUserName] = useState('')
+  const [remoteMedias, setRemoteMedias,] = useState<{[key: string]: MediaStream}>({})
+  const [remoteStreams, setRemoteStreams,] = useState<{[key: string]: MediaStream}>({})
+  const [peerConnections, setPeerConnections] = useState<{
+    [key: string]: RTCPeerConnection
+  }>({})
+  const [totalParticipants, setTotalParticipants] = useState(0)
 
-  // const peerConnections = useRef<Map<string, RTCPeerConnection>>(new Map())
-  const peerConnections = new Map()
 
-  const formatDuration = (durationInMilliseconds: number) => {
-    const totalSeconds = Math.floor(durationInMilliseconds / 1000) // Convert milliseconds to seconds
-    const hours = Math.floor(totalSeconds / 3600)
-    const minutes = Math.floor((totalSeconds % 3600) / 60)
-    const seconds = totalSeconds % 60
-    return `Call Duration: ${hours}h ${minutes}m ${seconds}s`
+  const FirestoreCollections = {
+    rooms: 'rooms',
+    users: 'users',
+    participants: 'participants',
+    connections: 'connections',
+    offerCandidates: 'offerCandidates',
+    answerCandidates: 'answerCandidates',
   }
+
 
   //call server
   const servers = {
@@ -51,151 +55,44 @@ const useGroupCall = () => {
     iceCandidatePoolSize: 10,
   }
 
-  const startLocalStream = async () => {
-    const constraints = {
-      audio: true,
-      video: {
-        mandatory: {
-          minWidth: 500,
-          minHeight: 300,
-          minFrameRate: 30,
-        },
-      },
-    }
 
-    try {
-      const stream = await mediaDevices.getUserMedia(constraints)
-      setLocalStream(stream)
-      return stream // Return the stream to indicate it's ready
-    } catch (error) {
-      console.error('Error getting user media:', error)
-      throw error // Throw to handle potential errors downstream
-    }
-  }
+  const openMediaDevices = useCallback(async (audio: boolean, video: boolean) => {
+    // get media devices stream from webRTC API
+    const mediaStream = await mediaDevices.getUserMedia({
+      audio,
+      video,
+    })
 
-  const startCall = async (callId: string) => {
-    try {
-      if (!localStream) {
-        console.error('Local stream is not available')
-        return
-      }
+    // init peer connection to show user's track locally
+    const peerConnection = new RTCPeerConnection(servers)
 
-      // Reference to the Firestore call and group chat documents
-      const callDoc = doc(collection(db, 'calls'), callId)
-      const groupCallDoc = doc(db, 'groupChats', callId)
-      const offerCandidates = collection(callDoc, 'offerCandidates')
-      const answerCandidates = collection(callDoc, 'answerCandidates')
+    // add track from created mediaStream to peer connection
+    mediaStream.getTracks().forEach(track => peerConnection.addTrack(track, mediaStream))
 
-      await setDoc(groupCallDoc, {
-        callStarted: true,
-        startedBy: currentUser?.uid,
-        timestamp: serverTimestamp(),
-      })
+    // set mediaStream in localStream
+    setLocalStream(mediaStream)
+  }, [])
 
-      // Get the group members
-      const groupChatSnapshot = await getDoc(groupCallDoc)
-      let userCallIds: string[] = []
-      if (groupChatSnapshot.exists()) {
-        const chatData = groupChatSnapshot.data()
-        userCallIds = (chatData?.members || []).filter(
-          (id: string) => id !== currentUser?.uid,
-        )
-      }
+  const createRoom = useCallback(async () => {
+    // create room with current userName and set createdDate as current datetime
+    const offerCandidates = collection(callDoc, 'offerCandidates')
+    const roomRef = doc(collection(db,FirestoreCollections.rooms), userName)
 
-      // Set up peer connections for each participant (excluding the current user)
-      for (const participantId of userCallIds) {
-        if (peerConnections.has(participantId)) continue
-        const pc = new RTCPeerConnection(servers) // Create a new peer connection for the participant
-        // Store the peer connection in the map
-        peerConnections.set(participantId, pc)
-        // Add tracks to the peer connection
-        localStream.getTracks().forEach((track) => {
-          console.log('Adding track', track)
-          pc.addTrack(track, localStream)
-        })
+    await setDoc(roomRef, {
+      createdDate: serverTimestamp(),
+    })
 
-        // Listen for incoming remote tracks
-        pc.addEventListener('track', (event) => {
-          console.log('Received track event:', event)
-          const newStream = event.streams[0]
-          if (!newStream) {
-            console.error('No stream received')
-            return
-          }
+    const participantsRef = collection(roomRef, 'participants');
+      // Set participant data
+      await setDoc(doc(participantsRef, userName), {
+        name: userName,
+      });
 
-          // Update state with the new stream if it's not already in the list
-          setRemoteStreams((prevStreams) => {
-            const streamExists = prevStreams.some(
-              (stream) => stream.id === newStream.id,
-            )
-            return streamExists ? prevStreams : [...prevStreams, newStream]
-          })
-        })
+    setRoomId(roomRef.id) // store new created roomId
 
-        pc.addEventListener('icecandidate', (e) => {
-          if (e.candidate) {
-            const candidateData = e.candidate.toJSON()
-            setDoc(doc(offerCandidates, participantId), candidateData) // Send candidate to Firebase
-          }
-        })
+    // add listener to new peer connection in Firestore
 
-        const offerDescription = await pc.createOffer({})
 
-        await pc.setLocalDescription(offerDescription)
-
-        // Send the offer to Firestore
-        await updateDoc(callDoc, {
-          [`offers.${participantId}`]: {
-            sdp: offerDescription.sdp,
-            type: offerDescription.type,
-          },
-        })
-      }
-
-      // Listen for incoming ICE candidates from the callee (other participants)
-      const unsubscribeAnswerCandidates = onSnapshot(
-        answerCandidates,
-        (snapshot) => {
-          snapshot.docChanges().forEach((change) => {
-            if (change.type === 'added') {
-              const candidateData = change.doc.data()
-              const candidate = new RTCIceCandidate(candidateData)
-              console.log('candidatecandidate', candidate)
-
-              // Iterate through each participant ID
-              userCallIds.forEach((participantId) => {
-                const pc = peerConnections.get(participantId)
-                if (pc) {
-                  // Ensure remote description is set before adding candidate
-                  if (pc.remoteDescription) {
-                    pc.addIceCandidate(candidate)
-                      .then(() =>
-                        console.log('ICE candidate added successfully'),
-                      )
-
-                      .catch((error) =>
-                        console.error('Error adding ICE candidate:', error),
-                      )
-                  } else {
-                    console.log(
-                      'Remote description is not set yet, skipping candidate',
-                    )
-                  }
-                } else {
-                  console.error(`PeerConnection not found for ${participantId}`)
-                }
-              })
-            }
-          })
-        },
-      )
-
-      // Return the unsubscribe function to clean up listeners when the call ends
-      return () => unsubscribeAnswerCandidates()
-    } catch (error) {
-      console.error('Error starting call:', error)
-    }
-  }
 
   const answerCall = async (callId: string) => {
     try {
@@ -314,20 +211,124 @@ const useGroupCall = () => {
     console.log('endlive')
   }
 
-  const switchCamera = () => {
-    localStream?.getVideoTracks().forEach((track) => track._switchCamera())
-  }
+  const listenPeerConnections = useCallback(
+    async (roomRef, createdUserName) => {
+      // Reference to the connection collection where all peer connections are stored
+      const connectionSnapshot = collection(roomRef, 'connections'); // Use roomRef to get connections collection
+
+      const unsubscribeCandidates = onSnapshot(connectionSnapshot, (snapshot) => {
+        // Loop through all changes in the connections collection
+        snapshot.docChanges().forEach(async (change) => {
+          if (change.type === 'added') {
+            const data = change.doc.data();
+
+            // Check if the responder is the current user
+            if (data.responder === createdUserName) {
+              // Get the requester's participant data from the participants collection
+              const requestParticipantRef = doc(roomRef, 'participants', data.requester); // Reference to the requester's document
+              const requestParticipantData = (await getDoc(requestParticipantRef)).data();
+
+              // Update the remote media controls for the requester
+              setRemoteMedias((prev) => ({
+                ...prev,
+                [data.requester]: {
+                  mic: requestParticipantData?.mic,
+                  camera: requestParticipantData?.camera,
+                },
+              }));
+
+              // Initialize the requester's remote stream
+              setRemoteStreams((prev) => ({
+                ...prev,
+                [data.requester]: new MediaStream([]),
+              }));
+
+              // Initialize PeerConnection for the requester
+              const peerConnection = new RTCPeerConnection(servers);
+
+              // Get the connection document for the current user and the requester
+              const connectionRef = doc(roomRef, 'connections', `${data.requester}-${createdUserName}`);
+              const answerCandidatesCollection = collection(connectionRef, 'answerCandidates'); // Create the answerCandidates sub-collection
+
+              // Add current user's local stream tracks to the PeerConnection
+              localStream?.getTracks().forEach((track) => {
+                peerConnection.addTrack(track, localStream);
+              });
+
+              // Handle incoming tracks from the requester’s MediaStream
+              peerConnection.addEventListener('track', (event) => {
+                event.streams[0].getTracks().forEach((track) => {
+                  const remoteStream = remoteStreams[data.requester] ?? new MediaStream([]);
+                  remoteStream.addTrack(track);
+
+                  // Store the remote stream
+                  setRemoteStreams((prev) => ({
+                    ...prev,
+                    [data.requester]: remoteStream,
+                  }));
+                });
+              });
+
+              // Handle ICE candidates and store them in the Firestore collection
+              peerConnection.addEventListener('icecandidate', (event) => {
+                if (event.candidate) {
+                  addDoc(answerCandidatesCollection, event.candidate.toJSON());
+                }
+              });
+
+              // Get the connection data (offer) from Firestore
+              const connectionData = (await getDoc(connectionRef)).data();
+              const offer = connectionData?.offer;
+
+              // Set the offer as the remote description
+              await peerConnection.setRemoteDescription(offer);
+
+              // Create an answer and set it as the local description
+              const answerDescription = await peerConnection.createAnswer();
+              await peerConnection.setLocalDescription(answerDescription);
+
+              // Send the answer to Firestore
+              const answer = {
+                type: answerDescription.type,
+                sdp: answerDescription.sdp,
+              };
+              await updateDoc(connectionRef, { answer });
+
+              // Listen for ICE candidates from the offerCandidates collection and add to the PeerConnection
+              const offerCandidatesCollection = collection(connectionRef, 'offerCandidates');
+              onSnapshot(offerCandidatesCollection, (iceCandidateSnapshot) => {
+                iceCandidateSnapshot.docChanges().forEach(async (iceCandidateChange) => {
+                  if (iceCandidateChange.type === 'added') {
+                    await peerConnection.addIceCandidate(
+                      new RTCIceCandidate(iceCandidateChange.doc.data())
+                    );
+                  }
+                });
+              });
+
+              // Store the peer connection for later use
+              setPeerConnections((prev) => ({
+                ...prev,
+                [data.requester]: peerConnection,
+              }));
+            }
+          }
+        });
+      });
+
+      // Return the unsubscribe function to stop listening for updates when needed
+      return unsubscribeCandidates;
+    },
+    [localStream, remoteStreams, setPeerConnections, setRemoteMedias, setRemoteStreams]
+  );
+
 
   return {
     localStream,
     remoteStreams,
-    startCall,
     answerCall,
     endCall,
-    switchCamera,
-    setCallId,
-    callId,
-    startLocalStream,
+    openMediaDevices,
   }
 }
 
