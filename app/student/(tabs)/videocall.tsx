@@ -1,3 +1,4 @@
+import { auth } from '@/config'
 import useGc from '@/hooks/useGc'
 import React, { useEffect, useState } from 'react'
 import { Button, StyleSheet, Text, TextInput, View } from 'react-native'
@@ -11,23 +12,26 @@ const WebRTCView = () => {
     startLocalStream()
   }, [])
 
+  const currentUser = auth?.currentUser
+
   // Create a new room
   const handleCreateRoom = async () => {
-    await createCall(roomId, ['rmAPBvcPvgdskiqknhqtLV7dCM63'])
+    await createCall(roomId, [
+      'rmAPBvcPvgdskiqknhqtLV7dCM63',
+      'Z4fokIeso3VNSbZzaLrhYt3RZ2p2',
+    ])
     console.log(`Room created with ID: ${roomId}`)
   }
-
   // Join an existing room
   const handleJoinRoom = async () => {
     if (roomId && localStream) {
-      await joinCall(roomId, ['rmAPBvcPvgdskiqknhqtLV7dCM63'])
+      await joinCall(roomId, currentUser?.uid)
       console.log('click')
     } else {
       console.log('Room ID or local stream is missing')
     }
   }
 
-  console.log('remoteStreams', remoteStreams.length)
   return (
     <View style={styles.container}>
       {/* Room Controls */}
@@ -53,7 +57,7 @@ const WebRTCView = () => {
       {Object.values(remoteStreams).map((stream, index) => (
         <>
           <View>
-            <Text className="text-lg">stream.toUrl</Text>
+            <Text className="text-lg">{stream.toURL()}</Text>
           </View>
 
           <RTCView

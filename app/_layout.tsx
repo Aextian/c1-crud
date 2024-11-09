@@ -11,7 +11,8 @@ const _layout = () => {
   useEffect(() => {
     if (loading) return
     const inAuthGroup = segments[0] == 'auth'
-    if (currentUser && !inAuthGroup) {
+    // if (currentUser && !inAuthGroup) {
+    if (currentUser) {
       router.replace('/student/videocall')
       // router.replace('/teacher/messages/group')
     } else if (!currentUser && !inAuthGroup) {

@@ -183,12 +183,13 @@ const useGc = () => {
       // A Map to manage peer connections for each user
       const peerConnections = new Map()
 
-      // Firestore references
+      // Firestore reference to the main call document
       const callDoc = doc(collection(db, 'rooms'), callId)
 
       // Loop through each participant (other than the current user) to set up connections
       for (const participantId of participants) {
-        if (participantId === currentUser?.uid) continue // Skip the current user
+        // Skip the current user
+        if (participantId === currentUser?.uid) continue
 
         // Initialize a new peer connection for this participant
         const pc = new RTCPeerConnection(servers)
@@ -230,18 +231,22 @@ const useGc = () => {
         const offerDescription = await pc.createOffer()
         await pc.setLocalDescription(offerDescription)
 
-        // Save offer to Firestore
-        await setDoc(callDoc, {
-          [`offer_${participantId}`]: {
-            sdp: offerDescription.sdp,
-            type: offerDescription.type,
+        // Save offer to Firestore for this participant with unique field
+        await setDoc(
+          callDoc,
+          {
+            [`offer_${participantId}`]: {
+              sdp: offerDescription.sdp,
+              type: offerDescription.type,
+            },
+            from: currentUser?.uid,
+            to: participantId,
+            status: 'incoming', // 'incoming' means awaiting answer
           },
-          from: currentUser?.uid,
-          to: participantId,
-          status: 'incoming',
-        })
+          { merge: true },
+        ) // Use merge: true to ensure existing data is not overwritten
 
-        // Listen for answer for this participant
+        // Listen for the answer from this participant in Firestore
         onSnapshot(callDoc, (snapshot) => {
           const data = snapshot.data()
           if (data?.[`answer_${participantId}`] && !pc.remoteDescription) {
@@ -276,45 +281,50 @@ const useGc = () => {
     }
   }
 
-  // const joinCall = async (callId: string) => {
+  // const joinCall = async (callId, participantId) => {
   //   try {
-  //     // Firestore references
-  //     const callDoc = doc(collection(db, 'rooms'), callId)
-  //     const offerCandidates = collection(callDoc, 'offerCandidates')
-  //     const answerCandidates = collection(callDoc, 'answerCandidates')
-
-  //     // Check if localStream is initialized
   //     if (!localStream) {
   //       console.error('Local stream is not available')
   //       return
   //     }
 
-  //     // Initialize peer connection only if not already initialized
-  //     if (!pc.current) {
-  //       pc.current = new RTCPeerConnection(servers)
-  //     }
+  //     // Firestore reference to the call document
+  //     const callDoc = doc(collection(db, 'rooms'), callId)
 
-  //     // Add local stream tracks
-  //     localStream.getTracks().forEach((track) => {
-  //       pc.current?.addTrack(track, localStream)
-  //     })
+  //     // Initialize a single peer connection for the participant you are joining
+  //     const pc = new RTCPeerConnection(servers)
+
+  //     // Clear existing senders and add local stream tracks
+  //     pc.getSenders().forEach(
+  //       (sender) => sender.track && pc.removeTrack(sender),
+  //     )
+  //     localStream
+  //       .getTracks()
+  //       .forEach((track) => pc.addTrack(track, localStream))
+
+  //     // Firestore references for ICE candidates for the current participant
+  //     const offerCandidates = collection(
+  //       callDoc,
+  //       `offerCandidates_${participantId}`,
+  //     )
+  //     const answerCandidates = collection(
+  //       callDoc,
+  //       `answerCandidates_${participantId}`,
+  //     )
 
   //     // Handle ICE candidates
-  //     pc.current.addEventListener('icecandidate', (e) => {
+  //     pc.addEventListener('icecandidate', (e) => {
   //       if (e.candidate) {
   //         setDoc(doc(answerCandidates), e.candidate.toJSON())
-  //       } else {
-  //         console.log('Got final candidate!')
   //       }
   //     })
 
-  //     // Stream remote tracks
-  //     pc.current.addEventListener('track', (event) => {
-  //       setRemoteStream(event.streams[0])
-  //       console.log('Remote stream added:', event.streams[0])
+  //     // Handle remote track
+  //     pc.addEventListener('track', (event) => {
+  //       setRemoteStreamForUser(participantId, event.streams[0])
   //     })
 
-  //     // Fetch and set remote offer description
+  //     // Fetch call data from Firestore
   //     const docSnapshot = await getDoc(callDoc)
   //     if (!docSnapshot.exists()) {
   //       console.error('No such document!')
@@ -322,167 +332,159 @@ const useGc = () => {
   //     }
 
   //     const callData = docSnapshot.data()
-  //     if (callData.offer) {
-  //       await pc.current.setRemoteDescription(
-  //         new RTCSessionDescription(callData.offer),
+
+  //     // Check if there is an offer for this participant
+  //     if (callData[`offer_${participantId}`]) {
+  //       const offerDescription = new RTCSessionDescription(
+  //         callData[`offer_${participantId}`],
   //       )
+  //       await pc.setRemoteDescription(offerDescription)
+
+  //       // Create and set local answer description
+  //       const answerDescription = await pc.createAnswer()
+  //       await pc.setLocalDescription(answerDescription)
+
+  //       // Save answer to Firestore for the specific participant
+  //       await updateDoc(callDoc, {
+  //         [`answer_${participantId}`]: {
+  //           sdp: answerDescription.sdp,
+  //           type: answerDescription.type,
+  //         },
+  //       })
   //     }
 
-  //     const conversationDoc = doc(db, 'conversations', callId)
-  //     const docSnap = await getDoc(conversationDoc) // Await the getDoc call
-  //     let userCallId = ''
-  //     if (docSnap.exists()) {
-  //       const usersId = docSnap.data().users
-  //       userCallId = usersId.find((id: string) => id !== currentUser?.uid)
-  //     }
-
-  //     // Create and send the answer
-  //     const answerDescription = await pc.current.createAnswer()
-  //     await pc.current.setLocalDescription(answerDescription)
-
-  //     await updateDoc(callDoc, {
-  //       answer: { sdp: answerDescription.sdp, type: answerDescription.type },
-  //     })
-
-  //     // Listen for ICE candidates from the offerer
+  //     // Listen for ICE candidates from the offerer (to add to the peer connection)
   //     const unsubscribeOfferCandidates = onSnapshot(
   //       offerCandidates,
   //       (snapshot) => {
   //         snapshot.docChanges().forEach((change) => {
   //           if (change.type === 'added') {
   //             const candidate = new RTCIceCandidate(change.doc.data())
-  //             pc.current?.addIceCandidate(candidate)
+  //             pc.addIceCandidate(candidate).catch((error) =>
+  //               console.error('Error adding ICE candidate:', error),
+  //             )
   //           }
   //         })
   //       },
   //     )
 
-  //     // Listen for call status changes
-  //     const unsubscribeCallStatus = onSnapshot(callDoc, (snapshot) => {
-  //       const data = snapshot.data()
-  //       if (!data) {
-  //         router.push(`/student/messages/conversations/${callId}`)
-  //       }
-  //     })
-
-  //     // Return a cleanup function to unsubscribe on component unmount
+  //     // Return cleanup function to close connection and unsubscribe listeners
   //     return () => {
+  //       pc.close()
   //       unsubscribeOfferCandidates()
-  //       unsubscribeCallStatus() // Clean up the status listener
-  //       if (pc.current) {
-  //         pc.current.close()
-  //         pc.current = null // Set to null after closing
-  //       }
   //     }
   //   } catch (error) {
-  //     console.error('Error answering call:', error)
+  //     console.error('Error joining call:', error)
   //   }
   // }
 
-  const joinCall = async (callId, participants) => {
+  const joinCall = async (callId, participantId) => {
     try {
       if (!localStream) {
         console.error('Local stream is not available')
         return
       }
 
-      // A Map to manage peer connections for each user
-      const peerConnections = new Map()
-
-      // Firestore references
+      // Firestore reference to the call document
       const callDoc = doc(collection(db, 'rooms'), callId)
 
-      // Loop through each participant to set up connections
-      for (const participantId of participants) {
-        // if (participantId === currentUser?.uid) continue // Skip the current user
+      // Initialize a single peer connection for the participant joining
+      const pc = new RTCPeerConnection(servers)
 
-        // Initialize a new peer connection for this participant
-        const pc = new RTCPeerConnection(servers)
-        peerConnections.set(participantId, pc)
+      // Clear existing senders and add local stream tracks
+      pc.getSenders().forEach(
+        (sender) => sender.track && pc.removeTrack(sender),
+      )
+      localStream
+        .getTracks()
+        .forEach((track) => pc.addTrack(track, localStream))
 
-        // Clear existing senders and add local stream tracks
-        pc.getSenders().forEach(
-          (sender) => sender.track && pc.removeTrack(sender),
-        )
-        localStream
-          .getTracks()
-          .forEach((track) => pc.addTrack(track, localStream))
+      // Firestore references for ICE candidates for this specific participant
+      const offerCandidates = collection(
+        callDoc,
+        `offerCandidates_${participantId}`,
+      )
+      const answerCandidates = collection(
+        callDoc,
+        `answerCandidates_${participantId}`,
+      )
 
-        // Firestore candidate collections for this participant
-        const offerCandidates = collection(
-          callDoc,
-          `offerCandidates_${participantId}`,
-        )
-        const answerCandidates = collection(
-          callDoc,
-          `answerCandidates_${participantId}`,
-        )
-
-        // Handle ICE candidates
-        pc.addEventListener('icecandidate', (e) => {
-          if (e.candidate) {
-            setDoc(doc(answerCandidates), e.candidate.toJSON())
-          }
-        })
-
-        // Handle remote track
-        pc.addEventListener('track', (event) => {
-          setRemoteStreamForUser(participantId, event.streams[0])
-        })
-
-        // Listen for the offer for this participant
-        const docSnapshot = await getDoc(callDoc)
-        if (!docSnapshot.exists()) {
-          console.error('No such document!')
-          return
+      // Handle ICE candidates (sending this participant's ICE candidates to Firestore)
+      pc.addEventListener('icecandidate', (e) => {
+        if (e.candidate) {
+          setDoc(doc(answerCandidates), e.candidate.toJSON())
         }
+      })
 
-        const callData = docSnapshot.data()
-        if (callData[`offer_${participantId}`]) {
-          const offerDescription = new RTCSessionDescription(
-            callData[`offer_${participantId}`],
-          )
-          await pc.setRemoteDescription(offerDescription)
+      // Handle remote track (incoming stream from the caller and other participants)
+      pc.addEventListener('track', (event) => {
+        setRemoteStreamForUser(participantId, event.streams[0])
+      })
 
-          // Create and set local answer description
-          const answerDescription = await pc.createAnswer()
-          await pc.setLocalDescription(answerDescription)
-
-          // Save answer to Firestore
-          await updateDoc(callDoc, {
-            [`answer_${participantId}`]: {
-              sdp: answerDescription.sdp,
-              type: answerDescription.type,
-            },
-          })
-        }
-
-        // Listen for ICE candidates from the offerer
-        const unsubscribeOfferCandidates = onSnapshot(
-          offerCandidates,
-          (snapshot) => {
-            snapshot.docChanges().forEach((change) => {
-              if (change.type === 'added') {
-                const candidate = new RTCIceCandidate(change.doc.data())
-                pc.addIceCandidate(candidate).catch((error) =>
-                  console.error('Error adding ICE candidate:', error),
-                )
-              }
-            })
-          },
-        )
-
-        // Store the unsubscribe function for cleanup later
-        peerConnections.set(participantId, { pc, unsubscribeOfferCandidates })
+      // Fetch call data from Firestore
+      const docSnapshot = await getDoc(callDoc)
+      if (!docSnapshot.exists()) {
+        console.error('No such document!')
+        return
       }
 
-      // Return cleanup function to close connections and unsubscribe listeners
-      return () => {
-        peerConnections.forEach(({ pc, unsubscribeOfferCandidates }) => {
-          pc.close()
-          unsubscribeOfferCandidates()
+      const callData = docSnapshot.data()
+
+      // Check if there is an offer for this participant (the callee)
+      if (callData[`offer_${participantId}`]) {
+        const offerDescription = new RTCSessionDescription(
+          callData[`offer_${participantId}`],
+        )
+        await pc.setRemoteDescription(offerDescription)
+
+        // Create and set local answer description
+        const answerDescription = await pc.createAnswer()
+        await pc.setLocalDescription(answerDescription)
+
+        // Save the answer to Firestore for the specific participant
+        await updateDoc(callDoc, {
+          [`answer_${participantId}`]: {
+            sdp: answerDescription.sdp,
+            type: answerDescription.type,
+          },
         })
-        peerConnections.clear()
+      }
+
+      // Listen for ICE candidates from the offerer (caller) to add to the peer connection
+      const unsubscribeOfferCandidates = onSnapshot(
+        offerCandidates,
+        (snapshot) => {
+          snapshot.docChanges().forEach((change) => {
+            if (change.type === 'added') {
+              const candidate = new RTCIceCandidate(change.doc.data())
+              pc.addIceCandidate(candidate).catch((error) =>
+                console.error('Error adding ICE candidate:', error),
+              )
+            }
+          })
+        },
+      )
+
+      // Listen for ICE candidates from answerers (other participants who answered the call)
+      const unsubscribeAnswerCandidates = onSnapshot(
+        answerCandidates,
+        (snapshot) => {
+          snapshot.docChanges().forEach((change) => {
+            if (change.type === 'added') {
+              const candidate = new RTCIceCandidate(change.doc.data())
+              pc.addIceCandidate(candidate).catch((error) =>
+                console.error('Error adding ICE candidate:', error),
+              )
+            }
+          })
+        },
+      )
+
+      // Return cleanup function to close connection and unsubscribe listeners
+      return () => {
+        pc.close()
+        unsubscribeOfferCandidates()
+        unsubscribeAnswerCandidates() // Cleanup for answer candidates
       }
     } catch (error) {
       console.error('Error joining call:', error)
