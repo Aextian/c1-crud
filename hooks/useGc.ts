@@ -1,5 +1,6 @@
 import { useRouter } from 'expo-router'
 import {
+  arrayUnion,
   collection,
   doc,
   getDoc,
@@ -27,7 +28,7 @@ const useGc = () => {
   const router = useRouter()
   const pc = useRef<RTCPeerConnection | null>(new RTCPeerConnection({}))
 
-  const servers = {
+  const STUN_SERVERS = {
     iceServers: [
       {
         urls: [
@@ -61,355 +62,230 @@ const useGc = () => {
     }
   }
 
-  // Declare outside the functions
-  const peerConnections = new Map()
+  const createCall = async (callId) => {
+    const userId = currentUser?.uid
 
-  const createCall = async (callId, participants) => {
-    try {
-      if (!localStream) {
-        console.error('Local stream is not available')
-        return
-      }
-
-      const peerConnections = new Map()
-      const callDoc = doc(collection(db, 'rooms'), callId)
-
-      await setDoc(callDoc, { participants }, { merge: true })
-
-      for (const participantId of participants) {
-        if (participantId === currentUser?.uid) continue
-
-        const pc = new RTCPeerConnection(servers)
-        peerConnections.set(participantId, pc)
-
-        // Add tracks to the connection
-        localStream
-          .getTracks()
-          .forEach((track) => pc.addTrack(track, localStream))
-
-        // Handle ICE candidates
-        const offerCandidates = collection(
-          callDoc,
-          `offerCandidates_${participantId}`,
-        )
-        pc.addEventListener('icecandidate', (event) => {
-          if (event.candidate) {
-            setDoc(doc(offerCandidates), event.candidate.toJSON())
-          }
-        })
-
-        // Track event for remote streams
-        pc.addEventListener('track', (event) => {
-          setRemoteStreamForUser(participantId, event.streams[0])
-        })
-
-        // Create offer and set local description
-        const offerDescription = await pc.createOffer()
-        await pc.setLocalDescription(offerDescription)
-
-        // Save offer to Firestore
-        await setDoc(
-          callDoc,
-          {
-            [`offer_${participantId}`]: {
-              sdp: offerDescription.sdp,
-              type: offerDescription.type,
-            },
-            from: currentUser?.uid,
-          },
-          { merge: true },
-        )
-
-        // Listen for answer from this participant
-        onSnapshot(callDoc, (snapshot) => {
-          const data = snapshot.data()
-          if (data?.[`answer_${participantId}`] && !pc.remoteDescription) {
-            const answerDescription = new RTCSessionDescription(
-              data[`answer_${participantId}`],
-            )
-            pc.setRemoteDescription(answerDescription)
-          }
-        })
-
-        // Listen for ICE candidates from answerers
-        const answerCandidates = collection(
-          callDoc,
-          `answerCandidates_${participantId}`,
-        )
-        onSnapshot(answerCandidates, (snapshot) => {
-          snapshot.docChanges().forEach((change) => {
-            if (change.type === 'added') {
-              const candidate = new RTCIceCandidate(change.doc.data())
-              pc.addIceCandidate(candidate).catch((error) =>
-                console.error('Error adding ICE candidate:', error),
-              )
-            }
-          })
-        })
-      }
-
-      return () => {
-        peerConnections.forEach((pc) => pc.close())
-      }
-    } catch (error) {
-      console.error('Error starting group call:', error)
+    if (!localStream) {
+      console.error('Local stream is not available')
+      return
     }
-  }
 
-  const joinCall = async (callId, participantId) => {
-    try {
-      if (!localStream) {
-        console.error('Local stream is not available')
+    const callDoc = doc(collection(db, 'rooms'), callId)
+    const pc = new RTCPeerConnection(STUN_SERVERS)
+
+    // Add the local stream to the peer connection
+    localStream.getTracks().forEach((track) => pc.addTrack(track, localStream))
+
+    // Listen for remote streams
+    pc.addEventListener('track', (event) => {
+      setRemoteStreamForUser(userId, event.streams[0]) // Handle remote stream
+    })
+
+    // Listen for ICE candidates and add them to Firestore under the participant's respective candidate array
+    pc.addEventListener('icecandidate', (event) => {
+      if (event.candidate) {
+        const candidateData = event.candidate.toJSON()
+        // Add to offerCandidates for the offerer
+        updateDoc(callDoc, {
+          [`signaling.offerCandidates.${userId}`]: arrayUnion(candidateData),
+        })
+      }
+    })
+
+    // Create an offer and set it as the local description (for User 1)
+    const offerDescription = await pc.createOffer()
+    await pc.setLocalDescription(offerDescription)
+
+    // Add the new participant and update Firestore with the offer
+    await setDoc(callDoc, {
+      participants: {
+        [String(userId)]: true,
+      },
+      offererId: userId,
+      signaling: {
+        offer: offerDescription.sdp,
+      },
+    })
+
+    // Listen for updates to the call document in Firestore
+    const unsubscribe = onSnapshot(callDoc, async (snapshot) => {
+      const updatedRoomData = snapshot.data()
+      const participants = updatedRoomData?.participants
+
+      if (!updatedRoomData) {
+        console.error('Room data is not available')
         return
       }
 
-      const callDoc = doc(collection(db, 'rooms'), callId)
-      const pc = new RTCPeerConnection(servers)
+      if (!participants || typeof participants !== 'object') {
+        console.error('Participants is not an object or is undefined')
+        return
+      }
 
-      // Add local stream to the connection
-      localStream
-        .getTracks()
-        .forEach((track) => pc.addTrack(track, localStream))
+      // Loop through the participant IDs (keys of the participants object)
+      Object.keys(participants).forEach(async (participantId) => {
+        if (participantId !== userId && pc) {
+          console.log(participantId, 'participantId')
 
-      const offerCandidates = collection(
-        callDoc,
-        `offerCandidates_${participantId}`,
-      )
-      const answerCandidates = collection(
-        callDoc,
-        `answerCandidates_${participantId}`,
-      )
+          // Look for the answer for this participant (e.g., answer_2, answer_3, etc.)
+          const answerDescription =
+            updatedRoomData.signaling[`answer_${participantId}`]
 
-      // Queue for candidates if remote description is not set
-      const candidateQueue = []
+          if (answerDescription && !pc.remoteDescription) {
+            try {
+              const answer = new RTCSessionDescription({
+                type: 'answer',
+                sdp: answerDescription,
+              })
 
-      pc.addEventListener('icecandidate', (e) => {
-        if (e.candidate) {
-          // If remote description is not set, queue the candidate
-          if (pc.remoteDescription) {
-            pc.addIceCandidate(e.candidate).catch((error) => {
-              console.error('Error adding ICE candidate:', error)
-            })
-          } else {
-            candidateQueue.push(e.candidate) // Queue the candidate
+              // Ensure remote description is set only once the offer has been processed
+              if (
+                pc.remoteDescription === null ||
+                pc.remoteDescription.type === 'offer'
+              ) {
+                await pc.setRemoteDescription(answer)
+                console.log(
+                  `Remote description set for participant ${participantId}`,
+                )
+              } else {
+                console.error(`Unable to set remote description: Invalid state`)
+              }
+            } catch (error) {
+              console.error('Error setting remote description:', error)
+            }
           }
         }
       })
 
-      pc.addEventListener('track', (event) => {
-        setRemoteStreamForUser(participantId, event.streams[0])
+      // Handle ICE candidates from other participants (answerCandidates)
+      if (updatedRoomData.signaling?.answerCandidates) {
+        Object.entries(updatedRoomData.signaling.answerCandidates).forEach(
+          async ([participantId, candidates]) => {
+            if (participantId !== userId) {
+              // Add ICE candidates from other participants (not the offerer)
+              for (const candidate of candidates) {
+                try {
+                  await pc.addIceCandidate(new RTCIceCandidate(candidate))
+                } catch (error) {
+                  console.error('Error adding ICE candidate:', error)
+                }
+              }
+            }
+          },
+        )
+      }
+    })
+
+    return unsubscribe
+  }
+
+  const joinCall = async (callId) => {
+    const userId = currentUser?.uid
+
+    if (!localStream) {
+      console.error('Local stream is not available')
+      return
+    }
+
+    const callDoc = doc(collection(db, 'rooms'), callId)
+    const pc = new RTCPeerConnection(STUN_SERVERS)
+
+    // Add the local stream to the peer connection
+    localStream.getTracks().forEach((track) => pc.addTrack(track, localStream))
+
+    // Listen for remote streams
+    pc.addEventListener('track', (event) => {
+      setRemoteStreamForUser(userId, event.streams[0]) // Handle remote stream
+    })
+
+    // Listen for ICE candidates and add them to Firestore under the participant's respective candidate array
+    pc.addEventListener('icecandidate', (event) => {
+      if (event.candidate) {
+        const candidateData = event.candidate.toJSON()
+        // Add to answerCandidates for the answerer
+        updateDoc(callDoc, {
+          [`signaling.answerCandidates.${userId}`]: arrayUnion(candidateData),
+        })
+      }
+    })
+
+    // Get the call document snapshot to check for the offer
+    const snapshot = await getDoc(callDoc)
+    const updatedRoomData = snapshot.data()
+
+    if (!updatedRoomData) {
+      console.error('Room data is not available')
+      return
+    }
+
+    // Check if there's a new offer from the caller (offerer)
+    if (updatedRoomData.signaling?.offer && !pc.remoteDescription) {
+      const offer = new RTCSessionDescription({
+        type: 'offer',
+        sdp: updatedRoomData.signaling.offer,
       })
 
-      const docSnapshot = await getDoc(callDoc)
-      if (!docSnapshot.exists()) {
-        console.error('No such document!')
+      try {
+        // Set remote description only if it's in a proper state
+        await pc.setRemoteDescription(offer)
+      } catch (error) {
+        console.error('Error setting remote offer:', error)
+      }
+    }
+
+    // Once remote description is set, create the answer
+    const answerDescription = await pc.createAnswer()
+    await pc.setLocalDescription(answerDescription)
+
+    // Update the Firestore with the answer
+    await updateDoc(callDoc, {
+      // Merge the new participant without overwriting the existing ones
+      participants: {
+        [String(userId)]: true,
+        ...updatedRoomData.participants, // Keep existing participants
+      },
+      [`signaling.answer_${userId}`]: answerDescription.sdp,
+    })
+
+    // Listen for updates to the call document in Firestore
+    const unsubscribe = onSnapshot(callDoc, async (snapshot) => {
+      const updatedRoomData = snapshot.data()
+
+      if (!updatedRoomData) {
+        console.error('Room data is not available')
         return
       }
 
-      const callData = docSnapshot.data()
-
-      // Process each other participant
-      for (const otherParticipantId of callData.participants) {
-        if (participantId === otherParticipantId) continue
-
-        const offerCandidates = collection(
-          callDoc,
-          `offerCandidates_${otherParticipantId}`,
-        )
-        const answerCandidates = collection(
-          callDoc,
-          `answerCandidates_${otherParticipantId}`,
-        )
-
-        const otherPc = new RTCPeerConnection(servers)
-        peerConnections.set(otherParticipantId, otherPc)
-
-        // Add local stream to the new peer connection
-        localStream
-          .getTracks()
-          .forEach((track) => otherPc.addTrack(track, localStream))
-
-        // Handle track event for the other peer
-        otherPc.addEventListener('track', (event) => {
-          console.log('Track event received for', otherParticipantId)
-          if (event.streams && event.streams.length > 0) {
-            console.log('Remote stream:', event.streams[0])
-            setRemoteStreamForUser(otherParticipantId, event.streams[0])
-          } else {
-            console.error('No streams found in track event')
-          }
-        })
-
-        otherPc.addEventListener('iceconnectionstatechange', () => {
-          console.log('ICE Connection State:', otherPc.iceConnectionState)
-          if (otherPc.iceConnectionState === 'connected') {
-            console.log('Connection established, waiting for remote stream...')
-          } else if (otherPc.iceConnectionState === 'failed') {
-            console.error('ICE connection failed')
-          }
-        })
-
-        otherPc.addEventListener('icecandidate', (e) => {
-          if (e.candidate) {
-            console.log('ICE candidate for', otherParticipantId, e.candidate)
-          } else {
-            console.log('ICE candidate gathering completed')
-          }
-        })
-
-        console.log(
-          'Peer connection status for',
-          otherParticipantId,
-          otherPc.connectionState,
-        )
-
-        // Listen for remote answer and set remote description
-        onSnapshot(callDoc, (snapshot) => {
-          const data = snapshot.data()
-          console.log('Current remote description:', otherPc.remoteDescription)
-          console.log('Current signaling state:', otherPc.signalingState)
-
-          // Check if answer data exists for the other participant
-          if (data?.[`answer_${otherParticipantId}`]) {
-            const answerDescription = new RTCSessionDescription(
-              data[`answer_${otherParticipantId}`],
-            )
-
-            // Only set remote description if it's not already set
-            if (!otherPc.remoteDescription) {
-              console.log('Setting remote description for:', otherParticipantId)
-
-              // If signaling state is "have-remote-offer" or "have-local-pranswer", set the remote description
-              if (
-                otherPc.signalingState === 'have-remote-offer' ||
-                otherPc.signalingState === 'have-local-pranswer'
-              ) {
-                otherPc
-                  .setRemoteDescription(answerDescription)
-                  .then(() => {
-                    console.log(
-                      'Remote description set successfully for',
-                      otherParticipantId,
-                    )
-
-                    // Add any queued candidates after setting remote description
-                    candidateQueue.forEach((candidate) => {
-                      otherPc.addIceCandidate(candidate).catch((error) => {
-                        console.error(
-                          'Error adding queued ICE candidate:',
-                          error,
-                        )
-                      })
-                    })
-
-                    // Clear the candidate queue after processing
-                    candidateQueue.length = 0
-                  })
-                  .catch((error) => {
-                    console.error(
-                      'Error setting remote description for',
-                      otherParticipantId,
-                      error,
-                    )
-                  })
-              } else {
-                console.log(
-                  'Cannot set remote description yet, signaling state:',
-                  otherPc.signalingState,
-                )
-                // Handle case where signaling state is not ready (waiting for offer or other condition)
-                // If needed, you could add logic to recheck periodically or handle state changes.
-              }
-            } else {
-              console.log(
-                'Remote description already set for',
-                otherParticipantId,
-              )
+      // Handle ICE candidates from offerCandidates (from the offerer)
+      if (updatedRoomData.signaling?.offerCandidates) {
+        // Ensure candidates are added only once the remote description is set
+        updatedRoomData.signaling.offerCandidates.forEach(
+          async (candidateData) => {
+            try {
+              await pc.addIceCandidate(new RTCIceCandidate(candidateData))
+            } catch (error) {
+              console.error('Error adding offer candidate:', error)
             }
-          } else {
-            console.log('Answer for participant not available in snapshot data')
-          }
-        })
-
-        // Add ICE candidates from the answerCandidates collection
-        onSnapshot(answerCandidates, (snapshot) => {
-          snapshot.docChanges().forEach((change) => {
-            if (change.type === 'added') {
-              const candidate = new RTCIceCandidate(change.doc.data())
-              otherPc.addIceCandidate(candidate).catch((error) => {
-                console.error('Error adding ICE candidate:', error)
-              })
-            }
-          })
-        })
-
-        // Listen for incoming offer ICE candidates
-        onSnapshot(offerCandidates, (snapshot) => {
-          snapshot.docChanges().forEach((change) => {
-            if (change.type === 'added') {
-              const candidate = new RTCIceCandidate(change.doc.data())
-
-              // If remote description is set, add ICE candidate
-              if (otherPc.remoteDescription) {
-                otherPc.addIceCandidate(candidate).catch((error) => {
-                  console.error('Error adding ICE candidate:', error)
-                })
-              } else {
-                // Otherwise, queue the candidate
-                candidateQueue.push(candidate)
-              }
-            }
-          })
-        })
-      }
-
-      // Handle offer from the current participant
-      if (callData[`offer_${participantId}`]) {
-        const offerDescription = new RTCSessionDescription(
-          callData[`offer_${participantId}`],
-        )
-        await pc.setRemoteDescription(offerDescription)
-
-        const answerDescription = await pc.createAnswer()
-        await pc.setLocalDescription(answerDescription)
-
-        await updateDoc(callDoc, {
-          [`answer_${participantId}`]: {
-            sdp: answerDescription.sdp,
-            type: answerDescription.type,
           },
-        })
+        )
       }
 
-      // Handle ICE candidates after the remote description is set
-      onSnapshot(offerCandidates, (snapshot) => {
-        snapshot.docChanges().forEach((change) => {
-          if (change.type === 'added') {
-            const candidate = new RTCIceCandidate(change.doc.data())
-            pc.addIceCandidate(candidate).catch((error) =>
-              console.error('Error adding ICE candidate:', error),
-            )
-          }
-        })
-      })
-
-      onSnapshot(answerCandidates, (snapshot) => {
-        snapshot.docChanges().forEach((change) => {
-          if (change.type === 'added') {
-            const candidate = new RTCIceCandidate(change.doc.data())
-            pc.addIceCandidate(candidate).catch((error) =>
-              console.error('Error adding ICE candidate:', error),
-            )
-          }
-        })
-      })
-
-      return () => {
-        pc.close()
+      // Handle ICE candidates from answerCandidates (from the answerer)
+      if (updatedRoomData.signaling?.answerCandidates) {
+        // Ensure candidates are added only once the remote description is set
+        updatedRoomData.signaling.answerCandidates.forEach(
+          async (candidateData) => {
+            try {
+              await pc.addIceCandidate(new RTCIceCandidate(candidateData))
+            } catch (error) {
+              console.error('Error adding answer candidate:', error)
+            }
+          },
+        )
       }
-    } catch (error) {
-      console.error('Error joining call:', error)
-    }
+    })
+
+    return unsubscribe
   }
 
   const setRemoteStreamForUser = (userId, stream) => {

@@ -16,16 +16,13 @@ const WebRTCView = () => {
 
   // Create a new room
   const handleCreateRoom = async () => {
-    await createCall(roomId, [
-      'rmAPBvcPvgdskiqknhqtLV7dCM63',
-      'Z4fokIeso3VNSbZzaLrhYt3RZ2p2',
-    ])
+    await createCall(roomId)
     console.log(`Room created with ID: ${roomId}`)
   }
   // Join an existing room
   const handleJoinRoom = async () => {
     if (roomId && localStream) {
-      await joinCall(roomId, currentUser?.uid)
+      await joinCall(roomId)
       console.log('click')
     } else {
       console.log('Room ID or local stream is missing')
