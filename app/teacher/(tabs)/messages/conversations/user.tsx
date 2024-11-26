@@ -1,11 +1,13 @@
+import CustomInputToolbar from '@/components/CustomeToolbar'
 import { auth, db } from '@/config'
 import useHideTabBarOnFocus from '@/hooks/useHideTabBarOnFocus'
 import useMessages from '@/hooks/useMessages'
 import { Ionicons } from '@expo/vector-icons'
+// import * as DocumentPicker from 'expo-document-picker'
 import { Stack, useLocalSearchParams, useRouter } from 'expo-router'
 import { DocumentData, doc, getDoc } from 'firebase/firestore'
 import React, { useEffect, useState } from 'react'
-import { StyleSheet, TouchableOpacity } from 'react-native'
+import { TouchableOpacity } from 'react-native'
 import { GiftedChat } from 'react-native-gifted-chat'
 
 export default function userConversation() {
@@ -42,6 +44,59 @@ export default function userConversation() {
 
   const router = useRouter()
 
+  // const uploadFileToFirebase = async (fileUri) => {
+  //   try {
+  //     const response = await fetch(fileUri)
+  //     const blob = await response.blob()
+  //     const fileName = fileUri.split('/').pop() // Get file name from URI
+  //     const storageRef = ref(storage, `uploads/${fileName}`)
+
+  //     // Upload the file
+  //     await uploadBytes(storageRef, blob)
+
+  //     // Get the file's download URL
+  //     const downloadURL = await getDownloadURL(storageRef)
+  //     return downloadURL
+  //   } catch (error) {
+  //     console.error('File upload error:', error)
+  //     return null
+  //   }
+  // }
+
+  // const pickFile = async () => {
+  //   try {
+  //     const result = await DocumentPicker.getDocumentAsync({
+  //       type: 'application/pdf', // Specify file type (e.g., PDFs)
+  //       copyToCacheDirectory: true,
+  //     })
+
+  //     if (result.type === 'success') {
+  //       return result.uri // Return the file URI
+  //     }
+  //     return null
+  //   } catch (error) {
+  //     console.error('Error picking file:', error)
+  //     return null
+  //   }
+  // }
+
+  const shareFile = async () => {
+    // const fileUri = await pickFile() // Pick a PDF
+    // if (fileUri) {
+    //   const fileUrl = await uploadFileToFirebase(fileUri) // Upload to Firebase
+    //   if (fileUrl) {
+    //     const message = {
+    //       _id: Math.random().toString(),
+    //       createdAt: new Date(),
+    //       text: 'Shared a file:', // Optional message text
+    //       user: { _id: 1, name: 'User' },
+    //       file: fileUrl, // Custom property for non-image files
+    //     }
+    //     onSend([message])
+    //   }
+    // }
+  }
+
   return (
     <>
       <Stack.Screen
@@ -73,25 +128,31 @@ export default function userConversation() {
           _id: currentUser?.uid ?? '',
           name: currentUser?.email ?? '',
         }}
+        renderInputToolbar={(props) => (
+          <CustomInputToolbar {...props} onFilePress={shareFile} />
+        )}
+        // renderMessageText={renderMessage}
       />
     </>
   )
 }
 
-const styles = StyleSheet.create({
-  tabBar: {
-    position: 'absolute', // Make it absolute to position it correctly
-    bottom: 10, // Position from the bottom
-    left: 20, // Add left margin
-    right: 20, // Add right margin
-    justifyContent: 'space-between', // Space items evenly
-    alignItems: 'center', // Center items vertically
-    backgroundColor: '#fff', // Background color
-    borderRadius: 25, // Rounded corners
-    shadowColor: 'black', // Shadow color
-    shadowOffset: { width: 0, height: 10 }, // Shadow offset
-    shadowRadius: 10, // Shadow blur
-    shadowOpacity: 0.1, // Shadow opacity
-    elevation: 5, // Android shadow elevation
-  },
-})
+// const renderMessage = (props) => {
+//   const { currentMessage } = props
+
+//   if (currentMessage.file) {
+//     // Render file messages (e.g., PDFs)
+//     return (
+//       <View
+//         style={{ padding: 10, backgroundColor: '#f0f0f0', borderRadius: 10 }}
+//       >
+//         <Text style={{ marginBottom: 5 }}>PDF File:</Text>
+//         <TouchableOpacity onPress={() => Linking.openURL(currentMessage.file)}>
+//           <Text style={{ color: 'blue' }}>Open PDF</Text>
+//         </TouchableOpacity>
+//       </View>
+//     )
+//   }
+
+//   return null // Default rendering for other messages
+// }
