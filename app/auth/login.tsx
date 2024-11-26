@@ -5,6 +5,7 @@ import { signInWithEmailAndPassword } from 'firebase/auth'
 import { doc, getDoc } from 'firebase/firestore'
 import React, { useState } from 'react'
 import {
+  Image,
   StyleSheet,
   Text,
   TextInput,
@@ -19,12 +20,12 @@ const login = () => {
   const router = useRouter()
   const { setUser } = useUserStore()
 
+  const [loading, setLoading] = useState(false)
   const handleLogin = async () => {
+    setLoading(true)
     try {
       const userCred = await signInWithEmailAndPassword(auth, email, password)
       if (userCred) {
-        // setUserOnlineFirestore()
-        console.log('Login successful:', userCred.user.uid)
         const docSnap = await getDoc(doc(db, 'users', userCred.user.uid))
         if (docSnap.exists()) {
           const data = docSnap.data()
@@ -36,7 +37,9 @@ const login = () => {
           }
         }
       }
+      setLoading(false)
     } catch (error: any) {
+      setLoading(false)
       console.error('Login error:', error.message)
       alert(error.message)
     }
@@ -44,30 +47,43 @@ const login = () => {
 
   return (
     <View style={styles.container}>
-      <View style={{ height: 200, width: '100%' }} className="bg-slate-500">
-        <Text className="text-white text-2xl">ajhsajs</Text>
+      <View className="flex items-center justify-between gap-10">
+        <Image
+          className="h-72 w-72"
+          source={require('../../assets/images/logo.png')}
+        />
+        <View>
+          <Text className="text-2xl tracking-widest">Welcome back !</Text>
+        </View>
       </View>
       <TextInput
+        className=" mt-5 rounded-2xl text-2xl border border-slate-200 bg-slate-200 w-10/12 p-4"
         value={email}
         onChangeText={(text) => setEmail(text)}
         placeholder="Email"
-        style={styles.loginInput}
       />
       <TextInput
         value={password}
         onChangeText={(text) => setPassword(text)}
         placeholder="Password"
         secureTextEntry
-        style={styles.loginInput}
+        className=" mt-5 rounded-2xl text-2xl border border-slate-200 bg-slate-200 w-10/12 p-4"
       />
-
-      <TouchableOpacity style={styles.loginButton} onPress={handleLogin}>
-        <Text style={styles.loginButtonText}>Login</Text>
+      <TouchableOpacity
+        disabled={loading}
+        onPress={handleLogin}
+        className="p-3 mt-5  border-green-500 border-2 items-center rounded-3xl  w-10/12"
+      >
+        <Text className="text-3xl font-bold text-green-500">
+          {loading ? 'Loging...' : 'Login'}
+        </Text>
       </TouchableOpacity>
-
-      <Link href="/auth/signup" style={styles.registerButton}>
-        <Text style={styles.registerText}>Register</Text>
-      </Link>
+      <View className="flex flex-row gap-4 mt-5">
+        <Text className="text-slate-400">New User? </Text>
+        <Link href={'/auth/signup'}>
+          <Text className="text-green-500">Sign Up</Text>
+        </Link>
+      </View>
     </View>
   )
 }
@@ -78,6 +94,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center', // Center content vertically
     alignItems: 'center', // Center content horizontally
     padding: 20,
+    gap: 5,
     backgroundColor: '#f0f0f0', // Light background for contrast
   },
   loginInput: {

@@ -31,6 +31,7 @@ const index = () => {
 
   const cards = Array.from({ length: 5 })
   // State to manage likes and comments
+
   const [likes, setLikes] = useState(Array(cards.length).fill(false)) // To track likes
   const [posts, setPosts] = useState<any>([])
   // Fetch posts from Firestore
@@ -106,6 +107,7 @@ const index = () => {
                   className="h-72 w-64 rounded-md"
                 />
               )}
+
               {/* Reaction (Like) Section */}
               <View className="flex flex-row items-center justify-start gap-5">
                 <TouchableOpacity

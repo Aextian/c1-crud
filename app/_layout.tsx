@@ -31,6 +31,7 @@ const _layout = () => {
       <Stack.Screen name="auth/signup" options={{ headerTitle: 'Signup' }} />
       <Stack.Screen name="student" options={{ headerShown: false }} />
       <Stack.Screen name="teacher" options={{ headerShown: false }} />
+      <Stack.Screen name="index" options={{ headerShown: false }} />
     </Stack>
   )
 }
