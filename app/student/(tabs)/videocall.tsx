@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { Text, TextInput, View } from 'react-native'
+import { StyleSheet, Text, TextInput, View } from 'react-native'
 import { RTCView } from 'react-native-webrtc'
 
 const WebRTCView = () => {
