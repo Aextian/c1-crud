@@ -47,6 +47,7 @@ export default function userConversation() {
       <Stack.Screen
         options={{
           headerTitle: user?.name || '',
+
           headerRight: () => (
             <TouchableOpacity
               style={{ marginRight: 10 }} // Adjust the margin if needed

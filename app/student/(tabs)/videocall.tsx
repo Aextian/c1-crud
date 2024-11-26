@@ -1,5 +1,7 @@
+import { auth } from '@/config'
+import useGc from '@/hooks/useGc'
 import React, { useEffect, useState } from 'react'
-import { StyleSheet, Text, TextInput, View } from 'react-native'
+import { Button, StyleSheet, Text, TextInput, View } from 'react-native'
 import { RTCView } from 'react-native-webrtc'
 
 const WebRTCView = () => {

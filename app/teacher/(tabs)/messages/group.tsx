@@ -8,7 +8,6 @@ import { Link, useRouter } from 'expo-router'
 import { DocumentData } from 'firebase/firestore'
 import React, { useEffect, useState } from 'react'
 import {
-  Button,
   Pressable,
   SafeAreaView,
   ScrollView,
@@ -59,7 +58,8 @@ const group = () => {
           callId={'WERv7Naf4VdEiyGq5rnE'}
         />
       )} */}
-      <Button title="Call" onPress={() => handleAnswer()} />
+      {/* <Button title="Call" onPress={() => handleAnswer()} />
+       */}
       <View>
         <Pressable
           onPress={() => router.push('/teacher/messages/create-group')}

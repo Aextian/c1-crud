@@ -11,6 +11,7 @@ import {
 import { useRef, useState } from 'react'
 import {
   MediaStream,
+  RTCIceCandidate,
   RTCPeerConnection,
   RTCSessionDescription,
   mediaDevices,
@@ -19,6 +20,9 @@ import { auth, db } from '../config'
 
 const useGc = () => {
   const [localStream, setLocalStream] = useState<MediaStream | null>()
+  const [remoteStreams, setRemoteStreams] = useState<{
+    [userId: string]: MediaStream
+  }>({})
   const [callId, setCallId] = useState('')
   const currentUser = auth.currentUser
   const router = useRouter()
