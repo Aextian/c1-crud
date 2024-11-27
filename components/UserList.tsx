@@ -79,19 +79,40 @@ const UserList = () => {
         paddingVertical: 5,
       }}
     >
-      {users.map((user: DocumentData) => (
-        <TouchableOpacity
-          key={user.id}
-          style={{ marginRight: 10, alignItems: 'center' }}
-          activeOpacity={0.8}
-          onPress={() => handleSelectUser(user)}
-        >
-          <View className="item-center  h-16 w-16  justify-center border p-4 rounded-full">
-            <Feather name="user" size={24} />
-          </View>
-          <Text className="text-[10px] text-center">{user.name}</Text>
-        </TouchableOpacity>
-      ))}
+      {users.map((user: DocumentData) => {
+        // Extract the first word from the user's name
+        const firstWord = user.name ? user.name.split(' ')[0] : ''
+
+        return (
+          <TouchableOpacity
+            key={user.id}
+            style={{ marginRight: 10, alignItems: 'center' }}
+            activeOpacity={0.8}
+            onPress={() => handleSelectUser(user)}
+          >
+            <View
+              style={{
+                height: 64,
+                width: 64,
+                justifyContent: 'center',
+                alignItems: 'center',
+                borderWidth: 1,
+                borderRadius: 50,
+                padding: 16,
+              }}
+            >
+              <Feather name="user" size={24} />
+            </View>
+            <Text
+              numberOfLines={1}
+              ellipsizeMode="tail"
+              style={{ fontSize: 10, textAlign: 'center' }}
+            >
+              {firstWord}
+            </Text>
+          </TouchableOpacity>
+        )
+      })}
     </ScrollView>
   )
 }

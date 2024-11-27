@@ -15,7 +15,9 @@ const index = () => {
 
   return (
     <SafeAreaView style={styles.container}>
-      {incomingCall && <CallScreen callId={callId} />}
+      {incomingCall && (
+        <CallScreen callId={callId} type={'user'} isTeacher={false} />
+      )}
       <View>
         <UserList />
         <View style={{ paddingHorizontal: 10, marginVertical: 10 }}>

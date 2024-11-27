@@ -1,9 +1,9 @@
-import { db } from '@/config'
+import { auth, db } from '@/config'
 import { Feather } from '@expo/vector-icons'
 import { useRouter } from 'expo-router'
 import {
-  collection,
   DocumentData,
+  collection,
   onSnapshot,
   orderBy,
   query,
@@ -21,13 +21,7 @@ import {
 } from 'react-native'
 
 const index = () => {
-  const images = [
-    { uri: 'https://via.placeholder.com/300/FF5733/FFFFFF?text=Image+1' },
-    { uri: 'https://via.placeholder.com/300/33FF57/FFFFFF?text=Image+2' },
-    { uri: 'https://via.placeholder.com/300/3357FF/FFFFFF?text=Image+3' },
-    { uri: 'https://via.placeholder.com/300/FFC300/FFFFFF?text=Image+4' },
-    { uri: 'https://via.placeholder.com/300/581845/FFFFFF?text=Image+5' },
-  ]
+  const currentUser = auth?.currentUser
 
   const cards = Array.from({ length: 5 })
   // State to manage likes and comments
@@ -67,7 +61,9 @@ const index = () => {
               <Feather name="user" size={12} />
             </View>
             <View className="gap-2">
-              <Text className="text-[12px] font-medium">Juan Dela Cruz</Text>
+              <Text className="text-[12px] font-medium">
+                {currentUser?.displayName}
+              </Text>
               <Text className="text-[10px] text-gray-500 font-medium">
                 What's on your mind?
               </Text>

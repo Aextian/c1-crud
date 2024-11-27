@@ -3,7 +3,6 @@ import { auth, db } from '@/config'
 import useHideTabBarOnFocus from '@/hooks/useHideTabBarOnFocus'
 import useMessages from '@/hooks/useMessages'
 import { Ionicons } from '@expo/vector-icons'
-// import * as DocumentPicker from 'expo-document-picker'
 import { Stack, useLocalSearchParams, useRouter } from 'expo-router'
 import { DocumentData, doc, getDoc } from 'firebase/firestore'
 import React, { useEffect, useState } from 'react'
@@ -56,6 +55,7 @@ export default function userConversation() {
 
   //     // Get the file's download URL
   //     const downloadURL = await getDownloadURL(storageRef)
+  //     console.log('success', downloadURL)
   //     return downloadURL
   //   } catch (error) {
   //     console.error('File upload error:', error)
@@ -64,6 +64,7 @@ export default function userConversation() {
   // }
 
   // const pickFile = async () => {
+  //   console.log('click file upload')
   //   try {
   //     const result = await DocumentPicker.getDocumentAsync({
   //       type: 'application/pdf', // Specify file type (e.g., PDFs)
@@ -71,6 +72,7 @@ export default function userConversation() {
   //     })
 
   //     if (result.type === 'success') {
+  //       console.log(result.uri)
   //       return result.uri // Return the file URI
   //     }
   //     return null
@@ -105,6 +107,7 @@ export default function userConversation() {
 
           headerRight: () => (
             <TouchableOpacity
+              className="bg-green-100 px-5 py-2 rounded-xl"
               style={{ marginRight: 10 }} // Adjust the margin if needed
               onPress={() =>
                 router.push({

@@ -7,7 +7,6 @@ import { addDoc, collection } from 'firebase/firestore'
 import { getDownloadURL, ref, uploadBytes } from 'firebase/storage'
 import React, { useState } from 'react'
 import {
-  Button,
   Image,
   Pressable,
   SafeAreaView,
@@ -96,7 +95,7 @@ const addPost = () => {
               <View className="rounded-full border p-3">
                 <Feather name="user" size={12} />
               </View>
-              <View className="">
+              <View className="px-10">
                 <View>
                   <Text className="text-xs font-medium">Juan Dela Cruz</Text>
                   <TextInput
@@ -111,14 +110,21 @@ const addPost = () => {
                   />
                 </View>
 
-                <View className="flex flex-row gap-5 items-center ">
-                  <TouchableOpacity onPress={pickImage}>
-                    <Feather name="image" size={24} color={'gray'} />
+                <View className="flex flex-row w-full justify-between gap-5 items-center ">
+                  <View className="flex flex-row  gap-10 ">
+                    <TouchableOpacity onPress={pickImage}>
+                      <Feather name="image" size={24} color={'gray'} />
+                    </TouchableOpacity>
+                    <TouchableOpacity onPress={takePhoto}>
+                      <Feather name="camera" size={24} color={'gray'} />
+                    </TouchableOpacity>
+                  </View>
+                  <TouchableOpacity
+                    className="bg-green-300 px-5 py-3  text-sm rounded-3xl"
+                    onPress={handleSubmit}
+                  >
+                    <Text className="text-white">Post</Text>
                   </TouchableOpacity>
-                  <TouchableOpacity onPress={takePhoto}>
-                    <Feather name="camera" size={24} color={'gray'} />
-                  </TouchableOpacity>
-                  <Button title="Post" onPress={handleSubmit} />
                 </View>
               </View>
             </View>

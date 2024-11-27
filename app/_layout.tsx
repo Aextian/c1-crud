@@ -14,7 +14,6 @@ const _layout = () => {
     // if (currentUser && !inAuthGroup) {
     if (currentUser) {
       // router.replace('/student/videocall')
-
       router.replace('/teacher/messages/group')
     } else if (!currentUser && !inAuthGroup) {
       router.replace('/auth/login')
