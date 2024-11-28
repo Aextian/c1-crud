@@ -13,8 +13,8 @@ const _layout = () => {
     const inAuthGroup = segments[0] == 'auth'
     // if (currentUser && !inAuthGroup) {
     if (currentUser) {
-      // router.replace('/student/videocall')
-      router.replace('/teacher/messages/group')
+      router.replace('/admin/posts')
+      // router.replace('/teacher/messages/group')
     } else if (!currentUser && !inAuthGroup) {
       router.replace('/auth/login')
       // router.replace('/student/videocall')
@@ -31,6 +31,7 @@ const _layout = () => {
       <Stack.Screen name="auth/signup" options={{ headerTitle: 'Signup' }} />
       <Stack.Screen name="student" options={{ headerShown: false }} />
       <Stack.Screen name="teacher" options={{ headerShown: false }} />
+      <Stack.Screen name="admin" options={{ headerShown: false }} />
       <Stack.Screen name="index" options={{ headerShown: false }} />
     </Stack>
   )

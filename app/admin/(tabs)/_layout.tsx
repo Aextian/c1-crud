@@ -1,4 +1,4 @@
-import { Feather, FontAwesome } from '@expo/vector-icons'
+import { FontAwesome } from '@expo/vector-icons'
 import { Tabs } from 'expo-router'
 import React from 'react'
 import { StyleSheet, View } from 'react-native'
@@ -22,18 +22,6 @@ const _layout = () => {
           ),
         }}
       />
-
-      <Tabs.Screen
-        name="messages"
-        options={{
-          // tabBarStyle: { display: 'none' },
-          headerShown: false,
-          tabBarHideOnKeyboard: true,
-          tabBarIcon: ({ color }) => (
-            <Feather size={24} name="message-circle" color={color} />
-          ),
-        }}
-      />
       <Tabs.Screen
         name="add-post"
         options={{
@@ -43,16 +31,6 @@ const _layout = () => {
             <View className="bg-gray-300 px-5 py-2 rounded-full">
               <FontAwesome size={24} name="plus" color={color} />
             </View>
-          ),
-        }}
-      />
-
-      <Tabs.Screen
-        name="notifications"
-        options={{
-          headerShown: false,
-          tabBarIcon: ({ color }) => (
-            <FontAwesome size={24} name="bell" color={color} />
           ),
         }}
       />
