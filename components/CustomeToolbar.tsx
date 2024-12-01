@@ -3,17 +3,37 @@ import React from 'react'
 import { StyleSheet, TouchableOpacity } from 'react-native'
 import { InputToolbar } from 'react-native-gifted-chat'
 
-const CustomInputToolbar = (props) => {
+const CustomInputToolbar = (props: any) => {
   return (
     <InputToolbar
       {...props}
       containerStyle={styles.inputToolbar}
       renderActions={() => (
+        <>
+          <TouchableOpacity
+            style={styles.fileButton}
+            onPress={props.onFilePress} // Add your file-sharing function
+          >
+            <Ionicons name="attach-outline" size={24} color="gray" />
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={styles.fileButton}
+            onPress={props.onFilePress} // Add your file-sharing function
+          >
+            <Ionicons name="attach-outline" size={24} color="gray" />
+          </TouchableOpacity>
+        </>
+      )}
+      renderSend={() => (
         <TouchableOpacity
           style={styles.fileButton}
-          onPress={props.onFilePress} // Add your file-sharing function
+          onPress={() => {
+            if (props.text && props.onSend) {
+              props.onSend({ text: props.text.trim() }, true)
+            }
+          }}
         >
-          <Ionicons name="attach-outline" size={24} color="gray" />
+          <Ionicons name="send-outline" size={24} color="gray" />
         </TouchableOpacity>
       )}
     />
@@ -28,6 +48,7 @@ const styles = StyleSheet.create({
   },
   fileButton: {
     marginHorizontal: 8,
+    marginBottom: 10,
   },
 })
 

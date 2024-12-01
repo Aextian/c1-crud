@@ -83,20 +83,20 @@ export default function userConversation() {
   // }
 
   const shareFile = async () => {
-    // const fileUri = await pickFile() // Pick a PDF
-    // if (fileUri) {
-    //   const fileUrl = await uploadFileToFirebase(fileUri) // Upload to Firebase
-    //   if (fileUrl) {
-    //     const message = {
-    //       _id: Math.random().toString(),
-    //       createdAt: new Date(),
-    //       text: 'Shared a file:', // Optional message text
-    //       user: { _id: 1, name: 'User' },
-    //       file: fileUrl, // Custom property for non-image files
-    //     }
-    //     onSend([message])
-    //   }
-    // }
+    const fileUri = await pickFile() // Pick a PDF
+    if (fileUri) {
+      const fileUrl = await uploadFileToFirebase(fileUri) // Upload to Firebase
+      if (fileUrl) {
+        const message = {
+          _id: Math.random().toString(),
+          createdAt: new Date(),
+          text: 'Shared a file:', // Optional message text
+          user: { _id: 1, name: 'User' },
+          file: fileUrl, // Custom property for non-image files
+        }
+        onSend([message])
+      }
+    }
   }
 
   return (
