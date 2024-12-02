@@ -1,22 +1,34 @@
 import CustomInputToolbar from '@/components/CustomeToolbar'
-import { auth, db, storage } from '@/config'
+import InChatFileTransfer from '@/components/inChatFileTransfer'
+import { auth, db } from '@/config'
+import InChatViewFile from '@/hooks/inChatViewFile'
 import useHideTabBarOnFocus from '@/hooks/useHideTabBarOnFocus'
 import useMessages from '@/hooks/useMessages'
 import { Ionicons } from '@expo/vector-icons'
-import * as DocumentPicker from 'expo-document-picker'
 import { Stack, useLocalSearchParams, useRouter } from 'expo-router'
 import { DocumentData, doc, getDoc } from 'firebase/firestore'
-import { getDownloadURL, ref, uploadBytes } from 'firebase/storage'
-import React, { useEffect, useState } from 'react'
-import { Button, TouchableOpacity } from 'react-native'
-import { GiftedChat } from 'react-native-gifted-chat'
+import React, { useCallback, useEffect, useState } from 'react'
+import { Image, Linking, Text, TouchableOpacity, View } from 'react-native'
+import { Bubble, GiftedChat } from 'react-native-gifted-chat'
 
 export default function userConversation() {
   useHideTabBarOnFocus()
   const { id } = useLocalSearchParams<{ id: string }>()
   const currentUser = auth.currentUser
-  const { messages, onSend } = useMessages(id) // Pass the id to the custom hook
+  const {
+    messages,
+    onSend,
+    isAttachFile,
+    pickFile,
+    isAttachImage,
+    imagePath,
+    filePath,
+    setFilePath,
+    setImagePath,
+  } = useMessages(id) // Pass the id to the custom hook
   const [user, setUser] = useState<DocumentData>()
+  const [inputText, setInputText] = useState('')
+  const [fileVisible, setFileVisible] = useState(false)
 
   useEffect(() => {
     const docRef = doc(db, 'conversations', id)
@@ -45,60 +57,99 @@ export default function userConversation() {
 
   const router = useRouter()
 
-  const uploadFileToFirebase = async (fileUri: any) => {
-    try {
-      const response = await fetch(fileUri)
-      const blob = await response.blob()
-      const fileName = fileUri.split('/').pop() // Get file name from URI
-      const storageRef = ref(storage, `uploads/${fileName}`)
-      // Upload the file
-      await uploadBytes(storageRef, blob)
-      // Get the file's download URL
-      const downloadURL = await getDownloadURL(storageRef)
-      console.log('success', downloadURL)
-      return downloadURL
-    } catch (error) {
-      console.error('File upload error:', error)
-      return null
+  const renderCustomView = (props) => {
+    const { currentMessage } = props
+    // Check if the message contains a file
+    if (currentMessage.file) {
+      console.log(currentMessage.file.url)
+      return (
+        <TouchableOpacity
+          onPress={() => Linking.openURL(currentMessage.file.url)}
+        >
+          <Text style={{ color: 'blue', textDecorationLine: 'underline' }}>
+            {currentMessage.file.name || 'Download File'}
+          </Text>
+        </TouchableOpacity>
+      )
     }
+    return null
   }
 
-  const pickFile = async () => {
-    console.log('pickFile')
-    try {
-      const result = await DocumentPicker.getDocumentAsync({
-        type: 'application/pdf', // Specify file type (e.g., PDFs)
-        copyToCacheDirectory: true,
-      })
-      console.log('result', result)
-
-      if (result.type === 'success') {
-        console.log(result.uri)
-        return result.uri // Return the file URI
-      }
-      return null
-    } catch (error) {
-      console.error('Error picking file:', error)
-      return null
+  const renderChatFooter = useCallback(() => {
+    if (imagePath) {
+      return (
+        <View>
+          <Image
+            source={{ uri: imagePath }}
+            style={{ height: 75, width: 75 }}
+          />
+          <TouchableOpacity onPress={() => setImagePath('')}>
+            <Text>X</Text>
+          </TouchableOpacity>
+        </View>
+      )
     }
-  }
-
-  const shareFile = async () => {
-    const fileUri = await pickFile() // Pick a PDF
-    console.log('fileUri', fileUri)
-    if (fileUri) {
-      const fileUrl = await uploadFileToFirebase(fileUri) // Upload to Firebase
-      if (fileUrl) {
-        const message = {
-          _id: Math.random().toString(),
-          createdAt: new Date(),
-          text: 'Shared a file:', // Optional message text
-          user: { _id: 1, name: 'User' },
-          file: fileUrl, // Custom property for non-image files
-        }
-        onSend([message])
-      }
+    if (filePath) {
+      return (
+        <View>
+          <InChatFileTransfer filePath={filePath} />
+          <TouchableOpacity onPress={() => setFilePath('')}>
+            <Text>X</Text>
+          </TouchableOpacity>
+        </View>
+      )
     }
+    return null
+  }, [filePath, imagePath])
+
+  const renderBubble = (props) => {
+    const { currentMessage } = props
+    if (currentMessage.file && currentMessage.file.url) {
+      return (
+        <TouchableOpacity
+          style={{
+            backgroundColor:
+              props.currentMessage.user._id === 2 ? '#2e64e5' : '#efefef',
+            borderBottomLeftRadius:
+              props.currentMessage.user._id === 2 ? 15 : 5,
+            borderBottomRightRadius:
+              props.currentMessage.user._id === 2 ? 5 : 15,
+          }}
+          onPress={() => setFileVisible(true)}
+        >
+          <InChatFileTransfer filePath={currentMessage.file.url} />
+          <InChatViewFile
+            props={props}
+            visible={fileVisible}
+            onClose={() => setFileVisible(false)}
+          />
+          <View style={{ flexDirection: 'column' }}>
+            <Text
+              style={{
+                color: currentMessage.user._id === 2 ? 'white' : 'black',
+              }}
+            >
+              {currentMessage.text}
+            </Text>
+          </View>
+        </TouchableOpacity>
+      )
+    }
+    return (
+      <Bubble
+        {...props}
+        wrapperStyle={{
+          right: {
+            backgroundColor: '#2e64e5',
+          },
+        }}
+        textStyle={{
+          right: {
+            color: '#efefef',
+          },
+        }}
+      />
+    )
   }
 
   return (
@@ -129,17 +180,18 @@ export default function userConversation() {
 
       <GiftedChat
         messages={messages}
-        onSend={(messages) => onSend(messages)}
+        onSend={onSend}
         user={{
           _id: currentUser?.uid ?? '',
-          name: currentUser?.email ?? '',
+          name: currentUser?.displayName ?? '',
         }}
+        renderCustomView={renderCustomView}
+        renderChatFooter={renderChatFooter}
+        renderBubble={renderBubble}
         renderInputToolbar={(props) => (
-          <CustomInputToolbar {...props} onFilePress={shareFile} />
+          <CustomInputToolbar {...props} onFilePress={pickFile} />
         )}
-        // renderMessageText={renderMessage}
       />
-      <Button title="Select FIle" onPress={shareFile} />
     </>
   )
 }
