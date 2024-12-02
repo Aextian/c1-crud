@@ -16,12 +16,6 @@ const CustomInputToolbar = (props: any) => {
           >
             <Ionicons name="attach-outline" size={24} color="gray" />
           </TouchableOpacity>
-          <TouchableOpacity
-            style={styles.fileButton}
-            onPress={props.onFilePress} // Add your file-sharing function
-          >
-            <Ionicons name="attach-outline" size={24} color="gray" />
-          </TouchableOpacity>
         </>
       )}
       renderSend={() => (
