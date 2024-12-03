@@ -1,15 +1,18 @@
-import { db } from '@/config' // Adjust the import path as necessary
-import * as DocumentPicker from 'expo-document-picker'
-import { collection, onSnapshot, orderBy, query } from 'firebase/firestore'
+import { auth, db } from '@/config' // Adjust the import path as necessary
+import {
+  addDoc,
+  collection,
+  onSnapshot,
+  orderBy,
+  query,
+} from 'firebase/firestore'
 import { useCallback, useEffect, useState } from 'react'
 import { GiftedChat, IMessage } from 'react-native-gifted-chat' // Adjust import based on your project structure
+import useFileUpload from './useFileUpload'
 
 const useMessages = (id: string) => {
   const [messages, setMessages] = useState<IMessage[]>([])
-  const [isAttachImage, setIsAttachImage] = useState(false)
-  const [isAttachFile, setIsAttachFile] = useState(false)
-  const [imagePath, setImagePath] = useState('')
-  const [filePath, setFilePath] = useState('')
+  console.log('messages', messages)
 
   useEffect(() => {
     if (!id) return // Check if conversationId is valid
@@ -26,6 +29,8 @@ const useMessages = (id: string) => {
         text: doc.data().text,
         createdAt: doc.data().createdAt.toDate(),
         user: doc.data().user,
+        image: doc.data().image,
+        file: doc.data().file,
       }))
       setMessages(allMessages)
     })
@@ -140,16 +145,30 @@ const useMessages = (id: string) => {
   //   [filePath, imagePath, isAttachFile, isAttachImage],
   // )
   // Modify onSend()
+  const {
+    shareFile,
+    isAttachFile,
+    isAttachImage,
+    filePath,
+    imagePath,
+    fileType,
+    setImagePath,
+    setFilePath,
+    resetState,
+  } = useFileUpload()
+  const currenUser = auth.currentUser
+
   const onSend = useCallback(
-    (messages = []) => {
+    async (messages = []) => {
       const [messageToSend] = messages
+      const messagesCollection = collection(db, 'conversations', id, 'messages')
       if (isAttachImage) {
         const newMessage = {
           _id: messages[0]._id + 1,
           text: messageToSend.text,
           createdAt: new Date(),
           user: {
-            _id: 2,
+            _id: currenUser?.uid,
             avatar: '',
           },
           image: imagePath,
@@ -157,30 +176,31 @@ const useMessages = (id: string) => {
             url: '',
           },
         }
-        setMessages((previousMessages) =>
-          GiftedChat.append(previousMessages, newMessage),
-        )
-        setImagePath('')
-        setIsAttachImage(false)
+
+        await addDoc(messagesCollection, newMessage)
+        // resetState()
       } else if (isAttachFile) {
         const newMessage = {
           _id: messages[0]._id + 1,
           text: messageToSend.text,
           createdAt: new Date(),
           user: {
-            _id: 2,
+            _id: currenUser?.uid,
             avatar: '',
           },
           image: '',
           file: {
             url: filePath,
+            type: fileType,
           },
         }
+        console.log('newMessage', newMessage)
+        await addDoc(messagesCollection, newMessage)
+
         setMessages((previousMessages) =>
           GiftedChat.append(previousMessages, newMessage),
         )
-        setFilePath('')
-        setIsAttachFile(false)
+        // resetState()
       } else {
         setMessages((previousMessages) =>
           GiftedChat.append(previousMessages, messages),
@@ -190,37 +210,37 @@ const useMessages = (id: string) => {
     [filePath, imagePath, isAttachFile, isAttachImage],
   )
 
-  const pickFile = async () => {
-    try {
-      const result = await DocumentPicker.getDocumentAsync({
-        type: 'application/pdf', // Specify file type (e.g., PDFs)
-        copyToCacheDirectory: true,
-      })
+  // const pickFile = async () => {
+  //   try {
+  //     const result = await DocumentPicker.getDocumentAsync({
+  //       type: '*/*', // Allow all file types
+  //       copyToCacheDirectory: true,
+  //     })
+  //     // Ensure the result is not canceled and assets are available
+  //     if (!result.canceled && result.assets && result.assets.length > 0) {
+  //       const fileUri = result.assets[0].uri // Access the file URI
 
-      // Ensure the result is not canceled and assets are available
-      if (!result.canceled && result.assets && result.assets.length > 0) {
-        const fileUri = result.assets[0].uri // Access the file URI
+  //       // Check file type and set paths accordingly
+  //       if (fileUri.indexOf('.png') !== -1 || fileUri.indexOf('.jpg') !== -1) {
+  //         setImagePath(fileUri)
+  //         setFileType(result.assets[0].mimeType || '')
+  //         setIsAttachImage(true)
+  //       } else {
+  //         setFilePath(fileUri)
+  //         setIsAttachFile(true)
+  //       }
 
-        // Check file type and set paths accordingly
-        if (fileUri.indexOf('.png') !== -1 || fileUri.indexOf('.jpg') !== -1) {
-          setImagePath(fileUri)
-          setIsAttachImage(true)
-        } else {
-          setFilePath(fileUri)
-          setIsAttachFile(true)
-        }
+  //       return fileUri // Return the file URI
+  //     }
 
-        return fileUri // Return the file URI
-      }
-
-      return null // Return null if no file was picked
-    } catch (error) {
-      console.error('Error picking file:', error)
-      return null
-    }
-  }
+  //     return null // Return null if no file was picked
+  //   } catch (error) {
+  //     console.error('Error picking file:', error)
+  //     return null
+  //   }
+  // }
   return {
-    pickFile,
+    shareFile,
     onSend,
     imagePath,
     filePath,

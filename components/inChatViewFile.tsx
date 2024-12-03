@@ -1,6 +1,6 @@
 import React from 'react'
 import { Modal, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
-import Pdf from 'react-native-pdf'
+import { WebView } from 'react-native-webview'
 
 function InChatViewFile({ props, visible, onClose }) {
   const { currentMessage } = props
@@ -12,7 +12,11 @@ function InChatViewFile({ props, visible, onClose }) {
       style={{ height: 600 }}
     >
       <View style={{ padding: 20 }}>
-        <Pdf source={{ uri: currentMessage.file.url }} />
+        <WebView
+          originWhitelist={['*']}
+          source={{ uri: currentMessage.file.url }} // Can be a URL or a local file URI
+          style={{ flex: 1 }}
+        />
         <TouchableOpacity onPress={onClose} style={styles.buttonCancel}>
           <Text style={styles.textBtn}>X</Text>
         </TouchableOpacity>

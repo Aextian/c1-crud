@@ -1,7 +1,7 @@
 import CustomInputToolbar from '@/components/CustomeToolbar'
 import InChatFileTransfer from '@/components/inChatFileTransfer'
+import InChatViewFile from '@/components/inChatViewFile'
 import { auth, db } from '@/config'
-import InChatViewFile from '@/hooks/inChatViewFile'
 import useHideTabBarOnFocus from '@/hooks/useHideTabBarOnFocus'
 import useMessages from '@/hooks/useMessages'
 import { Ionicons } from '@expo/vector-icons'
@@ -19,7 +19,7 @@ export default function userConversation() {
     messages,
     onSend,
     isAttachFile,
-    pickFile,
+    shareFile,
     isAttachImage,
     imagePath,
     filePath,
@@ -104,16 +104,22 @@ export default function userConversation() {
 
   const renderBubble = (props) => {
     const { currentMessage } = props
+    const currentUser = auth.currentUser
+    console.log('currentMessage.file.url', currentMessage)
+
     if (currentMessage.file && currentMessage.file.url) {
+      console.log('currentMessage.file.url', currentMessage.file.url)
       return (
         <TouchableOpacity
           style={{
             backgroundColor:
-              props.currentMessage.user._id === 2 ? '#2e64e5' : '#efefef',
+              props.currentMessage.user._id === currentUser?.uid
+                ? '#2e64e5'
+                : '#efefef',
             borderBottomLeftRadius:
-              props.currentMessage.user._id === 2 ? 15 : 5,
+              props.currentMessage.user._id === currentUser?.uid ? 15 : 5,
             borderBottomRightRadius:
-              props.currentMessage.user._id === 2 ? 5 : 15,
+              props.currentMessage.user._id === currentUser?.uid ? 5 : 15,
           }}
           onPress={() => setFileVisible(true)}
         >
@@ -126,10 +132,13 @@ export default function userConversation() {
           <View style={{ flexDirection: 'column' }}>
             <Text
               style={{
-                color: currentMessage.user._id === 2 ? 'white' : 'black',
+                color:
+                  currentMessage.user._id === currentUser?.uid
+                    ? 'white'
+                    : 'black',
               }}
             >
-              {currentMessage.text}
+              {currentMessage.text} hey
             </Text>
           </View>
         </TouchableOpacity>
@@ -181,6 +190,7 @@ export default function userConversation() {
       <GiftedChat
         messages={messages}
         onSend={onSend}
+        // onSend={(messages) => onSend(messages)}
         user={{
           _id: currentUser?.uid ?? '',
           name: currentUser?.displayName ?? '',
@@ -189,7 +199,7 @@ export default function userConversation() {
         renderChatFooter={renderChatFooter}
         renderBubble={renderBubble}
         renderInputToolbar={(props) => (
-          <CustomInputToolbar {...props} onFilePress={pickFile} />
+          <CustomInputToolbar {...props} onFilePress={shareFile} />
         )}
       />
     </>
