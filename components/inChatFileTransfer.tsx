@@ -20,10 +20,8 @@ const InChatFileTransfer = ({ filePath }) => {
           style={{ height: 60, width: 60 }}
         />
         <View>
-          <Text style={styles.text}>
-            {name.replace('%20', '').replace(' ', '')}
-          </Text>
-          <Text style={styles.textType}>{fileType.toUpperCase()}</Text>
+          <Text style={styles.text}>file</Text>
+          {/* <Text style={styles.textType}>{fileType.toUpperCase()}</Text> */}
         </View>
       </View>
     </View>

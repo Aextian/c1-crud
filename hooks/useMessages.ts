@@ -7,12 +7,11 @@ import {
   query,
 } from 'firebase/firestore'
 import { useCallback, useEffect, useState } from 'react'
-import { GiftedChat, IMessage } from 'react-native-gifted-chat' // Adjust import based on your project structure
+import { IMessage } from 'react-native-gifted-chat' // Adjust import based on your project structure
 import useFileUpload from './useFileUpload'
 
 const useMessages = (id: string) => {
   const [messages, setMessages] = useState<IMessage[]>([])
-  console.log('messages', messages)
 
   useEffect(() => {
     if (!id) return // Check if conversationId is valid
@@ -197,14 +196,15 @@ const useMessages = (id: string) => {
         console.log('newMessage', newMessage)
         await addDoc(messagesCollection, newMessage)
 
-        setMessages((previousMessages) =>
-          GiftedChat.append(previousMessages, newMessage),
-        )
+        // setMessages((previousMessages) =>
+        //   GiftedChat.append(previousMessages, newMessage),
+        // )
         // resetState()
       } else {
-        setMessages((previousMessages) =>
-          GiftedChat.append(previousMessages, messages),
-        )
+        // setMessages((previousMessages) =>
+        //   GiftedChat.append(previousMessages, messages),
+        // )
+        await addDoc(messagesCollection, messages)
       }
     },
     [filePath, imagePath, isAttachFile, isAttachImage],

@@ -4,12 +4,13 @@ import InChatViewFile from '@/components/inChatViewFile'
 import { auth, db } from '@/config'
 import useHideTabBarOnFocus from '@/hooks/useHideTabBarOnFocus'
 import useMessages from '@/hooks/useMessages'
+import useRenderGiftedChat from '@/hooks/useRenderGiftedChat'
 import { Ionicons } from '@expo/vector-icons'
 import { Stack, useLocalSearchParams, useRouter } from 'expo-router'
 import { DocumentData, doc, getDoc } from 'firebase/firestore'
 import React, { useCallback, useEffect, useState } from 'react'
 import { Image, Linking, Text, TouchableOpacity, View } from 'react-native'
-import { Bubble, GiftedChat } from 'react-native-gifted-chat'
+import { GiftedChat } from 'react-native-gifted-chat'
 
 export default function userConversation() {
   useHideTabBarOnFocus()
@@ -28,7 +29,6 @@ export default function userConversation() {
   } = useMessages(id) // Pass the id to the custom hook
   const [user, setUser] = useState<DocumentData>()
   const [inputText, setInputText] = useState('')
-  const [fileVisible, setFileVisible] = useState(false)
 
   useEffect(() => {
     const docRef = doc(db, 'conversations', id)
@@ -61,13 +61,13 @@ export default function userConversation() {
     const { currentMessage } = props
     // Check if the message contains a file
     if (currentMessage.file) {
-      console.log(currentMessage.file.url)
       return (
         <TouchableOpacity
           onPress={() => Linking.openURL(currentMessage.file.url)}
         >
           <Text style={{ color: 'blue', textDecorationLine: 'underline' }}>
-            {currentMessage.file.name || 'Download File'}
+            {/* {currentMessage.file.name || 'Download File'} */}
+            sdsdsds
           </Text>
         </TouchableOpacity>
       )
@@ -102,64 +102,7 @@ export default function userConversation() {
     return null
   }, [filePath, imagePath])
 
-  const renderBubble = (props) => {
-    const { currentMessage } = props
-    const currentUser = auth.currentUser
-    console.log('currentMessage.file.url', currentMessage)
-
-    if (currentMessage.file && currentMessage.file.url) {
-      console.log('currentMessage.file.url', currentMessage.file.url)
-      return (
-        <TouchableOpacity
-          style={{
-            backgroundColor:
-              props.currentMessage.user._id === currentUser?.uid
-                ? '#2e64e5'
-                : '#efefef',
-            borderBottomLeftRadius:
-              props.currentMessage.user._id === currentUser?.uid ? 15 : 5,
-            borderBottomRightRadius:
-              props.currentMessage.user._id === currentUser?.uid ? 5 : 15,
-          }}
-          onPress={() => setFileVisible(true)}
-        >
-          <InChatFileTransfer filePath={currentMessage.file.url} />
-          <InChatViewFile
-            props={props}
-            visible={fileVisible}
-            onClose={() => setFileVisible(false)}
-          />
-          <View style={{ flexDirection: 'column' }}>
-            <Text
-              style={{
-                color:
-                  currentMessage.user._id === currentUser?.uid
-                    ? 'white'
-                    : 'black',
-              }}
-            >
-              {currentMessage.text} hey
-            </Text>
-          </View>
-        </TouchableOpacity>
-      )
-    }
-    return (
-      <Bubble
-        {...props}
-        wrapperStyle={{
-          right: {
-            backgroundColor: '#2e64e5',
-          },
-        }}
-        textStyle={{
-          right: {
-            color: '#efefef',
-          },
-        }}
-      />
-    )
-  }
+  const { renderBubble, fileUrl, setFileUrl } = useRenderGiftedChat()
 
   return (
     <>
@@ -186,18 +129,19 @@ export default function userConversation() {
           ),
         }}
       />
-
+      {fileUrl && (
+        <InChatViewFile url={fileUrl} onClose={() => setFileUrl('')} />
+      )}
       <GiftedChat
         messages={messages}
         onSend={onSend}
-        // onSend={(messages) => onSend(messages)}
         user={{
           _id: currentUser?.uid ?? '',
           name: currentUser?.displayName ?? '',
         }}
-        renderCustomView={renderCustomView}
-        renderChatFooter={renderChatFooter}
-        renderBubble={renderBubble}
+        // renderCustomView={renderCustomView}
+        // renderChatFooter={renderChatFooter}
+        // renderBubble={renderBubble}
         renderInputToolbar={(props) => (
           <CustomInputToolbar {...props} onFilePress={shareFile} />
         )}
