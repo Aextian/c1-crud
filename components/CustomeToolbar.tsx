@@ -1,9 +1,19 @@
+import useRecording from '@/hooks/useRecording'
 import { Ionicons } from '@expo/vector-icons' // For file-sharing icon
 import React from 'react'
 import { StyleSheet, TouchableOpacity } from 'react-native'
 import { InputToolbar } from 'react-native-gifted-chat'
 
 const CustomInputToolbar = (props: any) => {
+  const { startRecording, stopRecording, recording, playSound } = useRecording()
+
+  const handleStopRecording = async () => {
+    const uri = await stopRecording()
+    if (uri) {
+      playSound(uri)
+    }
+  }
+
   return (
     <InputToolbar
       {...props}
@@ -15,6 +25,17 @@ const CustomInputToolbar = (props: any) => {
             onPress={props.onFilePress} // Add your file-sharing function
           >
             <Ionicons name="attach-outline" size={24} color="gray" />
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            style={styles.fileButton}
+            onPress={recording ? handleStopRecording : startRecording}
+          >
+            <Ionicons
+              name="mic-outline"
+              size={36}
+              color={`${recording ? 'green' : 'gray'}`}
+            />
           </TouchableOpacity>
         </>
       )}
