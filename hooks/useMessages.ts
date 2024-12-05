@@ -1,4 +1,5 @@
 import { auth, db } from '@/config' // Adjust the import path as necessary
+import useRecordingStore from '@/store/useRecordingStore'
 import {
   addDoc,
   collection,
@@ -30,6 +31,7 @@ const useMessages = (id: string) => {
         user: doc.data().user,
         image: doc.data().image,
         file: doc.data().file,
+        audio: doc.data().audio,
       }))
       setMessages(allMessages)
     })
@@ -37,113 +39,6 @@ const useMessages = (id: string) => {
     return () => unsubscribe() // Cleanup subscription on unmount
   }, [id])
 
-  // const onSend = useCallback(
-  //   async (messages = []) => {
-  //     const [messageToSend] = messages
-  //     const { text, _id, createdAt, user } = messageToSend
-
-  //     // Handle sending image
-  //     if (isAttachImage) {
-  //       const newMessage = {
-  //         _id: Math.random().toString(), // Generate a unique _id
-  //         text: messageToSend.text,
-  //         createdAt: new Date(),
-  //         user: {
-  //           _id: user._id, // Use the current user's ID
-  //           avatar: '', // Optionally set user avatar
-  //         },
-  //         image: imagePath, // Use the image path if it's an image
-  //         file: {
-  //           url: '', // No file URL if it's an image
-  //         },
-  //       }
-
-  //       setMessages((previousMessages) =>
-  //         GiftedChat.append(previousMessages, newMessage),
-  //       )
-
-  //       // Save to Firebase
-  //       const messagesCollection = collection(
-  //         db,
-  //         'conversations',
-  //         id,
-  //         'messages',
-  //       )
-  //       await addDoc(messagesCollection, {
-  //         _id: newMessage._id,
-  //         createdAt,
-  //         text,
-  //         user,
-  //         image: newMessage.image,
-  //         file: newMessage.file,
-  //       })
-
-  //       // Reset after sending the image
-  //       setImagePath('')
-  //       setIsAttachImage(false)
-  //     }
-
-  //     // Handle sending file
-  //     else if (isAttachFile) {
-  //       const newMessage = {
-  //         _id: Math.random().toString(), // Generate a unique _id
-  //         text: messageToSend.text,
-  //         createdAt: new Date(),
-  //         user: {
-  //           _id: user._id, // Use the current user's ID
-  //           avatar: '', // Optionally set user avatar
-  //         },
-  //         image: '', // No image if it's a file
-  //         file: {
-  //           url: filePath, // Use the file path for file URLs
-  //         },
-  //       }
-
-  //       // Save to Firebase
-  //       const messagesCollection = collection(
-  //         db,
-  //         'conversations',
-  //         id,
-  //         'messages',
-  //       )
-  //       await addDoc(messagesCollection, {
-  //         _id: newMessage._id,
-  //         createdAt,
-  //         text,
-  //         user,
-  //         image: newMessage.image,
-  //         file: newMessage.file,
-  //       })
-
-  //       // Reset after sending the file
-  //       setFilePath('')
-  //       setIsAttachFile(false)
-  //     }
-
-  //     // Handle sending regular text messages
-  //     else {
-  //       // Save regular message to Firebase
-  //       const messagesCollection = collection(
-  //         db,
-  //         'conversations',
-  //         id,
-  //         'messages',
-  //       )
-  //       await addDoc(messagesCollection, {
-  //         _id,
-  //         createdAt,
-  //         text,
-  //         user,
-  //         image: '',
-  //         file: {
-  //           url: '',
-  //         },
-  //       })
-  //     }
-  //   },
-  //   [filePath, imagePath, isAttachFile, isAttachImage],
-  // )
-  // Modify onSend()
   const {
     shareFile,
     isAttachFile,
@@ -155,12 +50,15 @@ const useMessages = (id: string) => {
     setFilePath,
     resetState,
   } = useFileUpload()
-  const currenUser = auth.currentUser
 
+  const { recordingUri, recording, setRecordingUri } = useRecordingStore()
+
+  const currenUser = auth.currentUser
   const onSend = useCallback(
     async (messages = []) => {
       const [messageToSend] = messages
       const messagesCollection = collection(db, 'conversations', id, 'messages')
+      console.log(isAttachFile, isAttachImage, recordingUri)
       if (isAttachImage) {
         const newMessage = {
           _id: messages[0]._id + 1,
@@ -193,52 +91,46 @@ const useMessages = (id: string) => {
             type: fileType,
           },
         }
-        console.log('newMessage', newMessage)
         await addDoc(messagesCollection, newMessage)
 
         // setMessages((previousMessages) =>
         //   GiftedChat.append(previousMessages, newMessage),
         // )
         // resetState()
+      } else if (recordingUri) {
+        const newMessage = {
+          _id: messages[0]._id + 1,
+          text: messageToSend.text,
+          createdAt: new Date(),
+          user: {
+            _id: currenUser?.uid,
+            avatar: '',
+          },
+          image: '',
+          file: {
+            url: '',
+            type: '',
+          },
+          audio: recordingUri,
+        }
+        await addDoc(messagesCollection, newMessage)
+        setRecordingUri(null)
       } else {
-        // setMessages((previousMessages) =>
-        //   GiftedChat.append(previousMessages, messages),
-        // )
-        await addDoc(messagesCollection, messages)
+        const newMessage = {
+          _id: messageToSend._id,
+          text: messageToSend.text,
+          createdAt: new Date(),
+          user: {
+            _id: currenUser?.uid,
+            avatar: '',
+          },
+        }
+        await addDoc(messagesCollection, newMessage)
       }
     },
-    [filePath, imagePath, isAttachFile, isAttachImage],
+    [filePath, imagePath, isAttachFile, isAttachImage, recordingUri],
   )
 
-  // const pickFile = async () => {
-  //   try {
-  //     const result = await DocumentPicker.getDocumentAsync({
-  //       type: '*/*', // Allow all file types
-  //       copyToCacheDirectory: true,
-  //     })
-  //     // Ensure the result is not canceled and assets are available
-  //     if (!result.canceled && result.assets && result.assets.length > 0) {
-  //       const fileUri = result.assets[0].uri // Access the file URI
-
-  //       // Check file type and set paths accordingly
-  //       if (fileUri.indexOf('.png') !== -1 || fileUri.indexOf('.jpg') !== -1) {
-  //         setImagePath(fileUri)
-  //         setFileType(result.assets[0].mimeType || '')
-  //         setIsAttachImage(true)
-  //       } else {
-  //         setFilePath(fileUri)
-  //         setIsAttachFile(true)
-  //       }
-
-  //       return fileUri // Return the file URI
-  //     }
-
-  //     return null // Return null if no file was picked
-  //   } catch (error) {
-  //     console.error('Error picking file:', error)
-  //     return null
-  //   }
-  // }
   return {
     shareFile,
     onSend,
@@ -249,6 +141,7 @@ const useMessages = (id: string) => {
     messages,
     setFilePath,
     setImagePath,
+    recording,
   }
 }
 

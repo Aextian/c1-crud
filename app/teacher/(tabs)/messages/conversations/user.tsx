@@ -5,11 +5,19 @@ import { auth, db } from '@/config'
 import useHideTabBarOnFocus from '@/hooks/useHideTabBarOnFocus'
 import useMessages from '@/hooks/useMessages'
 import useRenderGiftedChat from '@/hooks/useRenderGiftedChat'
+import useRecordingStore from '@/store/useRecordingStore'
 import { Ionicons } from '@expo/vector-icons'
 import { Stack, useLocalSearchParams, useRouter } from 'expo-router'
 import { DocumentData, doc, getDoc } from 'firebase/firestore'
 import React, { useCallback, useEffect, useState } from 'react'
-import { Image, Linking, Text, TouchableOpacity, View } from 'react-native'
+import {
+  Image,
+  Linking,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from 'react-native'
 import { GiftedChat } from 'react-native-gifted-chat'
 
 export default function userConversation() {
@@ -27,6 +35,16 @@ export default function userConversation() {
     setFilePath,
     setImagePath,
   } = useMessages(id) // Pass the id to the custom hook
+
+  const {
+    recordingUri,
+    playSound,
+    stopSound,
+    setRecordingUri,
+    isPlaying,
+    currentAudio,
+  } = useRecordingStore()
+
   const [user, setUser] = useState<DocumentData>()
   const [inputText, setInputText] = useState('')
 
@@ -75,6 +93,37 @@ export default function userConversation() {
     return null
   }
 
+  const renderMessageAudio = (props) => {
+    const { currentMessage } = props
+    // Check if the message contains a file
+
+    const handlePress = () => {
+      console.log('currentMessage.audio:', currentMessage.audio)
+      console.log('currentAudio.audio:', currentAudio)
+      if (isPlaying && currentAudio === currentMessage.audio) {
+        stopSound() // Stop the current audio
+      } else {
+        playSound(currentMessage.audio) // Play the new audio
+      }
+    }
+
+    if (currentMessage.audio) {
+      return (
+        <TouchableOpacity style={styles.audioContainer} onPress={handlePress}>
+          <Text style={styles.audioText}>
+            <Text style={styles.audioText}>
+              🎵{' '}
+              {isPlaying && currentAudio === currentMessage.audio
+                ? 'Pause Audio'
+                : 'Play Audio'}
+            </Text>
+          </Text>
+        </TouchableOpacity>
+      )
+    }
+    return null
+  }
+
   const renderChatFooter = useCallback(() => {
     if (imagePath) {
       return (
@@ -99,8 +148,23 @@ export default function userConversation() {
         </View>
       )
     }
+    if (recordingUri) {
+      return (
+        <View>
+          <TouchableOpacity
+            style={styles.audioContainer}
+            onPress={() => playSound(recordingUri)}
+          >
+            <Text style={styles.audioText}>🎵 Play Audio</Text>
+          </TouchableOpacity>
+          <TouchableOpacity onPress={() => setRecordingUri('')}>
+            <Text>X</Text>
+          </TouchableOpacity>
+        </View>
+      )
+    }
     return null
-  }, [filePath, imagePath])
+  }, [filePath, imagePath, recordingUri])
 
   const { renderBubble, fileUrl, setFileUrl } = useRenderGiftedChat()
 
@@ -134,14 +198,15 @@ export default function userConversation() {
       )}
       <GiftedChat
         messages={messages}
-        onSend={onSend}
+        onSend={(messages) => onSend(messages)}
         user={{
           _id: currentUser?.uid ?? '',
           name: currentUser?.displayName ?? '',
         }}
-        // renderCustomView={renderCustomView}
-        // renderChatFooter={renderChatFooter}
-        // renderBubble={renderBubble}
+        renderMessageAudio={renderMessageAudio}
+        renderCustomView={renderCustomView}
+        renderChatFooter={renderChatFooter}
+        renderBubble={renderBubble}
         renderInputToolbar={(props) => (
           <CustomInputToolbar {...props} onFilePress={shareFile} />
         )}
@@ -150,22 +215,13 @@ export default function userConversation() {
   )
 }
 
-// const renderMessage = (props) => {
-//   const { currentMessage } = props
-
-//   if (currentMessage.file) {
-//     // Render file messages (e.g., PDFs)
-//     return (
-//       <View
-//         style={{ padding: 10, backgroundColor: '#f0f0f0', borderRadius: 10 }}
-//       >
-//         <Text style={{ marginBottom: 5 }}>PDF File:</Text>
-//         <TouchableOpacity onPress={() => Linking.openURL(currentMessage.file)}>
-//           <Text style={{ color: 'blue' }}>Open PDF</Text>
-//         </TouchableOpacity>
-//       </View>
-//     )
-//   }
-
-//   return null // Default rendering for other messages
-// }
+const styles = StyleSheet.create({
+  audioContainer: {
+    backgroundColor: '#e0e0e0',
+    padding: 10,
+    borderRadius: 5,
+  },
+  audioText: {
+    color: '#000',
+  },
+})

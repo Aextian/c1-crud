@@ -1,18 +1,13 @@
-import useRecording from '@/hooks/useRecording'
+import useRecordingStore from '@/store/useRecordingStore'
 import { Ionicons } from '@expo/vector-icons' // For file-sharing icon
 import React from 'react'
 import { StyleSheet, TouchableOpacity } from 'react-native'
 import { InputToolbar } from 'react-native-gifted-chat'
 
 const CustomInputToolbar = (props: any) => {
-  const { startRecording, stopRecording, recording, playSound } = useRecording()
+  // const { startRecording, stopRecording, recording, playSound } = useRecording()
 
-  const handleStopRecording = async () => {
-    const uri = await stopRecording()
-    if (uri) {
-      playSound(uri)
-    }
-  }
+  const { startRecording, stopRecording, recording } = useRecordingStore()
 
   return (
     <InputToolbar
@@ -29,7 +24,7 @@ const CustomInputToolbar = (props: any) => {
 
           <TouchableOpacity
             style={styles.fileButton}
-            onPress={recording ? handleStopRecording : startRecording}
+            onPress={recording ? stopRecording : startRecording}
           >
             <Ionicons
               name="mic-outline"

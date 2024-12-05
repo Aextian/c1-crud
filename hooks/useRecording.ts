@@ -1,9 +1,12 @@
+import { storage } from '@/config'
 import { Audio } from 'expo-av'
+import { getDownloadURL, ref, uploadBytes } from 'firebase/storage'
 import { useEffect, useState } from 'react'
 
 const useRecording = () => {
   const [recording, setRecording] = useState<Audio.Recording | undefined>()
   const [sound, setSound] = useState<Audio.Sound | undefined>(undefined)
+  const [recordingUri, setRecordingUri] = useState<string | null>(null)
 
   const [permissionResponse, requestPermission] = Audio.usePermissions()
 
@@ -18,7 +21,6 @@ const useRecording = () => {
         playsInSilentModeIOS: true,
       })
 
-      console.log('Starting recording..')
       const { recording } = await Audio.Recording.createAsync(
         Audio.RecordingOptionsPresets.HIGH_QUALITY,
       )
@@ -41,9 +43,35 @@ const useRecording = () => {
       allowsRecordingIOS: false,
     })
 
-    console.log('Recording stopped and stored at', uri)
     setRecording(undefined) // Reset the recording state after stopping
-    return uri // You may want to return the URI of the recording
+    if (uri) {
+      const downloadURL = await uploadRecordingToFirebase(uri)
+      setRecordingUri(downloadURL)
+    }
+  }
+
+  async function uploadRecordingToFirebase(uri: string) {
+    try {
+      console.log('Uploading recording to Firebase...')
+      const response = await fetch(uri)
+      const blob = await response.blob() // Convert URI to Blob
+
+      const fileName = `recordings/${Date.now()}.m4a` // Create a unique filename
+      const storageRef = ref(storage, fileName)
+
+      // Upload the file to Firebase Storage
+      await uploadBytes(storageRef, blob)
+      console.log('Recording uploaded successfully')
+
+      // Get the download URL
+      const downloadURL = await getDownloadURL(storageRef)
+      console.log('Download URL:', downloadURL)
+
+      return downloadURL // Return the URL of the uploaded file
+    } catch (error) {
+      console.error('Error uploading recording to Firebase:', error)
+      return null
+    }
   }
 
   async function playSound(uri: string) {
@@ -70,6 +98,8 @@ const useRecording = () => {
   return {
     startRecording,
     stopRecording,
+    setRecordingUri,
+    recordingUri,
     playSound,
     recording,
   }
