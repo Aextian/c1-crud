@@ -55,7 +55,7 @@ const useMessages = (id: string) => {
 
   const currenUser = auth.currentUser
   const onSend = useCallback(
-    async (messages = []) => {
+    async (messages = [] as IMessage[]) => {
       const [messageToSend] = messages
       const messagesCollection = collection(db, 'conversations', id, 'messages')
       console.log(isAttachFile, isAttachImage, recordingUri)
@@ -75,7 +75,7 @@ const useMessages = (id: string) => {
         }
 
         await addDoc(messagesCollection, newMessage)
-        // resetState()
+        resetState()
       } else if (isAttachFile) {
         const newMessage = {
           _id: messages[0]._id + 1,
@@ -92,6 +92,7 @@ const useMessages = (id: string) => {
           },
         }
         await addDoc(messagesCollection, newMessage)
+        setFilePath('')
 
         // setMessages((previousMessages) =>
         //   GiftedChat.append(previousMessages, newMessage),

@@ -7,7 +7,7 @@ import { Bubble } from 'react-native-gifted-chat'
 const useRenderGiftedChat = () => {
   const [fileUrl, setFileUrl] = useState('')
 
-  const renderBubble = (props) => {
+  const renderBubble = (props: any) => {
     const { currentMessage } = props
     const currentUser = auth.currentUser
     if (currentMessage.file && currentMessage.file.url) {
@@ -26,7 +26,7 @@ const useRenderGiftedChat = () => {
           onPress={() => setFileUrl(currentMessage.file.url)}
         >
           <InChatFileTransfer filePath={currentMessage.file.url} />
-          <View style={{ flexDirection: 'column' }}>
+          <View style={{ flexDirection: 'column', padding: 5 }}>
             <Text
               style={{
                 color:

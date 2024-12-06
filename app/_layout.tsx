@@ -7,14 +7,20 @@ import '../global.css'
 const _layout = () => {
   const router = useRouter()
   const segments = useSegments()
-  const { currentUser, loading } = useAuth()
+  const { currentUser, loading, user } = useAuth()
+
   useEffect(() => {
     if (loading) return
     const inAuthGroup = segments[0] == 'auth'
     // if (currentUser && !inAuthGroup) {
     if (currentUser) {
-      // router.replace('/admin/posts')
-      router.replace('/teacher/messages')
+      user?.role === 'student'
+        ? router.replace('/student/messages')
+        : user?.role === 'teacher'
+          ? router.replace('/teacher/messages')
+          : user?.role === 'admin'
+            ? router.replace('/admin/posts')
+            : null
     } else if (!currentUser && !inAuthGroup) {
       router.replace('/auth/login')
       // router.replace('/student/videocall')

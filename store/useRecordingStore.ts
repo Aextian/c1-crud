@@ -106,7 +106,7 @@ const useRecordingStore = create<RecordingState>((set, get) => ({
     }
 
     try {
-      console.log('Loading sound...')
+      console.log('Loading sound...', uri)
       const { sound } = await Audio.Sound.createAsync({ uri })
       set({ sound: sound, currentAudio: uri, isPlaying: true })
       console.log('Playing sound...')

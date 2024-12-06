@@ -23,7 +23,7 @@ const _layout = () => {
         }}
       />
       <Tabs.Screen
-        name="add-post"
+        name="add-user"
         options={{
           headerShown: false,
           tabBarStyle: { display: 'none' },

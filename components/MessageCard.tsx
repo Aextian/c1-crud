@@ -12,7 +12,7 @@ import {
   query,
 } from 'firebase/firestore'
 import React, { useEffect, useState } from 'react'
-import { StyleSheet, Text, TouchableOpacity, View } from 'react-native'
+import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
 
 const MessageCard = ({ conversation }: { conversation: DocumentData }) => {
   const router = useRouter()
@@ -82,7 +82,14 @@ const MessageCard = ({ conversation }: { conversation: DocumentData }) => {
       }
     >
       <View style={styles.messsageCardIcon}>
-        <Feather name="user" size={24} color="black" />
+        {user?.avatar ? (
+          <Image
+            source={{ uri: user?.avatar }}
+            style={{ width: 45, height: 45, borderRadius: 100 }}
+          />
+        ) : (
+          <Feather name="user" size={24} color="black" />
+        )}
       </View>
       {/* content */}
       <View

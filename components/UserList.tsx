@@ -11,7 +11,7 @@ import {
   where,
 } from 'firebase/firestore'
 import React, { useEffect, useState } from 'react'
-import { ScrollView, Text, TouchableOpacity, View } from 'react-native'
+import { Image, ScrollView, Text, TouchableOpacity, View } from 'react-native'
 
 const UserList = () => {
   const [users, setUsers] = useState<DocumentData>([])
@@ -101,7 +101,15 @@ const UserList = () => {
                 padding: 16,
               }}
             >
-              <Feather name="user" size={24} />
+              {user?.avatar ? (
+                <Image
+                  src={user?.avatar}
+                  alt="avatar"
+                  style={{ width: 50, height: 50, borderRadius: 50 }}
+                />
+              ) : (
+                <Feather name="user" size={24} />
+              )}
             </View>
             <Text
               numberOfLines={1}

@@ -19,18 +19,18 @@ const CustomInputToolbar = (props: any) => {
             style={styles.fileButton}
             onPress={props.onFilePress} // Add your file-sharing function
           >
-            <Ionicons name="attach-outline" size={24} color="gray" />
+            <Ionicons name="attach-outline" size={24} color="blue" />
           </TouchableOpacity>
 
           <TouchableOpacity
             style={styles.fileButton}
             onPress={recording ? stopRecording : startRecording}
           >
-            <Ionicons
-              name="mic-outline"
-              size={36}
-              color={`${recording ? 'green' : 'gray'}`}
-            />
+            {recording ? (
+              <Ionicons name="stop-circle-outline" size={24} color="blue" />
+            ) : (
+              <Ionicons name="mic-outline" size={24} color="blue" />
+            )}
           </TouchableOpacity>
         </>
       )}
@@ -43,7 +43,7 @@ const CustomInputToolbar = (props: any) => {
             }
           }}
         >
-          <Ionicons name="send-outline" size={24} color="gray" />
+          <Ionicons name="send" size={24} color="blue" />
         </TouchableOpacity>
       )}
     />

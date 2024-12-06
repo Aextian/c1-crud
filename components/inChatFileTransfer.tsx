@@ -9,7 +9,7 @@ const InChatFileTransfer = ({ filePath }) => {
     fileType = filePath.split('.').pop()
   }
   return (
-    <View style={styles.container}>
+    <View>
       <View style={styles.frame}>
         <Image
           source={
@@ -17,11 +17,10 @@ const InChatFileTransfer = ({ filePath }) => {
               ? require('../assets/images/chat_file.png')
               : require('../assets/images/unknown_file.png')
           }
-          style={{ height: 60, width: 60 }}
+          style={{ height: 40, width: 40 }}
         />
         <View>
           <Text style={styles.text}>file</Text>
-          {/* <Text style={styles.textType}>{fileType.toUpperCase()}</Text> */}
         </View>
       </View>
     </View>
@@ -30,12 +29,6 @@ const InChatFileTransfer = ({ filePath }) => {
 export default InChatFileTransfer
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    marginTop: 5,
-    borderRadius: 15,
-    padding: 5,
-  },
   text: {
     color: 'black',
     marginTop: 10,

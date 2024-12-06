@@ -5,7 +5,7 @@ import { Pressable, SafeAreaView, Text, View } from 'react-native'
 
 const index = () => {
   return (
-    <SafeAreaView className="flex-1 px-5 gap-10 bg-gray-200 ">
+    <SafeAreaView className="flex-1 px-5  gap-10 bg-gray-200 ">
       <View className="bg-white p-5 mt-20 rounded-2xl flex justify-start flex-row gap-5 ">
         <View className="rounded-full w-12 h-12 bg-red-400" />
         <View>

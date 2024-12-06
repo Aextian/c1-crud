@@ -12,6 +12,7 @@ const useSignUp = () => {
     password: string,
     name: string,
     role: string,
+    imageUrl: string,
   ) => {
     setLoading(true)
     setError(null)
@@ -28,6 +29,8 @@ const useSignUp = () => {
         _id: user.uid,
         name: name,
         email: email,
+        avatar: imageUrl,
+        role: role,
         providerData: user.providerData[0],
       }
       // Update user profile with display name

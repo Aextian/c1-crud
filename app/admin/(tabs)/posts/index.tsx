@@ -1,6 +1,5 @@
-import { auth, db } from '@/config'
+import { db } from '@/config'
 import { Feather } from '@expo/vector-icons'
-import { useRouter } from 'expo-router'
 import {
   DocumentData,
   collection,
@@ -23,8 +22,6 @@ import {
 } from 'react-native'
 
 const index = () => {
-  const currentUser = auth?.currentUser
-
   const [posts, setPosts] = useState<any>([])
   // Fetch posts from Firestore
   const postsRef = collection(db, 'posts')
@@ -37,13 +34,11 @@ const index = () => {
         ...doc.data(),
       }))
       setPosts(postsData)
-      // setLoading(false);
     })
 
     return () => unsubscribe() // Cleanup the subscription on unmount
   }, [])
 
-  const router = useRouter()
   // Function to update status
   const handleApprove = async (id: string) => {
     try {
@@ -89,13 +84,17 @@ const index = () => {
               )}
               {/* Reaction (Like) Section */}
               <View className="flex flex-row items-center justify-around gap-5 mt-10">
-                <TouchableOpacity onPress={() => handleApprove(post.id)}>
-                  <Text className="text-lg ">
-                    <Feather name="check" color={'green'} size={28} />
-                  </Text>
+                <TouchableOpacity
+                  className="bg-green-400 p-3 rounded-lg"
+                  onPress={() => handleApprove(post.id)}
+                >
+                  <Text className="text-lg text-white">Approve</Text>
                 </TouchableOpacity>
-                <TouchableOpacity onPress={() => handleReject(post.id)}>
-                  <Feather name="x" color={'red'} size={28} />
+                <TouchableOpacity
+                  className="bg-red-400 p-3 rounded-lg"
+                  onPress={() => handleReject(post.id)}
+                >
+                  <Text className="text-lg text-white">Reject</Text>
                 </TouchableOpacity>
               </View>
             </View>
