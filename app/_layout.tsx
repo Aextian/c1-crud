@@ -22,7 +22,9 @@ const _layout = () => {
             ? router.replace('/admin/posts')
             : null
     } else if (!currentUser && !inAuthGroup) {
-      router.replace('/auth/login')
+      router.replace('/admin/home')
+
+      // router.replace('/auth/login')
       // router.replace('/student/videocall')
     }
   }, [currentUser, loading])

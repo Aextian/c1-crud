@@ -1,3 +1,4 @@
+import { TDataProps } from '@/app/admin/(tabs)/add-user'
 import { auth, db } from '@/config'
 import { createUserWithEmailAndPassword, updateProfile } from 'firebase/auth'
 import { doc, setDoc } from 'firebase/firestore'
@@ -11,7 +12,7 @@ const useSignUp = () => {
     email: string,
     password: string,
     name: string,
-    role: string,
+    data: TDataProps,
     imageUrl: string,
   ) => {
     setLoading(true)
@@ -25,18 +26,20 @@ const useSignUp = () => {
       )
       const user = userCredential.user
 
-      const data = {
+      const formData = {
         _id: user.uid,
         name: name,
         email: email,
         avatar: imageUrl,
-        role: role,
+        role: data.role,
+        year: data.year,
+        course: data.course,
         providerData: user.providerData[0],
       }
       // Update user profile with display name
       await updateProfile(user, { displayName: name })
       // Add user data to Firestore
-      await setDoc(doc(db, 'users', user.uid), data)
+      await setDoc(doc(db, 'users', user.uid), formData)
 
       setLoading(false)
       return user

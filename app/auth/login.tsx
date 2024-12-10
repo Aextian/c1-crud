@@ -51,7 +51,7 @@ const login = () => {
     <View style={styles.container}>
       <View className="flex items-center justify-between gap-10">
         <Image
-          className="h-72 w-72"
+          className="h-64 w-64"
           source={require('../../assets/images/logo.png')}
         />
         <View>

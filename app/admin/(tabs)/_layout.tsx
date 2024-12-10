@@ -43,6 +43,15 @@ const _layout = () => {
           ),
         }}
       />
+      <Tabs.Screen
+        name="home"
+        options={{
+          headerShown: false,
+          tabBarIcon: ({ color }) => (
+            <FontAwesome size={24} name="user" color={color} />
+          ),
+        }}
+      />
     </Tabs>
   )
 }

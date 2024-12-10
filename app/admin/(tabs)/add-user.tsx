@@ -1,5 +1,6 @@
 import LoadingScreen from '@/components/loadingScreen'
 import { storage } from '@/config'
+import useGradeLevel from '@/hooks/useGradeLevel'
 import useSignUp from '@/hooks/useSignUp'
 import { Feather } from '@expo/vector-icons'
 import { Picker } from '@react-native-picker/picker'
@@ -19,12 +20,25 @@ import {
 } from 'react-native'
 import Animated, { FadeIn, SlideInDown } from 'react-native-reanimated'
 
+export type TDataProps = {
+  role: string
+  year: string
+  course: string
+}
+
 const addUser = () => {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
-  const [role, setRole] = useState('student')
+  // const [role, setRole] = useState('student')
   const [name, setName] = useState('')
   const [image, setImage] = useState<string | null>(null)
+  const { years, courses } = useGradeLevel<string>()
+
+  const [data, setData] = useState<TDataProps>({
+    role: '',
+    year: '',
+    course: '',
+  })
 
   const uploadImage = async () => {
     if (image) {
@@ -53,14 +67,17 @@ const addUser = () => {
   const handleSignUp = async () => {
     try {
       const imageUrl = await uploadImage()
-      const user = await signUp(email, password, name, role, String(imageUrl))
+      const user = await signUp(email, password, name, data, String(imageUrl))
       if (user) {
         alert('Registered successfully!')
         // Optionally, reset form fields
         setEmail('')
         setPassword('')
-        setName('')
-        setRole('')
+        setData({
+          role: 'student',
+          year: '',
+          course: '',
+        })
       }
     } catch (error) {
       alert(error)
@@ -81,13 +98,14 @@ const addUser = () => {
             </Link>
           </View>
           <View style={styles.container}>
-            <View className="h-36 w-36 rounded-full bg-green-200 overflow-hidden">
+            <View className="h-24 w-24 rounded-full bg-white overflow-hidden shadow-lg">
               {image && (
                 <Image
                   source={{ uri: image }}
                   className="h-full w-full object-cover"
                 />
               )}
+              <Feather name="x" size={20} />
             </View>
             <TouchableOpacity
               onPress={pickImage}
@@ -101,7 +119,7 @@ const addUser = () => {
                 setEmail(email)
               }}
               placeholder="Email"
-              className=" mt-5 rounded-2xl text-2xl border border-slate-200 bg-slate-200 w-10/12 p-4"
+              className=" mt-5 rounded-2xl text-lg border border-slate-200 bg-slate-200 w-10/12 p-4"
             />
             <TextInput
               value={password}
@@ -110,7 +128,7 @@ const addUser = () => {
               }}
               placeholder="Password"
               secureTextEntry
-              className=" mt-5 rounded-2xl text-2xl border border-slate-200 bg-slate-200 w-10/12 p-4"
+              className=" mt-5 rounded-2xl text-lg border border-slate-200 bg-slate-200 w-10/12 p-4"
             />
             <TextInput
               value={name}
@@ -118,32 +136,71 @@ const addUser = () => {
                 setName(name)
               }}
               placeholder="Name"
-              className=" mt-5 rounded-2xl text-2xl border border-slate-200 bg-slate-200 w-10/12 p-4"
+              className=" mt-5 tex rounded-2xl text-lg border border-slate-200 bg-slate-200 w-10/12 p-4"
             />
-            <View
-              style={{
-                padding: 20,
-                display: 'flex',
-                justifyContent: 'space-around',
-                flexDirection: 'column',
-              }}
-            >
-              <Text>What is your role?</Text>
-              <Picker
-                selectedValue={role}
-                style={{
-                  height: 50,
-                  width: 200,
-                  borderColor: 'gray',
-                  borderRadius: 5, // Rounded corners
-                  borderWidth: 1,
-                }}
-                onValueChange={(role) => setRole(role)}
-              >
-                <Picker.Item label="Student" value="student" />
-                <Picker.Item label="Teacher" value="teacher" />
-              </Picker>
+
+            <View>
+              <Text>Role?</Text>
+              <View className="border border-slate-200 rounded-2xl bg-slate-200 w-10/12 ">
+                <Picker
+                  selectedValue={data.role}
+                  style={{
+                    // height: 50,
+                    width: 350,
+                  }}
+                  onValueChange={(role) => setData({ ...data, role })}
+                  mode="dropdown"
+                  dropdownIconColor="black"
+                  dropdownIconRippleColor="black"
+                >
+                  <Picker.Item label="Student" value="student" />
+                  <Picker.Item label="Teacher" value="teacher" />
+                </Picker>
+              </View>
             </View>
+
+            <View>
+              <Text>Year Level?</Text>
+              <View className="border border-slate-200 rounded-2xl bg-slate-200 w-10/12 ">
+                <Picker
+                  selectedValue={data.year}
+                  onValueChange={(year) => setData({ ...data, year })}
+                  style={{
+                    // height: 50,
+                    width: 350,
+                  }}
+                >
+                  {/* <Picker.Item label="Student" value="student" /> */}
+
+                  {years.map((year: any) => (
+                    <Picker.Item key={year} label={year.name} value={year.id} />
+                  ))}
+                </Picker>
+              </View>
+            </View>
+
+            <View>
+              <Text>Courses?</Text>
+              <View className="border border-slate-200 rounded-2xl bg-slate-200 w-10/12 ">
+                <Picker
+                  selectedValue={data.course}
+                  onValueChange={(course) => setData({ ...data, course })}
+                  style={{
+                    // height: 50,
+                    width: 350,
+                  }}
+                >
+                  {courses.map((course: any) => (
+                    <Picker.Item
+                      key={course.id}
+                      label={course.name}
+                      value={course.id}
+                    />
+                  ))}
+                </Picker>
+              </View>
+            </View>
+
             <TouchableOpacity
               className="p-3 mt-5  border-green-500 border-2 items-center rounded-3xl  w-10/12"
               onPress={handleSignUp}
