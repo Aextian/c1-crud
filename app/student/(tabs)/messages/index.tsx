@@ -30,7 +30,7 @@ import {
 const index = () => {
   const [chat, addChat] = useState('')
   const [rooms, setChatRoom] = useState<DocumentData[] | undefined>()
-  const { conversations } = useChat()
+  const { conversations, loading } = useChat()
   const currentUser = auth.currentUser
 
   // functio to create new chat
@@ -135,23 +135,33 @@ const index = () => {
             <Feather name="send" size={24} />
           </TouchableOpacity>
         </View>
-        <UserList />
+        <UserList role="student" />
         <View style={{ paddingHorizontal: 10, marginVertical: 10 }}>
           <Text>Messages</Text>
         </View>
         <ScrollView contentContainerStyle={{ display: 'flex', gap: 30 }}>
           {conversations && conversations?.length > 0 ? (
             <>
-              {conversations?.map((conversation) => (
-                <MessageCard
-                  key={conversation.id}
-                  conversation={conversation}
-                />
-              ))}
+              {conversations?.map((conversation) =>
+                conversation.messages && conversation.messages.length > 0 ? (
+                  <MessageCard
+                    key={conversation.id}
+                    conversation={conversation}
+                  />
+                ) : null,
+              )}
             </>
           ) : (
             <>
-              <LoadingScreen />
+              {loading ? (
+                <LoadingScreen />
+              ) : (
+                <View>
+                  <Text style={{ textAlign: 'center' }}>
+                    No conversation found
+                  </Text>
+                </View>
+              )}
             </>
           )}
         </ScrollView>

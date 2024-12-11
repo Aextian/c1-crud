@@ -19,10 +19,10 @@ const _layout = () => {
         : user?.role === 'teacher'
           ? router.replace('/teacher/messages')
           : user?.role === 'admin'
-            ? router.replace('/admin/posts')
+            ? router.replace('/admin/home')
             : null
     } else if (!currentUser && !inAuthGroup) {
-      router.replace('/admin/home')
+      router.replace('/auth/login')
 
       // router.replace('/auth/login')
       // router.replace('/student/videocall')

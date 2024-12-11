@@ -76,8 +76,11 @@ const manageCourses = () => {
           <Text>Add</Text>
         </TouchableOpacity>
       </View>
-      {courses.map((course) => (
-        <View className="flex items-start flex-row justify-between mt-5">
+      {courses.map((course, key) => (
+        <View
+          key={key}
+          className="flex items-start flex-row justify-between mt-5"
+        >
           <Text>{course.name}</Text>
           <View className="flex items-center flex-row gap-2">
             <TouchableOpacity className="bg-green-300 p-2 rounded-xl">

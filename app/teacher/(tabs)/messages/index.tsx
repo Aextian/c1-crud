@@ -19,7 +19,7 @@ const index = () => {
         <CallScreen callId={callId} type={'user'} isTeacher={false} />
       )}
       <View>
-        <UserList />
+        <UserList role="teacher" />
         <View style={{ paddingHorizontal: 10, marginVertical: 10 }}>
           <View className="flex flex-row items-center justify-center gap-5">
             <Link

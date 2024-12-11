@@ -7,7 +7,7 @@ const useGradeLevel = <T>() => {
   const [courses, setCourses] = useState<DocumentData | T[]>([])
 
   const yearCollectionRef = collection(db, 'years')
-  const courseCollectionRef = collection(db, 'years')
+  const courseCollectionRef = collection(db, 'courses')
   useEffect(() => {
     const unsubscribeYear = onSnapshot(yearCollectionRef, (querySnapshot) => {
       const postsData = querySnapshot.docs.map((doc) => ({

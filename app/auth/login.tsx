@@ -31,7 +31,7 @@ const login = () => {
           const data = docSnap.data()
           setUser(data)
           if (data.role === 'admin') {
-            router.push('/admin/posts')
+            router.push('/admin/home')
           } else if (data.role === 'teacher') {
             router.push('/teacher/messages')
           } else {

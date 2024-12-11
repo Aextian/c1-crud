@@ -13,7 +13,11 @@ import {
 import React, { useEffect, useState } from 'react'
 import { Image, ScrollView, Text, TouchableOpacity, View } from 'react-native'
 
-const UserList = () => {
+interface UserListProps {
+  role?: string
+}
+
+const UserList = ({ role }: UserListProps) => {
   const [users, setUsers] = useState<DocumentData>([])
   const currentUser = auth.currentUser
   const router = useRouter() // Initialize the router
@@ -45,24 +49,28 @@ const UserList = () => {
         // Check if the selected user is in the conversation
         return users.includes(selectedUser.id)
       })
+
       if (conversation) {
-        router.push({
-          pathname: `/teacher/(tabs)/messages/conversations/user`,
-          params: {
-            id: conversation.id,
-          },
-        })
+        role === 'teacher'
+          ? router.push({
+              pathname: `/teacher/(tabs)/messages/conversations/user`,
+              params: {
+                id: conversation.id,
+              },
+            })
+          : router.push(
+              `/student/(tabs)/messages/conversations/${conversation.id}`,
+            )
       } else {
         // Create a new conversation
         const docRef = await addDoc(collection(db, 'conversations'), {
           users: [currentUser?.uid, selectedUser.id], // Corrected document structure
         })
-        router.push({
-          pathname: `/teacher/(tabs)/messages/conversations/user`,
-          params: {
-            id: docRef.id,
-          },
-        })
+        role === 'teacher'
+          ? router.push({
+              pathname: `/teacher/(tabs)/messages/conversations/user`,
+            })
+          : router.push(`/student/(tabs)/messages/conversations/${docRef.id}`)
       }
     } catch (error) {
       console.error('Error fetching or creating conversation: ', error)

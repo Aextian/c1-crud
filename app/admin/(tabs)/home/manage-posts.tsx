@@ -21,7 +21,7 @@ import {
   View,
 } from 'react-native'
 
-const index = () => {
+const managePosts = () => {
   const [posts, setPosts] = useState<any>([])
   // Fetch posts from Firestore
   const postsRef = collection(db, 'posts')
@@ -158,4 +158,4 @@ const styles = StyleSheet.create({
   },
 })
 
-export default index
+export default managePosts

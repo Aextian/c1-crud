@@ -13,24 +13,11 @@ const _layout = () => {
       }}
     >
       <Tabs.Screen
-        name="posts"
-        options={{
-          tabBarStyle: styles.tabBar,
-          headerShown: false,
-          tabBarIcon: ({ color }) => (
-            <FontAwesome size={28} name="home" color={color} />
-          ),
-        }}
-      />
-      <Tabs.Screen
-        name="add-user"
+        name="home"
         options={{
           headerShown: false,
-          tabBarStyle: { display: 'none' },
           tabBarIcon: ({ color }) => (
-            <View className="bg-gray-300 px-5 py-2 rounded-full">
-              <FontAwesome size={24} name="plus" color={color} />
-            </View>
+            <FontAwesome size={24} name="home" color={color} />
           ),
         }}
       />
@@ -44,11 +31,14 @@ const _layout = () => {
         }}
       />
       <Tabs.Screen
-        name="home"
+        name="add-user"
         options={{
           headerShown: false,
+          tabBarStyle: { display: 'none' },
           tabBarIcon: ({ color }) => (
-            <FontAwesome size={24} name="user" color={color} />
+            <View className="bg-gray-300 px-5 py-2 rounded-full">
+              <FontAwesome size={24} name="plus" color={color} />
+            </View>
           ),
         }}
       />

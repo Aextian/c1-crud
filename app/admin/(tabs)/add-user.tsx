@@ -72,6 +72,7 @@ const addUser = () => {
         alert('Registered successfully!')
         // Optionally, reset form fields
         setEmail('')
+        setImage(null)
         setPassword('')
         setData({
           role: 'student',
@@ -91,7 +92,7 @@ const addUser = () => {
         {/* <SafeAreaProvider> */}
         <SafeAreaView style={{ flex: 1 }}>
           <View className="w-full bg-white border-b border-b-slate-100 flex justify-start ">
-            <Link href={'/admin/posts'} asChild>
+            <Link href={'/admin/home'} asChild>
               <Pressable className="p-4">
                 <Feather name="x" size={20} />
               </Pressable>
@@ -158,48 +159,57 @@ const addUser = () => {
                 </Picker>
               </View>
             </View>
+            {data.role === 'student' && (
+              <>
+                <View>
+                  <Text>Year Level?</Text>
+                  <View className="border border-slate-200 rounded-2xl bg-slate-200 w-10/12 ">
+                    <Picker
+                      selectedValue={data.year}
+                      onValueChange={(year) => setData({ ...data, year })}
+                      style={{
+                        // height: 50,
+                        width: 350,
+                      }}
+                    >
+                      <Picker.Item label="Please Select Year Level" value="" />
 
-            <View>
-              <Text>Year Level?</Text>
-              <View className="border border-slate-200 rounded-2xl bg-slate-200 w-10/12 ">
-                <Picker
-                  selectedValue={data.year}
-                  onValueChange={(year) => setData({ ...data, year })}
-                  style={{
-                    // height: 50,
-                    width: 350,
-                  }}
-                >
-                  {/* <Picker.Item label="Student" value="student" /> */}
+                      {years.map((year: any) => (
+                        <Picker.Item
+                          key={year}
+                          label={year.name}
+                          value={year.name}
+                        />
+                      ))}
+                    </Picker>
+                  </View>
+                </View>
 
-                  {years.map((year: any) => (
-                    <Picker.Item key={year} label={year.name} value={year.id} />
-                  ))}
-                </Picker>
-              </View>
-            </View>
+                <View>
+                  <Text>Courses?</Text>
+                  <View className="border border-slate-200 rounded-2xl bg-slate-200 w-10/12 ">
+                    <Picker
+                      selectedValue={data.course}
+                      onValueChange={(course) => setData({ ...data, course })}
+                      style={{
+                        // height: 50,
+                        width: 350,
+                      }}
+                    >
+                      <Picker.Item label="Please Select Course" value="" />
 
-            <View>
-              <Text>Courses?</Text>
-              <View className="border border-slate-200 rounded-2xl bg-slate-200 w-10/12 ">
-                <Picker
-                  selectedValue={data.course}
-                  onValueChange={(course) => setData({ ...data, course })}
-                  style={{
-                    // height: 50,
-                    width: 350,
-                  }}
-                >
-                  {courses.map((course: any) => (
-                    <Picker.Item
-                      key={course.id}
-                      label={course.name}
-                      value={course.id}
-                    />
-                  ))}
-                </Picker>
-              </View>
-            </View>
+                      {courses.map((course: any) => (
+                        <Picker.Item
+                          key={course.id}
+                          label={course.name}
+                          value={course.name}
+                        />
+                      ))}
+                    </Picker>
+                  </View>
+                </View>
+              </>
+            )}
 
             <TouchableOpacity
               className="p-3 mt-5  border-green-500 border-2 items-center rounded-3xl  w-10/12"
