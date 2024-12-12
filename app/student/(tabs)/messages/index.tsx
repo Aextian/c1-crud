@@ -1,7 +1,7 @@
 import CallScreen from '@/components/CallScreen'
 import MessageCard from '@/components/MessageCard'
+import SkUserLoader from '@/components/SkLoader'
 import UserList from '@/components/UserList'
-import LoadingScreen from '@/components/loadingScreen'
 // import MessageCard from '@/components/messageCard'
 import { auth, db } from '@/config'
 import { useChat } from '@/hooks/useChat'
@@ -154,7 +154,7 @@ const index = () => {
           ) : (
             <>
               {loading ? (
-                <LoadingScreen />
+                <SkUserLoader />
               ) : (
                 <View>
                   <Text style={{ textAlign: 'center' }}>

@@ -10,7 +10,7 @@ import React from 'react'
 import { SafeAreaView, ScrollView, StyleSheet, Text, View } from 'react-native'
 
 const index = () => {
-  const { conversations } = useChat()
+  const { conversations, loading } = useChat()
   const { incomingCall, callId } = useIncomingCall()
 
   return (
@@ -40,16 +40,26 @@ const index = () => {
         <ScrollView contentContainerStyle={{ display: 'flex', gap: 30 }}>
           {conversations && conversations?.length > 0 ? (
             <>
-              {conversations?.map((conversation) => (
-                <MessageCard
-                  key={conversation.id}
-                  conversation={conversation}
-                />
-              ))}
+              {conversations?.map((conversation) =>
+                conversation.messages && conversation.messages.length > 0 ? (
+                  <MessageCard
+                    key={conversation.id}
+                    conversation={conversation}
+                  />
+                ) : null,
+              )}
             </>
           ) : (
             <>
-              <SkUserLoader />
+              {loading ? (
+                <SkUserLoader />
+              ) : (
+                <View>
+                  <Text style={{ textAlign: 'center' }}>
+                    No conversation found
+                  </Text>
+                </View>
+              )}
             </>
           )}
         </ScrollView>

@@ -1,5 +1,5 @@
 import { auth, db } from '@/config'
-import { Feather } from '@expo/vector-icons'
+import { AntDesign, Entypo, Feather } from '@expo/vector-icons'
 import { useRouter } from 'expo-router'
 import {
   DocumentData,
@@ -23,10 +23,10 @@ import {
 const index = () => {
   const currentUser = auth?.currentUser
 
-  const cards = Array.from({ length: 5 })
   // State to manage likes and comments
-  const [likes, setLikes] = useState(Array(cards.length).fill(false)) // To track likes
   const [posts, setPosts] = useState<any>([])
+  const [likes, setLikes] = useState(Array(posts.length).fill(false)) // To track likes
+
   // Fetch posts from Firestore
   useEffect(() => {
     const q = query(collection(db, 'posts'), orderBy('createdAt', 'desc'))
@@ -48,17 +48,34 @@ const index = () => {
     newLikes[index] = !newLikes[index] // Toggle like status
     setLikes(newLikes)
   }
-
+  console.log('likes', likes)
   const router = useRouter()
+
+  const formatDate = (dateString: string) => {
+    const date = new Date(dateString)
+    return date.toLocaleDateString('en-US', {
+      weekday: 'long', // e.g., "Monday"
+      year: 'numeric', // e.g., "2023"
+      month: 'long', // e.g., "December"
+      day: 'numeric', // e.g., "12"
+    })
+  }
 
   return (
     <SafeAreaView style={{ flex: 1 }}>
       <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
         {/* navigate to post screen */}
-        <Pressable onPress={() => router.push('/student/add-post')}>
+        <Pressable onPress={() => router.push('/teacher/(tabs)/add-post')}>
           <View className="flex flex-row gap-5  border-b border-b-slate-100  p-4 ">
-            <View className="rounded-full border p-3 ">
-              <Feather name="user" size={12} />
+            <View className="rounded-full border ">
+              {currentUser?.photoURL ? (
+                <Image
+                  source={{ uri: currentUser?.photoURL }}
+                  style={{ width: 45, height: 45, borderRadius: 100 }}
+                />
+              ) : (
+                <Feather name="user" size={24} color="black" />
+              )}
             </View>
             <View className="gap-2">
               <Text className="text-[12px] font-medium">
@@ -71,29 +88,31 @@ const index = () => {
           </View>
         </Pressable>
 
-        {/* view carousel */}
-        {/* <ScrollView
-        horizontal
-        showsHorizontalScrollIndicator={false}
-        style={styles.carousel}
-      >
-        {images.map((image, index) => (
-          <View key={index} style={styles.imageContainer}>
-            <Image source={image} style={styles.image} resizeMode="cover" />
-          </View>
-        ))}
-      </ScrollView> */}
         {/* post content*/}
         {posts.map((post: DocumentData, index: number) => (
           <View key={index} className="border-b border-b-slate-200 p-4">
-            <View className="flex flex-row items-center justify-start gap-2">
-              <View className="rounded-full w-8 h-8 border p-3 items-center justify-center">
-                <Feather name="user" size={14} />
+            <View className="flex flex-row justify-between">
+              <View className="flex flex-row items-center justify-start gap-2">
+                <View className="rounded-full w-8 h-8 border p-3 items-center justify-center">
+                  {post?.authorAvatar ? (
+                    <Image
+                      source={{ uri: post?.authorAvatar }}
+                      style={{ width: 30, height: 30, borderRadius: 100 }}
+                    />
+                  ) : (
+                    <Feather name="user" size={24} color="black" />
+                  )}
+                </View>
+                <View>
+                  <Text className="font-semibold">{post.authorName}</Text>
+                  <Text className="text-[8px] text-gray-500">
+                    {formatDate(post.createdAt)}
+                  </Text>
+                </View>
               </View>
-              <View>
-                <Text className="font-semibold">{post.authorName}</Text>
-              </View>
+              <Text>...</Text>
             </View>
+
             <View className="px-9 pb-10">
               <Text className="text-black leading-loose">{post.post} </Text>
               {post.imageUrl && (
@@ -103,19 +122,57 @@ const index = () => {
                 />
               )}
               {/* Reaction (Like) Section */}
-              <View className="flex flex-row items-center justify-start gap-5">
+              <View className="flex flex-row items-center justify-start gap-5 relative">
+                {likes[index] ? (
+                  <View className="flex flex-row rounded-br-2xl rounded-tl-2xl   items-start gap-5 px-3 py-2  bg-white shadow-2xl absolute -top-16 left-0">
+                    {/* emotic */}
+                    <TouchableOpacity
+                      onPress={() => toggleLike(index)}
+                      style={styles.likeButton}
+                    >
+                      <Text>
+                        <AntDesign name="like2" size={24} />
+                      </Text>
+                    </TouchableOpacity>
+
+                    <TouchableOpacity
+                      onPress={() => toggleLike(index)}
+                      style={styles.likeButton}
+                    >
+                      <Text>
+                        {' '}
+                        <AntDesign name="dislike2" size={24} />
+                      </Text>
+                    </TouchableOpacity>
+                  </View>
+                ) : null}
+
                 <TouchableOpacity
                   onPress={() => toggleLike(index)}
+                  onLongPress={() => toggleLike(index)}
+                  // onLongPress={() => handleEmoticonPress(index)}
+                  style={styles.likeButton}
+                >
+                  <Text>
+                    <Entypo name="bookmark" size={24} />
+                  </Text>
+                </TouchableOpacity>
+
+                <TouchableOpacity
+                  onPress={() => toggleLike(index)}
+                  onLongPress={() => toggleLike(index)}
+                  // onLongPress={() => handleEmoticonPress(index)}
                   style={styles.likeButton}
                 >
                   <Text className="text-lg ">
                     {likes[index] ? '❤️1K ' : '🤍 '}
                   </Text>
                 </TouchableOpacity>
+
                 <TouchableOpacity
                   onPress={() =>
                     // @ts-ignore
-                    router.push(`/student/posts/comments/${post.id}`)
+                    router.push(`/teacher/posts/comments/${post.id}`)
                   }
                 >
                   <Feather name="message-circle" color={'gray'} size={28} />

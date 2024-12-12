@@ -1,6 +1,6 @@
 import { auth, db } from '@/config'
 import { useUserStore } from '@/store/useUserStore'
-import { Link, useRouter } from 'expo-router'
+import { useRouter } from 'expo-router'
 import { signInWithEmailAndPassword } from 'firebase/auth'
 import { doc, getDoc } from 'firebase/firestore'
 import React, { useState } from 'react'
@@ -81,10 +81,7 @@ const login = () => {
         </Text>
       </TouchableOpacity>
       <View className="flex flex-row gap-4 mt-5">
-        <Text className="text-slate-400">New User? </Text>
-        <Link href={'/auth/signup'}>
-          <Text className="text-green-500">Sign Up</Text>
-        </Link>
+        {/* <Text className="text-slate-400">New User? </Text> */}
       </View>
     </View>
   )

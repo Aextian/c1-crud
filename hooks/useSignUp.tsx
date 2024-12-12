@@ -37,7 +37,7 @@ const useSignUp = () => {
         providerData: user.providerData[0],
       }
       // Update user profile with display name
-      await updateProfile(user, { displayName: name })
+      await updateProfile(user, { displayName: name, photoURL: imageUrl })
       // Add user data to Firestore
       await setDoc(doc(db, 'users', user.uid), formData)
 

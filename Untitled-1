@@ -1,0 +1,65 @@
+// Fetch posts from Firestore
+// useEffect(() => {
+//   const q = query(collection(db, 'posts'), orderBy('createdAt', 'desc'))
+//   const unsubscribe = onSnapshot(q, async (querySnapshot) => {
+//     const postsData = querySnapshot.docs.map((doc) => ({
+//       id: doc.id,
+//       ...doc.data(),
+//     }))
+
+//     // Get the user ID for checking likes
+//     const userId = auth.currentUser?.uid
+//     const likesData = {}
+
+//     for (const post of postsData) {
+//       if (userId) {
+//         const likeDocRef = doc(db, `posts/${post.id}/likes/${userId}`)
+//         const likeDocSnapshot = await getDoc(likeDocRef)
+//         likesData[post.id] = likeDocSnapshot.exists() // Check if the document exists
+//       }
+//     }
+
+//     setPosts(postsData)
+//     setLikes(likesData)
+//   })
+
+//   return () => unsubscribe() // Cleanup on unmount
+// }, [])
+
+// const toggleLike = async (postId) => {
+//   const userId = auth.currentUser?.uid // Get the logged-in user's ID
+//   if (!userId) {
+//     console.warn('User not logged in')
+//     return
+//   }
+
+//   const postRef = doc(db, 'posts', postId)
+//   const likeRef = doc(db, `posts/${postId}/likes/${userId}`)
+
+//   try {
+//     if (likes[postId]) {
+//       // Unlike the post
+//       await deleteDoc(likeRef)
+//       await updateDoc(postRef, {
+//         likesCount: increment(-1),
+//       })
+//     } else {
+//       // Like the post
+//       await setDoc(likeRef, {
+//         userId,
+//         likedAt: new Date().toISOString(),
+//       })
+//       await updateDoc(postRef, {
+//         likesCount: increment(1),
+//       })
+//     }
+
+//     // Update local like state
+//     setLikes((prevLikes) => ({
+//       ...prevLikes,
+//       [postId]: !prevLikes[postId],
+//     }))
+//   } catch (error) {
+//     console.error('Error toggling like:', error)
+//   }
+// }

@@ -64,6 +64,7 @@ const addPost = () => {
         createdAt: new Date().toISOString(),
         authorId: currentUser?.uid, // Store the UID of the author
         authorName: currentUser?.displayName || 'Anonymous', // Store the author's name
+        authorAvatar: currentUser?.photoURL,
         post: post,
         likes: 0,
         comment: 0,
@@ -71,7 +72,7 @@ const addPost = () => {
         imageUrl: imageUrl,
       })
       addPost('')
-      router.push('/student/posts')
+      router.push('/teacher/posts')
     } catch (error) {
       console.error('Error adding post: ', error)
       alert('Post added error')
@@ -84,22 +85,31 @@ const addPost = () => {
         {/* <SafeAreaProvider> */}
         <SafeAreaView style={{ flex: 1 }}>
           <View className="w-full bg-white border-b border-b-slate-100 flex justify-start ">
-            <Link href={'/student/posts'} asChild>
+            <Link href={'/teacher/posts'} asChild>
               <Pressable className="p-4">
                 <Feather name="x" size={20} />
               </Pressable>
             </Link>
           </View>
           <View className="flex-1 bg-white">
-            <View className="flex flex-row   items-center   p-4 gap-2">
-              <View className="rounded-full border p-3">
-                <Feather name="user" size={12} />
+            <View className="flex flex-row  items-center  p-4 gap-2">
+              <View className="rounded-full border">
+                {currentUser?.photoURL ? (
+                  <Image
+                    source={{ uri: currentUser?.photoURL }}
+                    style={{ width: 45, height: 45, borderRadius: 100 }}
+                  />
+                ) : (
+                  <Feather name="user" size={24} color="black" />
+                )}
               </View>
               <View className="px-10">
                 <View>
-                  <Text className="text-xs font-medium">Juan Dela Cruz</Text>
+                  <Text className="text-xs font-medium">
+                    {currentUser?.displayName}
+                  </Text>
                   <TextInput
-                    className="w-full items-center border-none text-[10px] outline-none"
+                    className=" items-center border-none text-[10px] outline-none"
                     editable
                     multiline
                     numberOfLines={4}
@@ -110,17 +120,17 @@ const addPost = () => {
                   />
                 </View>
 
-                <View className="flex flex-row w-full justify-between gap-5 items-center ">
+                <View className="flex flex-row  justify-between gap-5 items-center ">
                   <View className="flex flex-row  gap-10 ">
                     <TouchableOpacity onPress={pickImage}>
-                      <Feather name="image" size={24} color={'gray'} />
+                      <Feather name="image" size={24} color={'green'} />
                     </TouchableOpacity>
                     <TouchableOpacity onPress={takePhoto}>
-                      <Feather name="camera" size={24} color={'gray'} />
+                      <Feather name="camera" size={24} color={'green'} />
                     </TouchableOpacity>
                   </View>
                   <TouchableOpacity
-                    className="bg-green-300 px-5 py-3  text-sm rounded-3xl"
+                    className="bg-green-400 px-5 py-3 w-1/2 items-center  text-sm rounded-3xl"
                     onPress={handleSubmit}
                   >
                     <Text className="text-white">Post</Text>
