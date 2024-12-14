@@ -36,7 +36,7 @@ const useIncomingCall = () => {
       if (data?.callStarted && data.startedBy !== userId) {
         // Notify the user of an incoming call
         setIncomingCall(data)
-        alert(`Incoming call from ${data.startedBy}`)
+        // alert(`Incoming call from ${data.startedBy}`)
         // Optionally, open the call UI here or trigger a ringtone
       }
     })

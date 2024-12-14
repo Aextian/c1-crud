@@ -66,9 +66,13 @@ const UserList = ({ role }: UserListProps) => {
         const docRef = await addDoc(collection(db, 'conversations'), {
           users: [currentUser?.uid, selectedUser.id], // Corrected document structure
         })
+
         role === 'teacher'
           ? router.push({
               pathname: `/teacher/(tabs)/messages/conversations/user`,
+              params: {
+                id: docRef.id,
+              },
             })
           : router.push(`/student/(tabs)/messages/conversations/${docRef.id}`)
       }
