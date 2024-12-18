@@ -66,11 +66,15 @@ const addPost = () => {
         authorName: currentUser?.displayName || 'Anonymous', // Store the author's name
         authorAvatar: currentUser?.photoURL,
         post: post,
-        likes: 0,
-        comment: 0,
+        likes: [],
+        likesCount: 0,
+        dislikes: [],
+        dislikesCount: 0,
+        commentCount: 0,
         status: false,
         imageUrl: imageUrl,
       })
+
       addPost('')
       router.push('/teacher/posts')
     } catch (error) {

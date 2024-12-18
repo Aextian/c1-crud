@@ -29,10 +29,44 @@ export type TDataProps = {
 const addUser = () => {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
-  // const [role, setRole] = useState('student')
   const [name, setName] = useState('')
   const [image, setImage] = useState<string | null>(null)
   const { years, courses } = useGradeLevel<string>()
+  const [isFormValid, setIsFormValid] = useState(false)
+  const [errors, setErrors] = useState({} as any)
+
+  const handleFormValidation = () => {
+    let errors = {} as any
+
+    if (!email) {
+      errors.email = 'Email is required'
+    } else if (!/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i.test(email)) {
+      errors.email = 'Invalid email address'
+    }
+
+    if (!password) {
+      errors.password = 'Password is required'
+    }
+
+    if (!name) {
+      errors.name = 'Name is required'
+    }
+
+    if (!data.role) {
+      errors.role = 'Role is required'
+    }
+
+    if (!data.year && data.role === 'student') {
+      errors.year = 'Year is required'
+    }
+
+    if (!data.course && data.role === 'student') {
+      errors.course = 'Course is required'
+    }
+
+    setErrors(errors)
+    setIsFormValid(Object.keys(errors).length === 0)
+  }
 
   const [data, setData] = useState<TDataProps>({
     role: '',
@@ -51,6 +85,7 @@ const addUser = () => {
       return downloadURL
     }
   }
+
   const pickImage = async () => {
     let result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.All,
@@ -65,6 +100,10 @@ const addUser = () => {
   const { signUp, loading, error } = useSignUp() // Using the custom hook
 
   const handleSignUp = async () => {
+    if (!isFormValid) {
+      handleFormValidation()
+      return
+    }
     try {
       const imageUrl = await uploadImage()
       const user = await signUp(email, password, name, data, String(imageUrl))
@@ -75,7 +114,7 @@ const addUser = () => {
         setImage(null)
         setPassword('')
         setData({
-          role: 'student',
+          role: '',
           year: '',
           course: '',
         })
@@ -86,7 +125,7 @@ const addUser = () => {
   }
 
   return (
-    <Animated.View entering={FadeIn} style={{ flex: 1, marginTop: 25 }}>
+    <Animated.View entering={FadeIn} style={{ flex: 1, marginTop: 10 }}>
       <Animated.View entering={SlideInDown} style={{ flex: 1 }}>
         {/* Dismiss modal when pressing outside */}
         {/* <SafeAreaProvider> */}
@@ -100,9 +139,14 @@ const addUser = () => {
           </View>
           <View style={styles.container}>
             <View className="h-24 w-24 rounded-full bg-white overflow-hidden shadow-lg">
-              {image && (
+              {image ? (
                 <Image
                   source={{ uri: image }}
+                  className="h-full w-full object-cover"
+                />
+              ) : (
+                <Image
+                  source={require('../../../assets/images/user-image.jpg')}
                   className="h-full w-full object-cover"
                 />
               )}
@@ -114,34 +158,42 @@ const addUser = () => {
             >
               <Text>Select Profile</Text>
             </TouchableOpacity>
-            <TextInput
-              value={email}
-              onChangeText={(email) => {
-                setEmail(email)
-              }}
-              placeholder="Email"
-              className=" mt-5 rounded-2xl text-lg border border-slate-200 bg-slate-200 w-10/12 p-4"
-            />
-            <TextInput
-              value={password}
-              onChangeText={(password) => {
-                setPassword(password)
-              }}
-              placeholder="Password"
-              secureTextEntry
-              className=" mt-5 rounded-2xl text-lg border border-slate-200 bg-slate-200 w-10/12 p-4"
-            />
-            <TextInput
-              value={name}
-              onChangeText={(name) => {
-                setName(name)
-              }}
-              placeholder="Name"
-              className=" mt-5 tex rounded-2xl text-lg border border-slate-200 bg-slate-200 w-10/12 p-4"
-            />
+            <View className="items-center flex justify-center w-full">
+              <TextInput
+                value={email}
+                onChangeText={(email) => {
+                  setEmail(email)
+                }}
+                placeholder="Email"
+                className=" rounded-2xl text-lg border border-slate-200 bg-slate-200 w-10/12 p-4"
+              />
+              <Text className="text-red-500 text-sm">{errors.email} </Text>
+            </View>
+            <View className="items-center flex justify-center w-full">
+              <TextInput
+                value={password}
+                onChangeText={(password) => {
+                  setPassword(password)
+                }}
+                placeholder="Password"
+                secureTextEntry
+                className=" rounded-2xl text-lg border border-slate-200 bg-slate-200 w-10/12 p-4"
+              />
+              <Text className="text-red-500 text-sm">{errors.password} </Text>
+            </View>
+            <View className="items-center flex justify-center w-full">
+              <TextInput
+                value={name}
+                onChangeText={(name) => {
+                  setName(name)
+                }}
+                placeholder="Name"
+                className=" tex rounded-2xl text-lg border border-slate-200 bg-slate-200 w-10/12 p-4"
+              />
+              <Text className="text-red-500 text-sm">{errors.name} </Text>
+            </View>
 
-            <View>
-              <Text>Role?</Text>
+            <View className="items-center flex justify-center w-full">
               <View className="border border-slate-200 rounded-2xl bg-slate-200 w-10/12 ">
                 <Picker
                   selectedValue={data.role}
@@ -150,19 +202,17 @@ const addUser = () => {
                     width: 350,
                   }}
                   onValueChange={(role) => setData({ ...data, role })}
-                  mode="dropdown"
-                  dropdownIconColor="black"
-                  dropdownIconRippleColor="black"
                 >
+                  <Picker.Item label="Please Select Role" value="" />
                   <Picker.Item label="Student" value="student" />
                   <Picker.Item label="Teacher" value="teacher" />
                 </Picker>
               </View>
+              <Text className="text-red-500 text-sm">{errors.role} </Text>
             </View>
             {data.role === 'student' && (
               <>
-                <View>
-                  <Text>Year Level?</Text>
+                <View className="items-center flex justify-center w-full">
                   <View className="border border-slate-200 rounded-2xl bg-slate-200 w-10/12 ">
                     <Picker
                       selectedValue={data.year}
@@ -183,10 +233,10 @@ const addUser = () => {
                       ))}
                     </Picker>
                   </View>
+                  <Text className="text-red-500 text-sm">{errors.year} </Text>
                 </View>
 
-                <View>
-                  <Text>Courses?</Text>
+                <View className="items-center flex justify-center w-full">
                   <View className="border border-slate-200 rounded-2xl bg-slate-200 w-10/12 ">
                     <Picker
                       selectedValue={data.course}
@@ -197,7 +247,6 @@ const addUser = () => {
                       }}
                     >
                       <Picker.Item label="Please Select Course" value="" />
-
                       {courses.map((course: any) => (
                         <Picker.Item
                           key={course.id}
@@ -207,6 +256,7 @@ const addUser = () => {
                       ))}
                     </Picker>
                   </View>
+                  <Text className="text-red-500 text-sm">{errors.course} </Text>
                 </View>
               </>
             )}

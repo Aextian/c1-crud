@@ -86,8 +86,8 @@ const comments = () => {
           className="px-10 rounded-lg"
           style={{ flex: 1, marginTop: 20, backgroundColor: 'white' }}
         >
-          {comments?.map((comment) => (
-            <View className="flex flex-row gap-5 mt-10">
+          {comments?.map((comment, key) => (
+            <View key={key} className="flex flex-row gap-5 mt-10">
               <View className="rounded-full h-12 w-12 bg-black"></View>
               <View className="justify-center">
                 <Text className="font-bold text-xs">{comment.author}</Text>
