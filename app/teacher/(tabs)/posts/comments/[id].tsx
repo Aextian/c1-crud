@@ -1,5 +1,6 @@
 import { auth, db } from '@/config'
-import { FontAwesome } from '@expo/vector-icons'
+import addNotifications from '@/hooks/useNotifications'
+import { Feather, FontAwesome } from '@expo/vector-icons'
 import {
   useFocusEffect,
   useLocalSearchParams,
@@ -13,6 +14,7 @@ import {
 } from 'firebase/firestore'
 import React, { useEffect, useState } from 'react'
 import {
+  Image,
   KeyboardAvoidingView,
   Platform,
   StyleSheet,
@@ -23,6 +25,9 @@ import {
 } from 'react-native'
 import Animated, { FadeIn, SlideInDown } from 'react-native-reanimated'
 const comments = () => {
+  const { id } = useLocalSearchParams<{ id: string }>()
+
+  const currentUser = auth.currentUser
   const navigation = useNavigation()
   const [comment, addComments] = useState('')
   const [comments, setComments] = useState<DocumentData[]>()
@@ -36,9 +41,6 @@ const comments = () => {
     }, [navigation]),
   )
 
-  const { id } = useLocalSearchParams()
-
-  const currentUser = auth.currentUser
   // add comments
   const submitComment = async () => {
     // Ensure `id` exists and is valid
@@ -48,11 +50,21 @@ const comments = () => {
     }
     const data = {
       author: currentUser?.displayName || 'Anonymous',
+      authorAvatar: currentUser?.photoURL,
       comment: comment,
       createdAt: new Date(),
     }
     try {
-      await addDoc(collection(db, 'posts', String(id), 'comments'), data)
+      await addDoc(collection(db, 'posts', id, 'comments'), data)
+
+      // Add comment notification
+      addNotifications({
+        fromUserId: currentUser?.uid || '',
+        postId: id,
+        type: 'comment', // Specify the type of notification
+        liketype: undefined, // Optional, not needed for comments
+      })
+
       addComments('')
     } catch (error) {
       console.error('Error adding comment: ', error)
@@ -88,7 +100,17 @@ const comments = () => {
         >
           {comments?.map((comment, key) => (
             <View key={key} className="flex flex-row gap-5 mt-10">
-              <View className="rounded-full h-12 w-12 bg-black"></View>
+              <View className="rounded-full w-8 h-8 border p-3 items-center justify-center">
+                {comment?.authorAvatar ? (
+                  <Image
+                    source={{ uri: comment?.authorAvatar }}
+                    style={{ width: 30, height: 30, borderRadius: 100 }}
+                  />
+                ) : (
+                  <Feather name="user" size={24} color="black" />
+                )}
+              </View>
+
               <View className="justify-center">
                 <Text className="font-bold text-xs">{comment.author}</Text>
                 <Text className="text-gray-500 pr-12" numberOfLines={1}>

@@ -1,11 +1,13 @@
 import Posts from '@/components/teacher/Posts'
 import { auth, db } from '@/config'
 import useHideTabBarOnFocus from '@/hooks/useHideTabBarOnFocus'
+import { handleSelectUser } from '@/hooks/useMessageUser'
 import useProfile from '@/hooks/useProfile'
 import userCoverUploads from '@/hooks/userCoverUploads'
 import { Feather, Ionicons } from '@expo/vector-icons'
 import { useLocalSearchParams, useRouter } from 'expo-router'
 import {
+  DocumentData,
   collection,
   doc,
   getDocs,
@@ -39,8 +41,9 @@ const profile = () => {
   const currentUser = auth?.currentUser
   const { id } = useLocalSearchParams<{ id: string }>()
 
-  const [user, setUser] = useState<TUser | null>()
+  const [user, setUser] = useState<DocumentData>()
   const [posts, setPosts] = useState<any>([])
+  const [conversationId, setConversationId] = useState<string | null>(null)
 
   const { pickImage, image } = userCoverUploads(currentUser?.uid || '')
 
@@ -59,10 +62,14 @@ const profile = () => {
     // To listen to real-time updates
     const unsubscribeUser = onSnapshot(userDocRef, (docSnapshot) => {
       if (docSnapshot.exists()) {
-        const userData = docSnapshot.data() as TUser
+        const userData = {
+          id: docSnapshot.id, // Include the document ID
+          ...docSnapshot.data(), // Spread the document's data
+        }
+
         setUser(userData) // Update state with the user data
       } else {
-        setUser(null) // No user found
+        setUser({}) // No user found
         console.error('User not found')
       }
     })
@@ -72,7 +79,6 @@ const profile = () => {
       where('authorId', '==', id),
       // orderBy('createdAt', 'desc'),
     )
-
     const unsubscribePosts = onSnapshot(q, async (querySnapshot) => {
       // Map over all posts to fetch their comments
       const postsWithComments = await Promise.all(
@@ -100,14 +106,6 @@ const profile = () => {
       )
       setPosts(postsWithComments)
     })
-
-    // const unsubscribePosts = onSnapshot(q, (querySnapshot) => {
-    //   const postsData = querySnapshot.docs.map((doc) => ({
-    //     id: doc.id,
-    //     ...doc.data(),
-    //   }))
-    //   setPosts(postsData)
-    // })
 
     // Cleanup the listener on unmount or when `currentUser.uid` changes
     return () => {
@@ -188,8 +186,11 @@ const profile = () => {
               </TouchableOpacity>
             )}
 
-            {id !== auth?.currentUser?.uid && (
-              <TouchableOpacity className="bg-green-200 px-5 py-2 rounded-xl flex flex-row items-center gap-5">
+            {id !== auth?.currentUser?.uid && user && (
+              <TouchableOpacity
+                onPress={() => handleSelectUser(user, 'teacher')}
+                className="bg-green-200 px-5 py-2 rounded-xl flex flex-row items-center gap-5"
+              >
                 <Feather name="message-square" size={24} color="black" />
                 <Text className="text-lg font-semibold">Message</Text>
               </TouchableOpacity>

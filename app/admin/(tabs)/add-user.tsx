@@ -97,6 +97,7 @@ const addUser = () => {
       setImage(result.assets[0].uri)
     }
   }
+
   const { signUp, loading, error } = useSignUp() // Using the custom hook
 
   const handleSignUp = async () => {

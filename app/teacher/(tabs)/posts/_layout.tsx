@@ -9,6 +9,7 @@ const _layout = () => {
         name="comments/[id]"
         options={{ headerShown: false, presentation: 'transparentModal' }}
       />
+      <Stack.Screen name="profile" options={{ headerShown: false }} />
     </Stack>
   )
 }

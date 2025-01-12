@@ -1,7 +1,7 @@
 import { Feather, FontAwesome } from '@expo/vector-icons'
-import { Tabs } from 'expo-router'
+import { Tabs, router } from 'expo-router'
 import React from 'react'
-import { StyleSheet, View } from 'react-native'
+import { StyleSheet, TouchableOpacity, View } from 'react-native'
 
 const _layout = () => {
   return (
@@ -59,9 +59,15 @@ const _layout = () => {
       <Tabs.Screen
         name="settings"
         options={{
-          headerShown: false,
+          headerShown: false, // Hide the header for this screen
           tabBarIcon: ({ color }) => (
-            <FontAwesome size={24} name="user" color={color} />
+            <FontAwesome size={24} name="gear" color={color} />
+          ),
+          tabBarButton: (props) => (
+            <TouchableOpacity
+              {...props}
+              onPress={() => router.push('/teacher/settings')}
+            />
           ),
         }}
       />

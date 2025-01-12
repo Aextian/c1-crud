@@ -28,7 +28,7 @@ const _layout = () => {
       // router.replace('/auth/login')
 
       router.replace('/auth/login')
-      // router.replace('/teacher/posts')
+      // router.replace('/teacher/settings/profile')
     }
   }, [currentUser, loading, user])
 
