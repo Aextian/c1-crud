@@ -6,6 +6,18 @@ const _layout = () => {
     <Stack>
       <Stack.Screen name="index" options={{ headerShown: false }} />
       <Stack.Screen name="manage-users" options={{ headerTitle: 'Users' }} />
+      <Stack.Screen
+        name="manage-posts"
+        options={{ headerTitle: 'Manage Posts' }}
+      />
+      <Stack.Screen
+        name="manage-course"
+        options={{ headerTitle: 'Manage Course' }}
+      />
+      <Stack.Screen
+        name="manage-year-level"
+        options={{ headerTitle: 'Manage Year' }}
+      />
     </Stack>
   )
 }

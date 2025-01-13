@@ -171,18 +171,25 @@ const Posts = ({ item, index }: { item: any; index: number }) => {
     }
   }
 
+  console.log(item.authorData)
+  if (item.authorData?.[0]?.avatar) {
+    console.log(item.authorData[0].avatar)
+  } else {
+    console.log('No avatar found')
+  }
+
   return (
     <View key={index} className="border-b border-b-slate-200 p-4">
       <View className="flex flex-row justify-between">
         <View className="flex flex-row items-center justify-start gap-2">
-          <View className="rounded-full w-8 h-8 border p-3 items-center justify-center">
-            {item?.authorAvatar ? (
+          <View className="rounded-full w-12 h-12 border p-3 items-center justify-center">
+            {item?.authorData.avatar ? (
               <Image
-                source={{ uri: item?.authorAvatar }}
+                source={{ uri: item?.authorData.avatar }}
                 style={{ width: 30, height: 30, borderRadius: 100 }}
               />
             ) : (
-              <Feather name="user" size={24} color="black" />
+              <Feather name="user" size={16} color="black" />
             )}
           </View>
           <TouchableOpacity

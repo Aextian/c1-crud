@@ -1,4 +1,5 @@
 import { useFetchPosts } from '@/api/useFetchPosts'
+import PostSkLoader from '@/components/shared/PostSkLoader'
 import Posts from '@/components/teacher/Posts'
 import { auth, db } from '@/config'
 import { Feather } from '@expo/vector-icons'
@@ -9,6 +10,7 @@ import {
   Image,
   Pressable,
   RefreshControl,
+  SafeAreaView,
   Text,
   View,
 } from 'react-native'
@@ -16,7 +18,7 @@ import {
 const index = () => {
   const currentUser = auth?.currentUser
 
-  const { posts, fetchPostsAndComments } = useFetchPosts()
+  const { posts, fetchPostsAndComments, isLoading } = useFetchPosts()
 
   // Fetch posts from Firestore
   useEffect(() => {
@@ -34,31 +36,35 @@ const index = () => {
   }, [])
 
   return (
+    // <SafeAreaView className="flex-1 px-5  gap-10 bg-gray-200 ">
     <View style={{ flex: 1 }}>
       {/* navigate to post screen */}
-      <Pressable onPress={() => router.push('/teacher/(tabs)/add-post')}>
-        <View className="flex flex-row gap-5  border-b border-b-slate-100  p-4 ">
-          <View className="rounded-full border ">
-            {currentUser?.photoURL ? (
-              <Image
-                source={{ uri: currentUser?.photoURL }}
-                style={{ width: 45, height: 45, borderRadius: 100 }}
-              />
-            ) : (
-              <Feather name="user" size={24} color="black" />
-            )}
+      <SafeAreaView className="flex-1 mt-10  ">
+        <Pressable onPress={() => router.push('/teacher/(tabs)/add-post')}>
+          <View className="flex flex-row gap-5  border-b border-b-slate-100  p-4 ">
+            <View className="rounded-full border ">
+              {currentUser?.photoURL ? (
+                <Image
+                  source={{ uri: currentUser?.photoURL }}
+                  style={{ width: 45, height: 45, borderRadius: 100 }}
+                />
+              ) : (
+                <Feather name="user" size={24} color="black" />
+              )}
+            </View>
+            <View className="gap-2">
+              <Text className="text-[12px] font-medium">
+                {currentUser?.displayName}
+              </Text>
+              <Text className="text-[10px] text-gray-500 font-medium">
+                What's on your mind?
+              </Text>
+            </View>
           </View>
-          <View className="gap-2">
-            <Text className="text-[12px] font-medium">
-              {currentUser?.displayName}
-            </Text>
-            <Text className="text-[10px] text-gray-500 font-medium">
-              What's on your mind?
-            </Text>
-          </View>
-        </View>
-      </Pressable>
+        </Pressable>
+      </SafeAreaView>
 
+      {isLoading && <PostSkLoader />}
       <FlatList
         data={posts}
         keyExtractor={(item) => item.id}

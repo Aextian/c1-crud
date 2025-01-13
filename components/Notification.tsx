@@ -3,23 +3,29 @@ import { Feather } from '@expo/vector-icons'
 import { DocumentData, doc, getDoc } from 'firebase/firestore'
 import React, { useEffect, useState } from 'react'
 import { Image, Text, View } from 'react-native'
+import SkUserLoader from './SkLoader'
 
 const Notification = (data: any) => {
   const [user, setUser] = useState<DocumentData>()
+  const [loading, setLoading] = useState(true)
 
   useEffect(() => {
+    setLoading(true)
     const fetchNotifications = async () => {
       const userDoc = doc(db, 'users', data.fromUserId)
       const userSnapshot = await getDoc(userDoc)
       if (userSnapshot.exists()) {
         const userData = userSnapshot.data()
         setUser(userData)
+        setLoading(false)
       }
     }
     fetchNotifications()
   }, [])
 
-  return (
+  return loading ? (
+    <SkUserLoader />
+  ) : (
     <View className="flex flex-row gap-5">
       <View className="rounded-full h-12 w-12 border items-center justify-center ">
         {user?.avatar ? (

@@ -1,5 +1,6 @@
 import ModalLoadingScreen from '@/components/ModalLoadingScreen'
 import { auth, db } from '@/config'
+import useHideTabBarOnFocus from '@/hooks/useHideTabBarOnFocus'
 import useImageUploads from '@/hooks/useImageUploads'
 import { Feather } from '@expo/vector-icons'
 import { Stack, router } from 'expo-router'
@@ -28,6 +29,7 @@ interface IUser extends TDataProps {
 
 const editProfile = () => {
   const currentUser = auth?.currentUser
+  useHideTabBarOnFocus()
 
   const [password, setPassword] = useState('')
   const [confirmPasword, setConfirmPassword] = useState('')
@@ -106,9 +108,6 @@ const editProfile = () => {
       }
 
       // Update Firebase Authentication profile
-      if (name) {
-        await updateProfile(user, { displayName: name, photoURL: image })
-      }
 
       if (password) {
         await updatePassword(user, password)
@@ -117,6 +116,10 @@ const editProfile = () => {
       // Update Firestore user document
       if (userId) {
         const imageUrl = await uploadImage()
+
+        if (name && imageUrl) {
+          await updateProfile(user, { displayName: name, photoURL: imageUrl })
+        }
 
         const userRef = doc(db, 'users', userId)
         const updatedData: Partial<IUser> = {}

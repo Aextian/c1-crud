@@ -49,8 +49,8 @@ const notifications = () => {
       )}
       <FlatList
         data={notifications}
-        keyExtractor={(item, index) => index.toString()} // Ensure each item has a unique key
-        renderItem={({ item }) => <Notification {...item} />} // Assuming Notification component takes the correct props
+        keyExtractor={(item, index) => index.toString()}
+        renderItem={({ item }) => <Notification {...item} />}
       />
     </View>
   )

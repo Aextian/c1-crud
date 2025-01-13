@@ -116,6 +116,8 @@ const profile = () => {
     }
   }, [db, currentUser?.uid, id, image])
 
+  console.log('user', user?.avatar)
+
   return (
     <View style={{ flex: 1, gap: 10 }}>
       <View className="h-48  w-full bg-gray-400 mt-10">

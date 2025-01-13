@@ -12,7 +12,7 @@ import { Alert, Text, TextInput, TouchableOpacity, View } from 'react-native'
 
 const manageYearLevel = () => {
   const [year, setYear] = useState('')
-  const [years, setYears] = useState<DocumentData>([])
+  const [years, setYears] = useState<DocumentData[]>([])
 
   const handleDelete = (id: string) => {
     Alert.alert(
@@ -83,9 +83,9 @@ const manageYearLevel = () => {
         >
           <Text>{year.name}</Text>
           <View className="flex items-center flex-row gap-2">
-            <TouchableOpacity className="bg-green-300 p-2 rounded-xl">
+            {/* <TouchableOpacity className="bg-green-300 p-2 rounded-xl">
               <Text>Reset</Text>
-            </TouchableOpacity>
+            </TouchableOpacity> */}
             <TouchableOpacity
               onPress={() => handleDelete(year.id)}
               className="bg-red-300 p-2 rounded-xl"
