@@ -85,7 +85,7 @@ const MessageCard = ({ conversation }: { conversation: DocumentData }) => {
         {user?.avatar ? (
           <Image
             source={{ uri: user?.avatar }}
-            style={{ width: 45, height: 45, borderRadius: 100 }}
+            style={{ width: '100%', height: '100%', borderRadius: 100 }}
           />
         ) : (
           <Feather name="user" size={24} color="black" />
@@ -120,8 +120,8 @@ const styles = StyleSheet.create({
   messsageCardIcon: {
     width: 45,
     height: 45,
-    borderColor: 'green',
-    borderWidth: 2,
+    // borderColor: 'green',
+    // borderWidth: 2,
     borderRadius: 100,
     marginRight: 10,
     alignItems: 'center',

@@ -10,14 +10,12 @@ import {
   Image,
   Pressable,
   RefreshControl,
-  SafeAreaView,
   Text,
   View,
 } from 'react-native'
 
 const index = () => {
   const currentUser = auth?.currentUser
-
   const { posts, fetchPostsAndComments, isLoading } = useFetchPosts()
 
   // Fetch posts from Firestore
@@ -37,47 +35,48 @@ const index = () => {
 
   return (
     // <SafeAreaView className="flex-1 px-5  gap-10 bg-gray-200 ">
-    <View style={{ flex: 1 }}>
+    <View style={{ flex: 1, marginTop: 20 }}>
       {/* navigate to post screen */}
-      <SafeAreaView className="flex-1 mt-10  ">
-        <Pressable onPress={() => router.push('/teacher/(tabs)/add-post')}>
-          <View className="flex flex-row gap-5  border-b border-b-slate-100  p-4 ">
-            <View className="rounded-full border ">
-              {currentUser?.photoURL ? (
-                <Image
-                  source={{ uri: currentUser?.photoURL }}
-                  style={{ width: 45, height: 45, borderRadius: 100 }}
-                />
-              ) : (
-                <Feather name="user" size={24} color="black" />
-              )}
-            </View>
-            <View className="gap-2">
-              <Text className="text-[12px] font-medium">
-                {currentUser?.displayName}
-              </Text>
-              <Text className="text-[10px] text-gray-500 font-medium">
-                What's on your mind?
-              </Text>
-            </View>
+      <Pressable onPress={() => router.push('/teacher/(tabs)/add-post')}>
+        <View className="flex flex-row gap-5  border-b border-b-slate-100  p-4 ">
+          <View className="rounded-full border ">
+            {currentUser?.photoURL ? (
+              <Image
+                source={{ uri: currentUser?.photoURL }}
+                style={{ width: 45, height: 45, borderRadius: 100 }}
+              />
+            ) : (
+              <Feather name="user" size={24} color="black" />
+            )}
           </View>
-        </Pressable>
-      </SafeAreaView>
+          <View className="gap-2">
+            <Text className="text-[12px] font-medium">
+              {currentUser?.displayName}
+            </Text>
+            <Text className="text-[10px] text-gray-500 font-medium">
+              What's on your mind?
+            </Text>
+          </View>
+        </View>
+      </Pressable>
 
-      {isLoading && <PostSkLoader />}
-      <FlatList
-        data={posts}
-        keyExtractor={(item) => item.id}
-        refreshControl={
-          <RefreshControl
-            refreshing={refreshing}
-            onRefresh={onRefresh} // This triggers the refresh logic
-            colors={['#ff0000']} // Optional, for custom colors
-            progressBackgroundColor="#ffffff" // Optional, for the background color of the spinner
-          />
-        }
-        renderItem={({ item, index }) => <Posts item={item} index={index} />}
-      />
+      {isLoading ? (
+        <PostSkLoader />
+      ) : (
+        <FlatList
+          data={posts}
+          keyExtractor={(item) => item.id}
+          refreshControl={
+            <RefreshControl
+              refreshing={refreshing}
+              onRefresh={onRefresh} // This triggers the refresh logic
+              colors={['#ff0000']} // Optional, for custom colors
+              progressBackgroundColor="#ffffff" // Optional, for the background color of the spinner
+            />
+          }
+          renderItem={({ item, index }) => <Posts item={item} index={index} />}
+        />
+      )}
     </View>
   )
 }

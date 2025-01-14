@@ -26,6 +26,10 @@ const _layout = () => {
           ),
         })}
       />
+      <Stack.Screen
+        name="add-note"
+        options={{ headerTitle: 'New Note', presentation: 'modal' }}
+      />
     </Stack>
   )
 }

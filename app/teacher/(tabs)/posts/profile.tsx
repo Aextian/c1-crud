@@ -1,23 +1,14 @@
 import PostSkLoader from '@/components/shared/PostSkLoader'
 import Posts from '@/components/teacher/Posts'
-import { auth, db } from '@/config'
+import { auth } from '@/config'
+import useUserAndPosts from '@/hooks/shared/useUserAndPosts'
 import useHideTabBarOnFocus from '@/hooks/useHideTabBarOnFocus'
 import { handleSelectUser } from '@/hooks/useMessageUser'
 import useProfile from '@/hooks/useProfile'
 import userCoverUploads from '@/hooks/userCoverUploads'
 import { Feather, Ionicons } from '@expo/vector-icons'
 import { useLocalSearchParams, useRouter } from 'expo-router'
-import {
-  DocumentData,
-  collection,
-  doc,
-  getDocs,
-  onSnapshot,
-  orderBy,
-  query,
-  where,
-} from 'firebase/firestore'
-import React, { useCallback, useEffect, useState } from 'react'
+import React, { useCallback, useState } from 'react'
 import {
   FlatList,
   Image,
@@ -41,80 +32,13 @@ const profile = () => {
 
   const currentUser = auth?.currentUser
   const { id } = useLocalSearchParams<{ id: string }>()
-
-  const [user, setUser] = useState<DocumentData>()
-  const [posts, setPosts] = useState<DocumentData[]>()
   const { pickImage, image } = userCoverUploads(currentUser?.uid || '')
   const { postsCount, likesCount, dislikesCount } = useProfile(id)
-  const [isLoading, setLoading] = useState(false)
-
   const [refreshing, setRefreshing] = useState(false)
   const onRefresh = useCallback(() => {}, [])
   const router = useRouter()
 
-  useEffect(() => {
-    if (!currentUser?.uid) return
-    if (!id) return
-
-    setLoading(true)
-
-    const userDocRef = doc(db, 'users', id) // Directly reference the document by ID
-
-    // To listen to real-time updates
-    const unsubscribeUser = onSnapshot(userDocRef, (docSnapshot) => {
-      if (docSnapshot.exists()) {
-        const userData = {
-          id: docSnapshot.id, // Include the document ID
-          ...docSnapshot.data(), // Spread the document's data
-        }
-        setUser(userData) // Update state with the user data
-        setLoading(false)
-      } else {
-        setUser({}) // No user found
-        console.error('User not found')
-        // setLoading(false)
-      }
-    })
-
-    const q = query(
-      collection(db, 'posts'),
-      where('authorId', '==', id),
-      // orderBy('createdAt', 'desc'),
-    )
-    const unsubscribePosts = onSnapshot(q, async (querySnapshot) => {
-      // Map over all posts to fetch their comments
-      const postsWithComments = await Promise.all(
-        querySnapshot.docs.map(async (doc) => {
-          const postId = doc.id
-
-          // Fetch comments for this post
-          const commentsQuery = query(
-            collection(db, `posts/${postId}/comments`),
-            orderBy('createdAt', 'asc'), // Optional: Order comments by creation time
-          )
-
-          const commentsSnapshot = await getDocs(commentsQuery)
-          const commentsData = commentsSnapshot.docs.map((commentDoc) => ({
-            id: commentDoc.id,
-            ...commentDoc.data(),
-          }))
-
-          return {
-            id: postId,
-            ...doc.data(),
-            comments: commentsData, // Attach the comments to the post
-          }
-        }),
-      )
-      setPosts(postsWithComments)
-    })
-
-    // Cleanup the listener on unmount or when `currentUser.uid` changes
-    return () => {
-      unsubscribeUser()
-      unsubscribePosts()
-    }
-  }, [db, currentUser?.uid, id, image])
+  const { posts, user, isLoading } = useUserAndPosts(id)
 
   return (
     <>
