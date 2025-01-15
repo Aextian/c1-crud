@@ -113,6 +113,14 @@ const UserList = ({ role }: UserListProps) => {
   const navigateToFormNote = () => {
     role === 'teacher' ? router.push('/teacher/(tabs)/messages/add-note') : null
   }
+  const navigateToViewNote = (user: DocumentData) => {
+    router.push({
+      pathname: `/teacher/(tabs)/messages/view-note`,
+      params: {
+        user: JSON.stringify(user), // Convert user object to JSON string
+      },
+    })
+  }
 
   return (
     <ScrollView
@@ -218,6 +226,7 @@ const UserList = ({ role }: UserListProps) => {
             >
               {user.note && (
                 <TouchableOpacity
+                  onPress={() => navigateToViewNote(user)}
                   style={{
                     position: 'absolute',
                     top: -0,
@@ -226,7 +235,18 @@ const UserList = ({ role }: UserListProps) => {
                   }}
                 >
                   <View style={{ position: 'relative' }}>
-                    <View className="h-16 w-16  rounded-full bg-white shadow shadow-black " />
+                    <View
+                      style={{ zIndex: 100 }}
+                      className="h-16 w-16 p-2 items-center justify-center  rounded-full bg-white shadow shadow-black "
+                    >
+                      <Text
+                        style={{ fontSize: 8 }}
+                        className=" text-gray-300 text-ellipsis"
+                        numberOfLines={2}
+                      >
+                        {user?.note || 'Add note'}
+                      </Text>
+                    </View>
                     <View
                       style={{ position: 'absolute', bottom: -20, left: 0 }}
                       className="h-8 w-8  rounded-full bg-white shadow"
