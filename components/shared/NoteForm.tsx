@@ -1,8 +1,8 @@
 import { auth, db } from '@/config'
-import { useRouter } from 'expo-router'
+import { Stack, useRouter } from 'expo-router'
 import { doc, getDoc, updateDoc } from 'firebase/firestore'
 import React, { useEffect, useState } from 'react'
-import { Text, TextInput, TouchableOpacity, View } from 'react-native'
+import { Pressable, Text, TextInput, View } from 'react-native'
 
 const NoteForm = () => {
   const currentUser = auth.currentUser
@@ -47,26 +47,35 @@ const NoteForm = () => {
   }, [currentUser])
 
   return (
-    <View className="flex flex-col gap-2">
-      <View className="w-full p-2 h-36 shadow shadow-black bg-white rounded-xl">
-        <TextInput
-          value={note}
-          onChangeText={(text) => setNote(text)}
-          multiline
-          numberOfLines={4}
-          className="p-2"
-          placeholder="Note"
-        />
+    <>
+      <Stack.Screen
+        options={{
+          headerTitle: 'New Note',
+          presentation: 'modal',
+          headerRight: () => (
+            <Pressable disabled={isLoading || !note} onPress={submitNote}>
+              <Text
+                className={`text-lg font-bold ${isLoading || !note ? 'text-gray-400' : ''}`}
+              >
+                Share
+              </Text>
+            </Pressable>
+          ),
+        }}
+      />
+      <View className="flex flex-col gap-2">
+        <View className="w-full p-2 h-36 shadow shadow-black bg-white rounded-xl">
+          <TextInput
+            value={note}
+            onChangeText={(text) => setNote(text)}
+            multiline
+            numberOfLines={4}
+            className="p-2"
+            placeholder="Note"
+          />
+        </View>
       </View>
-      <TouchableOpacity
-        disabled={isLoading}
-        className="bg-green-400 font-bold t p-2 items-center rounded-xl"
-      >
-        <Text className="text-white text-2xl" onPress={submitNote}>
-          {isLoading ? 'Submiting...' : 'Submit'}
-        </Text>
-      </TouchableOpacity>
-    </View>
+    </>
   )
 }
 

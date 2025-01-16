@@ -115,7 +115,7 @@ const UserList = ({ role }: UserListProps) => {
   }
   const navigateToViewNote = (user: DocumentData) => {
     router.push({
-      pathname: `/teacher/(tabs)/messages/view-note`,
+      pathname: `/teacher/(tabs)/messages/conversations/view-note`,
       params: {
         user: JSON.stringify(user), // Convert user object to JSON string
       },
@@ -153,7 +153,7 @@ const UserList = ({ role }: UserListProps) => {
           <View style={{ position: 'relative' }}>
             <View
               style={{ zIndex: 100 }}
-              className="h-16 w-16 p-2 items-center justify-center  rounded-full bg-white shadow shadow-black "
+              className="h-16 w-24 p-2 items-center justify-center  rounded-3xl bg-white shadow shadow-black "
             >
               <Text
                 style={{ fontSize: 8 }}
@@ -237,7 +237,7 @@ const UserList = ({ role }: UserListProps) => {
                   <View style={{ position: 'relative' }}>
                     <View
                       style={{ zIndex: 100 }}
-                      className="h-16 w-16 p-2 items-center justify-center  rounded-full bg-white shadow shadow-black "
+                      className="h-16 w-24 p-2 items-center justify-center  rounded-3xl bg-white shadow shadow-black "
                     >
                       <Text
                         style={{ fontSize: 8 }}

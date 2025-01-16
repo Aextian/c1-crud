@@ -3,7 +3,7 @@ import { DocumentData, collection, onSnapshot } from 'firebase/firestore'
 import { useEffect, useState } from 'react'
 
 const useUser = () => {
-  const [users, setUsers] = useState<DocumentData>()
+  const [users, setUsers] = useState<DocumentData[]>()
   const currentUser = auth?.currentUser
   useEffect(() => {
     const usersCollection = collection(db, 'users')

@@ -24,7 +24,7 @@ export const handleSelectUser = async (
     const conversation = querySnapshot.docs.find((doc) => {
       const users = doc.data().users
       // Check if the selected user is in the conversation
-      return users.includes(selectedUser.id)
+      return users.includes(selectedUser._id)
     })
 
     if (conversation) {
@@ -41,7 +41,7 @@ export const handleSelectUser = async (
     } else {
       // Create a new conversation
       const docRef = await addDoc(collection(db, 'conversations'), {
-        users: [currentUser?.uid, selectedUser.id], // Corrected document structure
+        users: [currentUser?.uid, selectedUser._id], // Corrected document structure
       })
 
       role === 'teacher'

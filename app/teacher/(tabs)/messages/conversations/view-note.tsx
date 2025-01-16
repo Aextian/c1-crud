@@ -14,6 +14,7 @@ import { Text, TouchableOpacity, View } from 'react-native'
 const ViewNote = () => {
   useHideTabBarOnFocus()
   const { user } = useLocalSearchParams<DocumentData>()
+
   const parsedUser = typeof user === 'string' ? JSON.parse(user) : user
 
   const router = useRouter()
