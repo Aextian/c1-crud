@@ -39,6 +39,10 @@ const _layout = () => {
   return (
     <Stack>
       <Stack.Screen name="auth/login" options={{ headerShown: false }} />
+      <Stack.Screen
+        name="auth/reset-password"
+        options={{ headerTitle: 'Reset Password' }}
+      />
       <Stack.Screen name="student" options={{ headerShown: false }} />
       <Stack.Screen name="teacher" options={{ headerShown: false }} />
       <Stack.Screen name="admin" options={{ headerShown: false }} />

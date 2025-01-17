@@ -1,35 +1,58 @@
 // src/services/firebase/users.js
 
-import { collection, getDocs, addDoc, doc, updateDoc } from "firebase/firestore";
-import {db} from "../../config";
+import {
+  DocumentData,
+  collection,
+  doc,
+  onSnapshot,
+  updateDoc,
+} from 'firebase/firestore'
+import { useEffect, useState } from 'react'
+import { auth, db } from '../../config'
 
 // Function to get all users
 export async function getAllUsers() {
+  const [users, setUsers] = useState<DocumentData[]>([])
+  const currentUser = auth?.currentUser
+  useEffect(() => {
+    // Set up real-time listener for users collection
+    const usersRef = collection(db, 'users')
+
+    const unsubscribe = onSnapshot(
+      usersRef,
+      (snapshot) => {
+        const userData = snapshot.docs.map((doc) => doc.data())
+        // Filter and update the users state with the real-time data
+        setUsers(
+          userData.filter(
+            (user) => user.id !== currentUser?.uid && user.role !== 'admin', // Remove current user and admin users
+          ),
+        )
+      },
+      (error) => {
+        console.error('Error fetching users:', error)
+      },
+    )
+
+    // Clean up the listener on component unmount
+    return () => unsubscribe()
+  }, [currentUser?.uid]) // Re-run when currentUser changes
+
+  return users
+}
+
+export async function updateUser(userId: string, updatedData: any) {
   try {
-    const querySnapshot = await getDocs(collection(db, "users"));
-    const users = querySnapshot.docs.map(doc => ({
-      id: doc.id,
-      ...doc.data(),
-    }));
-    return users;
+    const userRef = doc(db, 'users', userId)
+    await updateDoc(userRef, updatedData)
+    console.log('User successfully updated!')
   } catch (error) {
-    console.error("Error fetching users:", error);
-    throw error; // Re-throw to handle it elsewhere if needed
+    console.error('Error updating user:', error)
+    throw error
   }
 }
 
-export async function updateUser(userId:string, updatedData:any) {
-  try {
-    const userRef = doc(db, "users", userId);
-    await updateDoc(userRef, updatedData);
-    console.log("User successfully updated!");
-  } catch (error) {
-    console.error("Error updating user:", error);
-    throw error;
-  }
-}
-
- // Handle Update User
+// Handle Update User
 
 // Function to add a user
 // export async function addUser(username, email) {

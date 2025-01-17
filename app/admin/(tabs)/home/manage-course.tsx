@@ -12,7 +12,7 @@ import { Alert, Text, TextInput, TouchableOpacity, View } from 'react-native'
 
 const manageCourses = () => {
   const [course, setCouse] = useState('')
-  const [courses, setcourses] = useState<DocumentData>([])
+  const [courses, setcourses] = useState<DocumentData[]>([])
 
   const handleDelete = (id: string) => {
     Alert.alert(
@@ -47,9 +47,9 @@ const manageCourses = () => {
     })
   }
 
-  const collectionRef = collection(db, 'courses')
-
   useEffect(() => {
+    const collectionRef = collection(db, 'courses')
+
     const unsubscribe = onSnapshot(collectionRef, (querySnapshot) => {
       const postsData = querySnapshot.docs.map((doc) => ({
         id: doc.id,
@@ -71,7 +71,7 @@ const manageCourses = () => {
         />
         <TouchableOpacity
           onPress={handleSubmit}
-          className="bg-green-300 p-2 rounded-xl px-10 items-center justify-center"
+          className="bg-green-300 py-3 px-10 rounded-xl  items-center justify-center"
         >
           <Text>Add</Text>
         </TouchableOpacity>
@@ -83,12 +83,9 @@ const manageCourses = () => {
         >
           <Text>{course.name}</Text>
           <View className="flex items-center flex-row gap-2">
-            <TouchableOpacity className="bg-green-300 p-2 rounded-xl">
-              <Text>Reset</Text>
-            </TouchableOpacity>
             <TouchableOpacity
               onPress={() => handleDelete(course.id)}
-              className="bg-red-300 p-2 rounded-xl"
+              className="bg-red-300 p-2 rounded-xl py-2 px-16"
             >
               <Text>Delete</Text>
             </TouchableOpacity>

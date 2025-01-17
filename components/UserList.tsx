@@ -49,22 +49,6 @@ const UserList = ({ role }: UserListProps) => {
     fetchUsers() // Call the async function
   }, [])
 
-  // useEffect(() => {
-  //   const getNote = async () => {
-  //     try {
-  //       const noteRef = doc(db, 'notes', String(currentUser?.uid))
-  //       const noteSnapshot = await getDoc(noteRef)
-  //       if (noteSnapshot.exists()) {
-  //         setNote(noteSnapshot.data().note)
-  //       }
-  //     } catch (error) {
-  //       console.log(error)
-  //     }
-  //   }
-
-  //   getNote()
-  // }, [currentUser])
-
   const handleSelectUser = async (selectedUser: DocumentData) => {
     // Check if the conversation exists or create a new one
     const conversationCollection = query(

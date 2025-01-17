@@ -78,7 +78,9 @@ const index = () => {
 
             <View>
               <Text className="text-sm">Term of use</Text>
-              <Text className="text-xs text-gray-200">Jhon Doe</Text>
+              <Text className="text-xs text-gray-200">
+                {currentUser?.displayName}
+              </Text>
             </View>
           </View>
         </View>

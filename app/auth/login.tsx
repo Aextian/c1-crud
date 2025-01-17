@@ -1,7 +1,7 @@
 import { auth, db } from '@/config'
 import { useUserStore } from '@/store/useUserStore'
 import { useRouter } from 'expo-router'
-import { signInWithEmailAndPassword } from 'firebase/auth'
+import { signInWithEmailAndPassword, signOut } from 'firebase/auth'
 import { doc, getDoc } from 'firebase/firestore'
 import React, { useState } from 'react'
 import {
@@ -29,7 +29,13 @@ const login = () => {
         const docSnap = await getDoc(doc(db, 'users', userCred.user.uid))
         if (docSnap.exists()) {
           const data = docSnap.data()
-          setUser(data)
+          if (data.frozen) {
+            alert('Your account is frozen')
+            setLoading(false)
+            await signOut(auth)
+
+            return
+          }
           if (data.role === 'admin') {
             router.push('/admin/home')
           } else if (data.role === 'teacher') {
@@ -80,9 +86,12 @@ const login = () => {
           {loading ? 'Loging...' : 'Login'}
         </Text>
       </TouchableOpacity>
-      <View className="flex flex-row gap-4 mt-5">
-        {/* <Text className="text-slate-400">New User? </Text> */}
-      </View>
+      <TouchableOpacity
+        onPress={() => router.push('/auth/reset-password')}
+        className="flex flex-row gap-4 mt-5"
+      >
+        <Text className="text-slate-400">Forgot Password? </Text>
+      </TouchableOpacity>
     </View>
   )
 }
