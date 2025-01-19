@@ -1,12 +1,35 @@
-import { Ionicons } from '@expo/vector-icons'
-import { Stack } from 'expo-router'
+import { Feather, Ionicons } from '@expo/vector-icons'
+import { Stack, useRouter } from 'expo-router'
 import React from 'react'
-import { TouchableOpacity } from 'react-native'
+import { Text, TouchableOpacity, View } from 'react-native'
 
 const _layout = () => {
+  const router = useRouter()
   return (
     <Stack>
-      <Stack.Screen name="index" options={{ headerShown: false }} />
+      <Stack.Screen
+        name="index"
+        options={{
+          headerTitle: '',
+          headerRight: () => (
+            <TouchableOpacity
+              onPress={() =>
+                router.push('/teacher/(tabs)/messages/view-reminder')
+              }
+              style={{
+                flexDirection: 'row',
+                alignItems: 'center',
+                padding: 10,
+              }}
+            >
+              <View className="flex gap-2 items-center">
+                <Text>Reminders</Text>
+                <Feather name="book-open" size={24} color="black" />
+              </View>
+            </TouchableOpacity>
+          ),
+        }}
+      />
       <Stack.Screen name="group" options={{ headerShown: false }} />
       <Stack.Screen
         name="create-group"

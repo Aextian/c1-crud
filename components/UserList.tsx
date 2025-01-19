@@ -1,5 +1,5 @@
 import { auth, db } from '@/config'
-import { getAllUsers } from '@/services/firebase/users'
+import useUser from '@/hooks/useUser'
 import { Feather } from '@expo/vector-icons'
 import { useRouter } from 'expo-router'
 import {
@@ -10,7 +10,7 @@ import {
   query,
   where,
 } from 'firebase/firestore'
-import React, { useEffect, useState } from 'react'
+import React, { useState } from 'react'
 import {
   Image,
   Pressable,
@@ -25,29 +25,31 @@ interface UserListProps {
 }
 
 const UserList = ({ role }: UserListProps) => {
-  const [users, setUsers] = useState<DocumentData>([])
-  const [user, setUser] = useState<DocumentData>()
+  // const [users, setUsers] = useState<DocumentData>([])
+  // const [user, setUser] = useState<DocumentData>()
   const [note, setNote] = useState('')
   const currentUser = auth.currentUser
   const router = useRouter() // Initialize the router
 
-  useEffect(() => {
-    const fetchUsers = async () => {
-      try {
-        const userData: DocumentData[] = await getAllUsers() // Wait for the promise to resolve
-        setUsers(
-          userData.filter(
-            (user) => user.id !== currentUser?.uid && user.role !== 'admin', //remove admin and current user
-          ),
-        ) // Update the state with the fetched users
-        setUser(userData.find((user) => user.id === currentUser?.uid))
-      } catch (error) {
-        console.error('Error fetching users:', error)
-      }
-    }
+  const { user, users } = useUser()
 
-    fetchUsers() // Call the async function
-  }, [])
+  // useEffect(() => {
+  //   const fetchUsers = async () => {
+  //     try {
+  //       const userData: DocumentData[] = await getAllUsers() // Wait for the promise to resolve
+  //       setUsers(
+  //         userData.filter(
+  //           (user) => user.id !== currentUser?.uid && user.role !== 'admin', //remove admin and current user
+  //         ),
+  //       ) // Update the state with the fetched users
+  //       setUser(userData.find((user) => user.id === currentUser?.uid))
+  //     } catch (error) {
+  //       console.error('Error fetching users:', error)
+  //     }
+  //   }
+
+  //   fetchUsers() // Call the async function
+  // }, [])
 
   const handleSelectUser = async (selectedUser: DocumentData) => {
     // Check if the conversation exists or create a new one
@@ -60,7 +62,7 @@ const UserList = ({ role }: UserListProps) => {
       const conversation = querySnapshot.docs.find((doc) => {
         const users = doc.data().users
         // Check if the selected user is in the conversation
-        return users.includes(selectedUser.id)
+        return users.includes(selectedUser._id)
       })
 
       if (conversation) {
@@ -99,7 +101,7 @@ const UserList = ({ role }: UserListProps) => {
   }
   const navigateToViewNote = (user: DocumentData) => {
     router.push({
-      pathname: `/teacher/(tabs)/messages/conversations/view-note`,
+      pathname: `/teacher/(tabs)/messages/view-note`,
       params: {
         user: JSON.stringify(user), // Convert user object to JSON string
       },
@@ -194,7 +196,7 @@ const UserList = ({ role }: UserListProps) => {
         </TouchableOpacity>
       </View>
 
-      {users.map((user: DocumentData) => {
+      {users?.map((user: DocumentData) => {
         // Extract the first word from the user's name
         const firstWord = user.name ? user.name.split(' ')[0] : ''
 

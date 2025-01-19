@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react'
 
 const useUser = () => {
   const [users, setUsers] = useState<DocumentData[]>()
+  const [user, setUser] = useState<DocumentData>()
   const currentUser = auth?.currentUser
   useEffect(() => {
     // Set up real-time listener for users collection
@@ -18,6 +19,7 @@ const useUser = () => {
             (user) => user.id !== currentUser?.uid && user.role !== 'admin', // Remove current user and admin users
           ),
         )
+        setUser(userData.find((user) => user.id === currentUser?.uid))
       },
       (error) => {
         console.error('Error fetching users:', error)
@@ -28,7 +30,7 @@ const useUser = () => {
     return () => unsubscribe()
   }, [currentUser?.uid]) // Re-run when currentUser changes
 
-  return { users }
+  return { users, user }
 }
 
 export default useUser

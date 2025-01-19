@@ -1,5 +1,4 @@
 import { auth, db } from '@/config'
-import useHideTabBarOnFocus from '@/hooks/useHideTabBarOnFocus'
 import { Stack, useLocalSearchParams, useRouter } from 'expo-router'
 import {
   DocumentData,
@@ -12,7 +11,6 @@ import React from 'react'
 import { Text, TouchableOpacity, View } from 'react-native'
 
 const ViewNote = () => {
-  useHideTabBarOnFocus()
   const { user } = useLocalSearchParams<DocumentData>()
 
   const parsedUser = typeof user === 'string' ? JSON.parse(user) : user
@@ -30,7 +28,7 @@ const ViewNote = () => {
       const conversation = querySnapshot.docs.find((doc) => {
         const users = doc.data().users
         // Check if the selected user is in the conversation
-        return users.includes(parsedUser.id)
+        return users.includes(parsedUser._id)
       })
       router.push({
         pathname: `/teacher/(tabs)/messages/conversations/user`,
@@ -52,12 +50,12 @@ const ViewNote = () => {
 
       <View style={{ flex: 1 }} className="flex flex-col gap-2 p-10">
         {/* Content Section */}
-        <View className="w-full p-5 h-36 shadow shadow-black bg-white rounded-xl">
-          <Text>{parsedUser.note}</Text>
-        </View>
+        <View className="flex-1 justify-start   w-full items-center">
+          <View className="w-full p-5 h-36 shadow shadow-black bg-white rounded-xl">
+            <Text>{parsedUser.note}</Text>
+          </View>
 
-        {/* Button Section */}
-        <View className="flex-1 justify-end w-full items-center">
+          {/* Button Section */}
           <TouchableOpacity
             className="bg-green-400 font-bold p-2 items-center rounded-xl w-full"
             onPress={navigateToChat}

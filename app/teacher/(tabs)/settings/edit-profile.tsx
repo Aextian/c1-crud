@@ -3,7 +3,7 @@ import { auth, db } from '@/config'
 import useHideTabBarOnFocus from '@/hooks/useHideTabBarOnFocus'
 import useImageUploads from '@/hooks/useImageUploads'
 import { Feather } from '@expo/vector-icons'
-import { Stack, router } from 'expo-router'
+import { Stack, useRouter } from 'expo-router'
 import {
   EmailAuthProvider,
   getAuth,
@@ -13,7 +13,14 @@ import {
 } from 'firebase/auth'
 import { doc, updateDoc } from 'firebase/firestore'
 import React, { useState } from 'react'
-import { Image, Pressable, Text, TextInput, View } from 'react-native'
+import {
+  Image,
+  Pressable,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View,
+} from 'react-native'
 
 export type TDataProps = {
   role?: string
@@ -42,6 +49,8 @@ const editProfile = () => {
   const PASSWORD_REQUIRED = 'Password is required'
   const PASSWORD_INCORRECT = 'Incorrect password'
 
+  const router = useRouter()
+
   const [currentPasswordValidate, setCurrentPasswordValidate] = useState({
     isIncorrect: false,
     isRequired: false,
@@ -65,10 +74,10 @@ const editProfile = () => {
   }
 
   const updateUser = async ({ name, password }: Partial<IUser>) => {
-    if (!isFormValid) {
-      handleFormValidation()
-      return
-    }
+    // if (!isFormValid) {
+    handleFormValidation()
+    //   return
+    // }
 
     setIsLoading(true)
 
@@ -90,6 +99,7 @@ const editProfile = () => {
         try {
           await reauthenticateWithCredential(user, credential)
         } catch (error) {
+          console.log('Error reauthenticating:', error)
           setCurrentPasswordValidate({
             isIncorrect: true,
             isRequired: false,
@@ -117,34 +127,36 @@ const editProfile = () => {
       if (userId) {
         const imageUrl = await uploadImage()
 
-        if (name && imageUrl) {
-          await updateProfile(user, { displayName: name, photoURL: imageUrl })
-        }
+        if (name) await updateProfile(user, { displayName: name })
+        if (imageUrl) await updateProfile(user, { photoURL: imageUrl })
 
         const userRef = doc(db, 'users', userId)
         const updatedData: Partial<IUser> = {}
         if (name) updatedData.name = name
         if (imageUrl) updatedData.avatar = imageUrl
+        console.log(updatedData)
 
         if (Object.keys(updatedData).length > 0) {
           await updateDoc(userRef, updatedData)
         }
-        // alert('Profile updated successfully!')
+
         setIsLoading(false)
-        router.replace('/teacher/settings/profile')
+        // router.replace('/teacher/settings/profile')
+        alert('Updated Successfully')
+        router.back()
       } else {
         console.error('User ID is undefined')
         setIsLoading(true)
       }
     } catch (error: any) {
       setIsLoading(true)
-
       console.error('Error updating user:', error.message)
     }
   }
 
   //   submit updated data
   const handleSubmit = () => {
+    // alert('hshshsh')
     updateUser({ name, password })
   }
 
@@ -161,7 +173,7 @@ const editProfile = () => {
             </Pressable>
           ),
           headerRight: () => (
-            <Pressable
+            <TouchableOpacity
               disabled={!currentPassword || !name}
               onPress={handleSubmit}
             >
@@ -170,7 +182,7 @@ const editProfile = () => {
               >
                 Done
               </Text>
-            </Pressable>
+            </TouchableOpacity>
           ),
         }}
       />
