@@ -23,7 +23,7 @@ const index = () => {
         <View style={{ paddingHorizontal: 10, marginVertical: 10 }}>
           <View className="flex flex-row items-center justify-center gap-5">
             <Link
-              className="bg-red-300 rounded-lg p-2 text-xs font-bold text-black"
+              className="bg-gray-500 rounded-lg p-2 text-xs font-bold text-white"
               href="/teacher/messages"
             >
               Chats

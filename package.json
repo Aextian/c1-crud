@@ -56,7 +56,8 @@
     "react-native-webrtc": "^124.0.4",
     "react-native-webview": "13.8.6",
     "zustand": "5.0.0-rc.2",
-    "expo-av": "~14.0.7"
+    "expo-av": "~14.0.7",
+    "@react-native-async-storage/async-storage": "1.23.1"
   },
   "devDependencies": {
     "@babel/core": "^7.25.7",

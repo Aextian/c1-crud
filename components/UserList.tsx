@@ -172,7 +172,7 @@ const UserList = ({ role }: UserListProps) => {
               // padding: 16,
             }}
           >
-            {currentUser?.photoURL ? (
+            {currentUser?.photoURL && currentUser?.photoURL !== 'undefined' ? (
               <Image
                 src={currentUser?.photoURL}
                 alt="avatar"

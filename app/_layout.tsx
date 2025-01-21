@@ -20,7 +20,7 @@ const _layout = () => {
       user?.role === 'student'
         ? router.replace('/student/messages')
         : user?.role === 'teacher'
-          ? router.replace('/teacher/messages')
+          ? router.replace('/teacher/posts')
           : user?.role === 'admin'
             ? router.replace('/admin/home')
             : null

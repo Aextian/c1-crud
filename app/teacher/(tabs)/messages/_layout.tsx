@@ -13,18 +13,16 @@ const _layout = () => {
           headerTitle: '',
           headerRight: () => (
             <TouchableOpacity
-              onPress={() =>
-                router.push('/teacher/(tabs)/messages/view-reminder')
-              }
+              onPress={() => router.push('/teacher/(tabs)/messages/todo-lists')}
               style={{
                 flexDirection: 'row',
                 alignItems: 'center',
                 padding: 10,
               }}
             >
-              <View className="flex gap-2 items-center">
-                <Text>Reminders</Text>
-                <Feather name="book-open" size={24} color="black" />
+              <View className="flex flex-row gap-2 items-center">
+                <Text>Todo</Text>
+                <Feather name="book-open" size={24} color="green" />
               </View>
             </TouchableOpacity>
           ),

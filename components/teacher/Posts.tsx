@@ -170,6 +170,15 @@ const Posts = ({ item, index }: { item: any; index: number }) => {
     }
   }
 
+  const showImage = (image: string) => {
+    // console.log('image', image)
+    const encodedImage = encodeURIComponent(image) // Encode the
+    router.push({
+      pathname: '/teacher/(tabs)/posts/image-modal',
+      params: { image: encodedImage },
+    })
+  }
+
   return (
     <View key={index} className="border-b border-b-slate-200 p-4">
       <View className="flex flex-row justify-between">
@@ -208,10 +217,12 @@ const Posts = ({ item, index }: { item: any; index: number }) => {
       <View className="px-9 pb-10">
         <Text className="text-black leading-loose">{item.post} </Text>
         {item.imageUrl && (
-          <Image
-            source={{ uri: item.imageUrl }}
-            className="h-72 w-64 rounded-3xl mt-2"
-          />
+          <TouchableOpacity onPress={() => showImage(item.imageUrl)}>
+            <Image
+              source={{ uri: item.imageUrl }}
+              className="h-72 w-64 rounded-3xl mt-2"
+            />
+          </TouchableOpacity>
         )}
         {/* Reaction (Like) Section */}
         <View className="flex px-5 py-2 flex-row items-center justify-start gap-5 relative">

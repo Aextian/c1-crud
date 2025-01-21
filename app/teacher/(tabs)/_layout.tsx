@@ -26,8 +26,7 @@ const _layout = () => {
       <Tabs.Screen
         name="messages"
         options={{
-          tabBarStyle: { display: 'none' },
-
+          // tabBarStyle: { display: 'none' },
           headerShown: false,
           tabBarHideOnKeyboard: true,
           tabBarIcon: ({ color }) => (

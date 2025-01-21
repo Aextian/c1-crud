@@ -3,7 +3,7 @@ import { auth, db } from '@/config'
 import {
   DocumentData,
   collection,
-  getDocs,
+  onSnapshot,
   query,
   where,
 } from 'firebase/firestore'
@@ -17,23 +17,25 @@ const notifications = () => {
   // find who send the notifications
 
   useEffect(() => {
-    // const q = query (collection(db, 'notifications')),where('receiver', '==', currentUser.uid)
-    const fetchNotifications = async () => {
+    if (currentUser?.uid) {
       const notificationQuery = query(
         collection(db, 'notifications'),
-        where('fromUserId', '==', currentUser?.uid),
+        where('fromUserId', '==', currentUser.uid),
       )
 
-      const querySnapshot = await getDocs(notificationQuery)
+      // Set up the real-time listener
+      const unsubscribe = onSnapshot(notificationQuery, (querySnapshot) => {
+        const notificationsData = querySnapshot.docs.map((doc) => ({
+          id: doc.id, // Get document ID
+          ...doc.data(), // Get document data
+        }))
+        setNotifications(notificationsData) // Store the notifications
+      })
 
-      const notificationsData = querySnapshot.docs.map((doc) => doc.data())
-
-      setNotifications(notificationsData)
+      // Cleanup the listener on unmount or when currentUser changes
+      return () => unsubscribe()
     }
-    fetchNotifications()
-  }, [currentUser?.uid])
-
-  console.log(notifications)
+  }, [currentUser?.uid]) // Dependency array to run the effect when currentUser changes
 
   return (
     <View style={{ flex: 1, paddingTop: 35, padding: 10 }}>

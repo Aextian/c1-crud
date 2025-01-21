@@ -38,6 +38,10 @@ const ViewNote = () => {
       })
     } catch (error) {}
   }
+  const navigateToInbox = () =>
+    router.push({
+      pathname: `/teacher/(tabs)/messages`,
+    })
 
   return (
     <>
@@ -57,7 +61,7 @@ const ViewNote = () => {
 
           {/* Button Section */}
           <TouchableOpacity
-            className="bg-green-400 font-bold p-2 items-center rounded-xl w-full"
+            className="bg-green-400 font-bold p-2 mt-10 items-center rounded-xl w-full"
             onPress={navigateToChat}
           >
             <Text className="text-white text-2xl">Chat</Text>

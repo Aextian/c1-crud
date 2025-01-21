@@ -110,11 +110,27 @@ export default function userConversation() {
 
   const { renderBubble, fileUrl, setFileUrl } = useRenderGiftedChat()
 
+  const navigateToProfile = () => {
+    router.push({
+      pathname: '/teacher/(tabs)/messages/conversations/profile',
+      params: {
+        id: user?._id,
+      },
+    })
+  }
+
   return (
     <>
       <Stack.Screen
         options={{
-          headerTitle: user?.name || '',
+          headerTitle: () => (
+            <TouchableOpacity onPress={navigateToProfile}>
+              <Text style={{ fontWeight: 'bold', fontSize: 18 }}>
+                {user?.name || 'User'}
+              </Text>
+            </TouchableOpacity>
+          ),
+
           headerRight: () => (
             <TouchableOpacity
               className="bg-green-100 px-5 py-2 rounded-xl"
