@@ -2,6 +2,7 @@ import CallScreen from '@/components/CallScreen'
 import MessageCard from '@/components/MessageCard'
 import SkUserLoader from '@/components/SkLoader'
 import UserList from '@/components/UserList'
+import SearchUser from '@/components/shared/SearchUser'
 import { useChat } from '@/hooks/useChat'
 import useIncomingCall from '@/hooks/useIncommingCall'
 import { Link } from 'expo-router'
@@ -19,6 +20,7 @@ const index = () => {
         <CallScreen callId={callId} type={'user'} isTeacher={false} />
       )}
       <View>
+        <SearchUser />
         <UserList role="teacher" />
         <View style={{ paddingHorizontal: 10, marginVertical: 10 }}>
           <View className="flex flex-row items-center justify-center gap-5">
@@ -70,7 +72,7 @@ const index = () => {
 
 const styles = StyleSheet.create({
   container: {
-    paddingTop: 50,
+    // paddingTop: 50,
     flex: 1,
     padding: 16,
     backgroundColor: '#fff',

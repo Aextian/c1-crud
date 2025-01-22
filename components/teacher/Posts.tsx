@@ -18,7 +18,7 @@ const Posts = ({ item, index }: { item: any; index: number }) => {
   const [isDislikes, setIsDislikes] = useState(false)
   const [isFavorite, setIsFavorite] = useState(false)
   const [commentCounts, setCommentCounts] = useState(0)
-
+  // const [imageDisabled, setImageDisabled] = useState(false)
   const currentUser = auth?.currentUser
   const router = useRouter()
 
@@ -170,8 +170,7 @@ const Posts = ({ item, index }: { item: any; index: number }) => {
     }
   }
 
-  const showImage = (image: string) => {
-    // console.log('image', image)
+  const showImage = async (image: string) => {
     const encodedImage = encodeURIComponent(image) // Encode the
     router.push({
       pathname: '/teacher/(tabs)/posts/image-modal',
@@ -217,10 +216,14 @@ const Posts = ({ item, index }: { item: any; index: number }) => {
       <View className="px-9 pb-10">
         <Text className="text-black leading-loose">{item.post} </Text>
         {item.imageUrl && (
-          <TouchableOpacity onPress={() => showImage(item.imageUrl)}>
+          <TouchableOpacity
+            // disabled={imageDisabled}
+            onPress={() => showImage(item.imageUrl)}
+          >
             <Image
               source={{ uri: item.imageUrl }}
-              className="h-72 w-64 rounded-3xl mt-2"
+              className="h-72 w-full rounded-3xl mt-2"
+              resizeMode="cover"
             />
           </TouchableOpacity>
         )}

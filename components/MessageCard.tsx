@@ -82,7 +82,7 @@ const MessageCard = ({ conversation }: { conversation: DocumentData }) => {
       }
     >
       <View style={styles.messsageCardIcon}>
-        {user?.avatar ? (
+        {user?.avatar && user?.avatar !== 'undefined' ? (
           <Image
             source={{ uri: user?.avatar }}
             style={{ width: '100%', height: '100%', borderRadius: 100 }}

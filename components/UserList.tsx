@@ -10,7 +10,7 @@ import {
   query,
   where,
 } from 'firebase/firestore'
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import {
   Image,
   Pressable,
@@ -22,34 +22,15 @@ import {
 
 interface UserListProps {
   role?: string
+  search?: string
 }
 
-const UserList = ({ role }: UserListProps) => {
-  // const [users, setUsers] = useState<DocumentData>([])
-  // const [user, setUser] = useState<DocumentData>()
-  const [note, setNote] = useState('')
+const UserList = ({ role, search = '' }: UserListProps) => {
+  console.log('search', search)
   const currentUser = auth.currentUser
   const router = useRouter() // Initialize the router
-
+  const [filteredUsers, setFilteredUsers] = useState<DocumentData[]>([])
   const { user, users } = useUser()
-
-  // useEffect(() => {
-  //   const fetchUsers = async () => {
-  //     try {
-  //       const userData: DocumentData[] = await getAllUsers() // Wait for the promise to resolve
-  //       setUsers(
-  //         userData.filter(
-  //           (user) => user.id !== currentUser?.uid && user.role !== 'admin', //remove admin and current user
-  //         ),
-  //       ) // Update the state with the fetched users
-  //       setUser(userData.find((user) => user.id === currentUser?.uid))
-  //     } catch (error) {
-  //       console.error('Error fetching users:', error)
-  //     }
-  //   }
-
-  //   fetchUsers() // Call the async function
-  // }, [])
 
   const handleSelectUser = async (selectedUser: DocumentData) => {
     // Check if the conversation exists or create a new one
@@ -107,6 +88,18 @@ const UserList = ({ role }: UserListProps) => {
       },
     })
   }
+
+  useEffect(() => {
+    // filter users based on query
+    const filtered = users?.filter((user) =>
+      user.name.toLowerCase().includes(search?.toLowerCase()),
+    )
+    if (search === '' && users) {
+      setFilteredUsers(users)
+    } else {
+      setFilteredUsers(filtered || [])
+    }
+  }, [search, users])
 
   return (
     <ScrollView
@@ -196,7 +189,7 @@ const UserList = ({ role }: UserListProps) => {
         </TouchableOpacity>
       </View>
 
-      {users?.map((user: DocumentData) => {
+      {filteredUsers?.map((user: DocumentData) => {
         // Extract the first word from the user's name
         const firstWord = user.name ? user.name.split(' ')[0] : ''
 
@@ -258,7 +251,7 @@ const UserList = ({ role }: UserListProps) => {
                     // padding: 16,
                   }}
                 >
-                  {user?.avatar ? (
+                  {user?.avatar && user?.avatar !== 'undefined' ? (
                     <Image
                       src={user?.avatar}
                       alt="avatar"

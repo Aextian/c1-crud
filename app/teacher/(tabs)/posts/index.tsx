@@ -1,6 +1,7 @@
 import { useFetchPosts } from '@/api/useFetchPosts'
 import PostSkLoader from '@/components/shared/PostSkLoader'
 import Posts from '@/components/teacher/Posts'
+import PostsHeader from '@/components/teacher/PostsHeader'
 import { auth, db } from '@/config'
 import { Feather } from '@expo/vector-icons'
 import { useRouter } from 'expo-router'
@@ -36,6 +37,7 @@ const index = () => {
   return (
     // <SafeAreaView className="flex-1 px-5  gap-10 bg-gray-200 ">
     <View style={{ flex: 1, marginTop: 20 }}>
+      <PostsHeader />
       {/* navigate to post screen */}
       <Pressable onPress={() => router.push('/teacher/(tabs)/add-post')}>
         <View className="flex flex-row gap-5  border-b border-b-slate-100  p-4 ">
