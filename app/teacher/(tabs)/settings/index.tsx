@@ -75,13 +75,6 @@ const index = () => {
                 {currentUser?.displayName}
               </Text>
             </Pressable>
-
-            <View>
-              <Text className="text-sm">Term of use</Text>
-              <Text className="text-xs text-gray-200">
-                {currentUser?.displayName}
-              </Text>
-            </View>
           </View>
         </View>
         <View className="bg-white p-5 rounded-lg flex justify-start  gap-5  ">

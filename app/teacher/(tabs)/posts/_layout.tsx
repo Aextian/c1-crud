@@ -18,6 +18,7 @@ const _layout = () => {
           headerShown: false,
         }}
       />
+      <Stack.Screen name="calendar" options={{ headerTitle: 'Calendar' }} />
     </Stack>
   )
 }

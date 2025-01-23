@@ -103,7 +103,7 @@ const search = () => {
         options={{
           // headerTitle: 'Users',
           headerSearchBarOptions: {
-            placeholder: 'Search Users',
+            placeholder: 'Search',
             hideWhenScrolling: true,
             autoFocus: true,
             // onChangeText: (event) => handleSearch(event.nativeEvent.text),
