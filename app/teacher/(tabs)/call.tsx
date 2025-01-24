@@ -1,38 +1,39 @@
-import React, { useState } from 'react'
-import { Button, TextInput, View } from 'react-native'
+import Daily, { DailyMediaView } from '@daily-co/react-native-daily-js'
+import React, { useEffect, useRef } from 'react'
+import { Button, StyleSheet, View } from 'react-native'
 
-import { useNavigation } from '@react-navigation/native'
+const VideoCall = () => {
+  const callObject = useRef(null)
 
-const Home = () => {
-  const navigation = useNavigation()
-  const [room, onChangeRoom] = useState('')
+  useEffect(() => {
+    // Initialize the call object
+    callObject.current = Daily.createCallObject()
+
+    // Join the Daily room
+    callObject.current.join({ url: 'https://weconn.daily.co/test' })
+
+    // Cleanup on component unmount
+    return () => {
+      callObject.current.leave()
+    }
+  }, [])
 
   return (
-    <View
-      style={{
-        alignItems: 'center',
-        flex: 1,
-        justifyContent: 'center',
-      }}
-    >
-      <TextInput
-        // @ts-ignore
-        onChangeText={onChangeRoom}
-        placeholder="Enter room name here"
-        style={{ color: 'black', padding: 32 }}
-        value={room}
-      />
-      <Button
-        color="blue"
-        disabled={!room}
-        // @ts-ignore
-        onPress={() => navigation.navigate('Meeting', { room })}
-        // @ts-ignore
-        style={{ height: 32, width: 32 }}
-        title="Join"
-      />
+    <View style={styles.container}>
+      <DailyMediaView callObject={callObject.current} style={styles.video} />
+      <Button title="Leave Call" onPress={() => callObject.current.leave()} />
     </View>
   )
 }
 
-export default Home
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: '#000',
+  },
+  video: {
+    flex: 1,
+  },
+})
+
+export default VideoCall

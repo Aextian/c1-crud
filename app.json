@@ -42,12 +42,14 @@
     "plugins": [
       "expo-router",
       "@config-plugins/react-native-webrtc",
+      "@daily-co/config-plugin-rn-daily-js",
       [
         "expo-image-picker",
         {
           "photosPermission": "The app accesses your photos to let you share them with your friends."
         }
-      ]
+      ],
+      "expo-font"
     ],
     "experiments": {
       "typedRoutes": true

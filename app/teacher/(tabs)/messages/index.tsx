@@ -1,10 +1,8 @@
-import CallScreen from '@/components/CallScreen'
 import MessageCard from '@/components/MessageCard'
 import SkUserLoader from '@/components/SkLoader'
 import UserList from '@/components/UserList'
 import SearchUser from '@/components/shared/SearchUser'
 import { useChat } from '@/hooks/useChat'
-import useIncomingCall from '@/hooks/useIncommingCall'
 import { Link } from 'expo-router'
 
 import React from 'react'
@@ -12,13 +10,13 @@ import { SafeAreaView, ScrollView, StyleSheet, Text, View } from 'react-native'
 
 const index = () => {
   const { conversations, loading } = useChat()
-  const { incomingCall, callId } = useIncomingCall()
+  // const { incomingCall, callId } = useIncomingCall()
 
   return (
     <SafeAreaView style={styles.container}>
-      {incomingCall && (
+      {/* {incomingCall && (
         <CallScreen callId={callId} type={'user'} isTeacher={false} />
-      )}
+      )} */}
       <View>
         <SearchUser />
         <UserList role="teacher" />

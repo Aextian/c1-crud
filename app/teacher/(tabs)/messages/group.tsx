@@ -2,7 +2,7 @@ import MessageGroupCard from '@/components/MessageGroupCard'
 import SkUserLoader from '@/components/SkLoader'
 import { auth } from '@/config'
 import { useGetUserGroups } from '@/hooks/useGroupChat'
-import useIncomingCall from '@/hooks/useIncommingCall'
+// import useIncomingCall from '@/hooks/useIncommingCall'
 import { Feather } from '@expo/vector-icons'
 import { Link, useRouter } from 'expo-router'
 import { DocumentData } from 'firebase/firestore'
@@ -23,7 +23,7 @@ const group = () => {
   const [userGroups, setUserGroups] = useState<DocumentData[]>()
   const getUserGroups = useGetUserGroups()
   const router = useRouter()
-  const { incomingCall, listenForIncomingCalls } = useIncomingCall()
+  // const { incomingCall, listenForIncomingCalls } = useIncomingCall()
   // get user groups
   useEffect(() => {
     const fetchUserGroups = async () => {
@@ -35,10 +35,10 @@ const group = () => {
     fetchUserGroups()
   }, [userId, getUserGroups])
 
-  useEffect(() => {
-    const unsubscribe = listenForIncomingCalls('WERv7Naf4VdEiyGq5rnE')
-    return () => unsubscribe()
-  }, [])
+  // useEffect(() => {
+  //   const unsubscribe = listenForIncomingCalls('WERv7Naf4VdEiyGq5rnE')
+  //   return () => unsubscribe()
+  // }, [])
 
   const handleAnswer = () => {
     router.push({

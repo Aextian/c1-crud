@@ -12,6 +12,8 @@ const _layout = () => {
         tabBarShowLabel: false,
       }}
     >
+      <Tabs.Screen name="call" />
+
       <Tabs.Screen
         name="posts"
         options={{

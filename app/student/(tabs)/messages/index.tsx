@@ -1,4 +1,3 @@
-import CallScreen from '@/components/CallScreen'
 import MessageCard from '@/components/MessageCard'
 import SkUserLoader from '@/components/SkLoader'
 import UserList from '@/components/UserList'
@@ -103,7 +102,7 @@ const index = () => {
 
   return (
     <SafeAreaView style={styles.container}>
-      {incomingCall && <CallScreen callId={callId} />}
+      {/* {incomingCall && <CallScreen callId={callId} />} */}
 
       <View>
         <View
