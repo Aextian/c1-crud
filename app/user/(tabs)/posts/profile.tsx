@@ -3,7 +3,6 @@ import Posts from '@/components/teacher/Posts'
 import { auth } from '@/config'
 import useUserAndPosts from '@/hooks/shared/useUserAndPosts'
 import useHideTabBarOnFocus from '@/hooks/useHideTabBarOnFocus'
-import { handleSelectUser } from '@/hooks/useMessageUser'
 import useProfile from '@/hooks/useProfile'
 import userCoverUploads from '@/hooks/userCoverUploads'
 import { Feather, Ionicons } from '@expo/vector-icons'
@@ -111,13 +110,23 @@ const profile = () => {
               )}
 
               {id !== auth?.currentUser?.uid && user && (
-                <TouchableOpacity
-                  onPress={() => handleSelectUser(user, 'teacher')}
-                  className="bg-green-200 px-5 py-2 rounded-xl flex flex-row items-center gap-5"
+                <Link
+                  href={{
+                    pathname: `/user/(tabs)/messages/conversations/user`,
+                    params: {
+                      id: user._id,
+                    },
+                  }}
+                  asChild
                 >
-                  <Feather name="message-square" size={24} color="black" />
-                  <Text className="text-lg font-semibold">Message</Text>
-                </TouchableOpacity>
+                  <TouchableOpacity
+                    // onPress={() => handleSelectUser(user, 'teacher')}
+                    className="bg-green-200 px-5 py-2 rounded-xl flex flex-row items-center gap-5"
+                  >
+                    <Feather name="message-square" size={24} color="black" />
+                    <Text className="text-lg font-semibold">Message</Text>
+                  </TouchableOpacity>
+                </Link>
               )}
             </View>
           </View>
