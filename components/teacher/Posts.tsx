@@ -1,7 +1,7 @@
 import { auth, db } from '@/config'
 import { formatDate } from '@/utils/date-utils'
 import { AntDesign, Feather, Ionicons } from '@expo/vector-icons'
-import { useRouter } from 'expo-router'
+import { Link } from 'expo-router'
 import {
   arrayRemove,
   arrayUnion,
@@ -18,9 +18,7 @@ const Posts = ({ item, index }: { item: any; index: number }) => {
   const [isDislikes, setIsDislikes] = useState(false)
   const [isFavorite, setIsFavorite] = useState(false)
   const [commentCounts, setCommentCounts] = useState(0)
-  // const [imageDisabled, setImageDisabled] = useState(false)
   const currentUser = auth?.currentUser
-  const router = useRouter()
 
   useEffect(() => {
     const fetchFavorites = async () => {
@@ -170,20 +168,13 @@ const Posts = ({ item, index }: { item: any; index: number }) => {
     }
   }
 
-  const showImage = async (image: string) => {
-    const encodedImage = encodeURIComponent(image) // Encode the
-    router.push({
-      pathname: '/teacher/(tabs)/posts/image-modal',
-      params: { image: encodedImage },
-    })
-  }
-
   return (
     <View key={index} className="border-b border-b-slate-200 p-4">
       <View className="flex flex-row justify-between">
         <View className="flex flex-row items-center justify-start gap-2">
           <View className="rounded-full w-12 h-12 border  items-center justify-center">
-            {item?.authorData.avatar ? (
+            {item?.authorData.avatar &&
+            item?.authorData.avatar !== 'undefined' ? (
               <Image
                 source={{ uri: item?.authorData.avatar }}
                 style={{ width: '100%', height: '100%', borderRadius: 100 }}
@@ -192,21 +183,20 @@ const Posts = ({ item, index }: { item: any; index: number }) => {
               <Feather name="user" size={16} color="black" />
             )}
           </View>
-          <TouchableOpacity
-            onPress={() =>
-              router.push({
-                pathname: '/teacher/(tabs)/posts/profile',
-                params: {
-                  id: item.authorId,
-                },
-              })
-            }
+          <Link
+            href={{
+              pathname: '/user/(tabs)/posts/profile',
+              params: { id: item.authorId },
+            }}
+            asChild
           >
-            <Text className="font-semibold">{item.authorName}</Text>
-            <Text className="text-[8px] text-gray-500">
-              {formatDate(item.createdAt)}
-            </Text>
-          </TouchableOpacity>
+            <TouchableOpacity>
+              <Text className="font-semibold">{item.authorName}</Text>
+              <Text className="text-[8px] text-gray-500">
+                {formatDate(item.createdAt)}
+              </Text>
+            </TouchableOpacity>
+          </Link>
         </View>
         <TouchableOpacity onPress={() => toggleFavorite(item.id)}>
           <Ionicons name={isFavorite ? 'heart' : 'heart-outline'} size={24} />
@@ -216,16 +206,21 @@ const Posts = ({ item, index }: { item: any; index: number }) => {
       <View className="px-9 pb-10">
         <Text className="text-black leading-loose">{item.post} </Text>
         {item.imageUrl && (
-          <TouchableOpacity
-            // disabled={imageDisabled}
-            onPress={() => showImage(item.imageUrl)}
+          <Link
+            href={{
+              pathname: '/user/(tabs)/posts/image-modal',
+              params: { image: encodeURIComponent(item.imageUrl) }, // Encode the image URL
+            }}
+            asChild
           >
-            <Image
-              source={{ uri: item.imageUrl }}
-              className="h-72 w-full rounded-3xl mt-2"
-              resizeMode="cover"
-            />
-          </TouchableOpacity>
+            <TouchableOpacity>
+              <Image
+                source={{ uri: item.imageUrl }}
+                className="h-72 w-full rounded-3xl mt-2"
+                resizeMode="cover"
+              />
+            </TouchableOpacity>
+          </Link>
         )}
         {/* Reaction (Like) Section */}
         <View className="flex px-5 py-2 flex-row items-center justify-start gap-5 relative">
@@ -256,14 +251,11 @@ const Posts = ({ item, index }: { item: any; index: number }) => {
           </TouchableOpacity>
 
           <View className="flex flex-row items-center gap-2">
-            <TouchableOpacity
-              onPress={() =>
-                // @ts-ignore
-                router.push(`/teacher/posts/comments/${item.id}`)
-              }
-            >
-              <Feather name="message-circle" color={'gray'} size={20} />
-            </TouchableOpacity>
+            <Link href={`/user/posts/comments/${item.id}`} asChild>
+              <TouchableOpacity>
+                <Feather name="message-circle" color={'gray'} size={20} />
+              </TouchableOpacity>
+            </Link>
             <Text className="text-lg font-semibold">{commentCounts}</Text>
           </View>
         </View>

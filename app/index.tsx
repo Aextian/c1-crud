@@ -10,12 +10,7 @@ const index = () => {
         className="h-96 w-96"
         source={require('../assets/images/logo.png')}
       />
-      <TouchableOpacity
-        onPress={() => router.push('/auth/signup')}
-        className="p-5 mt-25  bg-green-300 items-center rounded-3xl  w-10/12"
-      >
-        <Text className="text-3xl text-white  font-bold">Create Account</Text>
-      </TouchableOpacity>
+
       <TouchableOpacity
         onPress={() => router.push('/auth/login')}
         className="p-5  border-green-500 border-2 items-center rounded-3xl  w-10/12"

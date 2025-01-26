@@ -41,6 +41,8 @@ const useSignUp = () => {
       // Add user data to Firestore
       await setDoc(doc(db, 'users', user.uid), formData)
 
+      // await signOut(auth) // Prevent auto-login
+
       setLoading(false)
       return user
     } catch (error: any) {

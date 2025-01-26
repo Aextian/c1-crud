@@ -23,7 +23,7 @@ const NoteForm = () => {
       })
 
       setLoading(false)
-      router.push('/teacher/messages')
+      router.push('/user/messages')
     } catch (error) {
       setLoading(false)
       console.log(error)

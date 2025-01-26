@@ -1,12 +1,12 @@
 import LoadingScreen from '@/components/loadingScreen'
-import { storage } from '@/config'
+import { auth } from '@/config'
 import useGradeLevel from '@/hooks/useGradeLevel'
+import useImageUploads from '@/hooks/useImageUploads'
 import useSignUp from '@/hooks/useSignUp'
 import { Feather } from '@expo/vector-icons'
 import { Picker } from '@react-native-picker/picker'
-import * as ImagePicker from 'expo-image-picker'
 import { Link } from 'expo-router'
-import { getDownloadURL, ref, uploadBytes } from 'firebase/storage'
+import { signInWithEmailAndPassword } from 'firebase/auth'
 import React, { useState } from 'react'
 import {
   Image,
@@ -30,10 +30,10 @@ const addUser = () => {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [name, setName] = useState('')
-  const [image, setImage] = useState<string | null>(null)
   const { years, courses } = useGradeLevel<string>()
   const [isFormValid, setIsFormValid] = useState(false)
   const [errors, setErrors] = useState({} as any)
+  const { image, pickImage, uploadImage, clearImage } = useImageUploads() //hooks to handle image
 
   const handleFormValidation = () => {
     let errors = {} as any
@@ -74,30 +74,6 @@ const addUser = () => {
     course: '',
   })
 
-  const uploadImage = async () => {
-    if (image) {
-      const response = await fetch(image)
-      const blob = await response.blob()
-      const filename = image.split('/').pop()
-      const storageRef = ref(storage, `images/${filename}`)
-      await uploadBytes(storageRef, blob)
-      const downloadURL = await getDownloadURL(storageRef)
-      return downloadURL
-    }
-  }
-
-  const pickImage = async () => {
-    let result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ImagePicker.MediaTypeOptions.All,
-      allowsEditing: true,
-      aspect: [4, 3],
-      quality: 1,
-    })
-    if (!result.canceled) {
-      setImage(result.assets[0].uri)
-    }
-  }
-
   const { signUp, loading, error } = useSignUp() // Using the custom hook
 
   const handleSignUp = async () => {
@@ -109,10 +85,11 @@ const addUser = () => {
       const imageUrl = await uploadImage()
       const user = await signUp(email, password, name, data, String(imageUrl))
       if (user) {
+        await signInWithEmailAndPassword(auth, 'admin@example.com', '123456')
         alert('Registered successfully!')
         // Optionally, reset form fields
         setEmail('')
-        setImage(null)
+        clearImage()
         setPassword('')
         setData({
           role: '',

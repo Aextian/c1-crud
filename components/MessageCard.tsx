@@ -1,6 +1,6 @@
 import { auth, db } from '@/config'
 import { Feather } from '@expo/vector-icons'
-import { useRouter } from 'expo-router'
+import { Link, useRouter } from 'expo-router'
 import {
   DocumentData,
   collection,
@@ -19,6 +19,7 @@ const MessageCard = ({ conversation }: { conversation: DocumentData }) => {
   const currentUser = auth.currentUser
   const [user, setUser] = useState<DocumentData>()
   const [lastMessage, setLastMessage] = useState<string | null>(null)
+  console.log('user', user)
 
   useEffect(() => {
     const docRef = doc(db, 'conversations', conversation.id)
@@ -67,45 +68,43 @@ const MessageCard = ({ conversation }: { conversation: DocumentData }) => {
     }
   }, [conversation.id]) // Add conversation.id as a dependency
 
-  const CONVERSATION_USER_PATH = '/teacher/(tabs)/messages/conversations/user'
+  const CONVERSATION_USER_PATH = '/user/(tabs)/messages/conversations/user'
 
   return (
-    <TouchableOpacity
-      style={styles.messageCardContainer}
-      onPress={() =>
-        router.push({
-          pathname: CONVERSATION_USER_PATH,
-          params: {
-            id: conversation.id,
-          },
-        })
-      }
+    <Link
+      href={{
+        pathname: CONVERSATION_USER_PATH,
+        params: { id: user?._id },
+      }}
+      asChild
     >
-      <View style={styles.messsageCardIcon}>
-        {user?.avatar && user?.avatar !== 'undefined' ? (
-          <Image
-            source={{ uri: user?.avatar }}
-            style={{ width: '100%', height: '100%', borderRadius: 100 }}
-          />
-        ) : (
-          <Feather name="user" size={24} color="black" />
-        )}
-      </View>
-      {/* content */}
-      <View
-        style={{
-          flex: 1,
-          alignItems: 'flex-start',
-          marginLeft: 1,
-          justifyContent: 'flex-start',
-        }}
-      >
-        <Text>{user?.name}</Text>
-        <Text className="text-xs text-gray-500" numberOfLines={1}>
-          {lastMessage}{' '}
-        </Text>
-      </View>
-    </TouchableOpacity>
+      <TouchableOpacity style={styles.messageCardContainer}>
+        <View style={styles.messsageCardIcon}>
+          {user?.avatar && user?.avatar !== 'undefined' ? (
+            <Image
+              source={{ uri: user?.avatar }}
+              style={{ width: '100%', height: '100%', borderRadius: 100 }}
+            />
+          ) : (
+            <Feather name="user" size={24} color="black" />
+          )}
+        </View>
+        {/* content */}
+        <View
+          style={{
+            flex: 1,
+            alignItems: 'flex-start',
+            marginLeft: 1,
+            justifyContent: 'flex-start',
+          }}
+        >
+          <Text>{user?.name}</Text>
+          <Text className="text-xs text-gray-500" numberOfLines={1}>
+            {lastMessage}{' '}
+          </Text>
+        </View>
+      </TouchableOpacity>
+    </Link>
   )
 }
 

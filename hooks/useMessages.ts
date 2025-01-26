@@ -35,7 +35,6 @@ const useMessages = (id: string) => {
       }))
       setMessages(allMessages)
     })
-
     return () => unsubscribe() // Cleanup subscription on unmount
   }, [id])
 
@@ -54,11 +53,13 @@ const useMessages = (id: string) => {
   const { recordingUri, recording, setRecordingUri } = useRecordingStore()
 
   const currenUser = auth.currentUser
+
   const onSend = useCallback(
     async (messages = [] as IMessage[]) => {
       const [messageToSend] = messages
+
       const messagesCollection = collection(db, 'conversations', id, 'messages')
-      console.log(isAttachFile, isAttachImage, recordingUri)
+
       if (isAttachImage) {
         const newMessage = {
           _id: messages[0]._id + 1,
@@ -129,7 +130,7 @@ const useMessages = (id: string) => {
         await addDoc(messagesCollection, newMessage)
       }
     },
-    [filePath, imagePath, isAttachFile, isAttachImage, recordingUri],
+    [filePath, imagePath, isAttachFile, isAttachImage, recordingUri, id],
   )
 
   return {

@@ -7,7 +7,7 @@ import {
   query,
   where,
 } from 'firebase/firestore'
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 
 const useChat = () => {
   const [conversations, setConversations] = useState<
@@ -16,14 +16,13 @@ const useChat = () => {
   const [loading, setLoading] = useState(true)
   const currentUser = auth.currentUser
 
-  useEffect(() => {
-    if (!currentUser) return // Handle the case where currentUser is null
+  const fetchConversations = async () => {
+    setLoading(true)
 
     const conversationCollection = query(
       collection(db, 'conversations'),
-      where('users', 'array-contains', currentUser.uid),
+      where('users', 'array-contains', currentUser?.uid),
     )
-
     const unsubscribe = onSnapshot(
       conversationCollection,
       async (querySnapshot) => {
@@ -53,11 +52,10 @@ const useChat = () => {
         setLoading(false) // Stop loading after fetching data
       },
     )
-
     return () => unsubscribe() // Cleanup subscription on unmount
-  }, [currentUser])
+  }
 
-  return { conversations, loading }
+  return { conversations, loading, fetchConversations }
 }
 
 export { useChat }

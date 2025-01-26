@@ -33,15 +33,12 @@ const login = () => {
             alert('Your account is frozen')
             setLoading(false)
             await signOut(auth)
-
             return
           }
           if (data.role === 'admin') {
             router.push('/admin/home')
-          } else if (data.role === 'teacher') {
-            router.push('/teacher/messages')
           } else {
-            router.push('/student/messages')
+            router.push('/user/posts')
           }
         }
       }

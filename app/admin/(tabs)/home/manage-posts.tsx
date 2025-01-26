@@ -65,7 +65,7 @@ const managePosts = () => {
     <SafeAreaView style={{ flex: 1 }}>
       <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
         {posts.map((post: DocumentData, index: number) => (
-          <View key={index} className="border-b border-b-slate-200 p-4">
+          <View key={index} className="border-b border-b-slate-200 p-4 w-full">
             <View className="flex flex-row items-center justify-start gap-2">
               <View className="rounded-full w-8 h-8 border p-3 items-center justify-center">
                 <Feather name="user" size={14} />
@@ -74,12 +74,12 @@ const managePosts = () => {
                 <Text className="font-semibold">{post.authorName}</Text>
               </View>
             </View>
-            <View className="px-9 pb-10">
+            <View className="px-9 pb-10 w-full">
               <Text className="text-black leading-loose">{post.post} </Text>
               {post.imageUrl && (
                 <Image
                   source={{ uri: post.imageUrl }}
-                  className="h-72 w-64 rounded-md"
+                  className="h-72 w-full rounded-md"
                 />
               )}
               {/* Reaction (Like) Section */}

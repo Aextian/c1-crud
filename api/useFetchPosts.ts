@@ -1,5 +1,6 @@
-import { db } from '@/config'
+import { auth, db } from '@/config'
 import {
+  DocumentData,
   collection,
   doc,
   getDoc,
@@ -12,11 +13,18 @@ import {
 import { useState } from 'react'
 
 export const useFetchPosts = () => {
-  const [posts, setPosts] = useState<any>([])
+  const [posts, setPosts] = useState<DocumentData[]>([])
+
   const [isLoading, setLoading] = useState(false)
+  const currentUser = auth.currentUser
 
   const fetchPostsAndComments = async () => {
     setLoading(true)
+
+    const documentRef = getDoc(doc(db, 'users', String(currentUser?.uid)))
+
+    const documentSnapshot = await documentRef
+    const userData = documentSnapshot.data()
 
     const q = query(collection(db, 'posts'), where('status', '==', true))
 
@@ -58,7 +66,21 @@ export const useFetchPosts = () => {
           }
         }),
       )
-      setPosts(postsWithComments)
+
+      if (userData?.role === 'student') {
+        // Filter posts that either have no `year` and `course`, or have matching `year` and `course`
+        const filteredPosts = postsWithComments.filter((p) => {
+          // Include posts with no `year` and `course`
+          if (!p.year || !p.course) return true
+          // Include posts with matching `year` and `course`
+          return p.year === userData.year && p.course === userData.course
+        })
+        setPosts(filteredPosts) // Sets the posts to be displayed
+      } else {
+        setPosts(postsWithComments)
+      }
+
+      // setPosts(postsWithComments.filter((p) => p.year === role))
       setLoading(false)
     })
 

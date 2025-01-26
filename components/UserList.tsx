@@ -1,7 +1,7 @@
 import { auth, db } from '@/config'
 import useUser from '@/hooks/useUser'
 import { Feather } from '@expo/vector-icons'
-import { useRouter } from 'expo-router'
+import { Link, useRouter } from 'expo-router'
 import {
   DocumentData,
   addDoc,
@@ -11,14 +11,7 @@ import {
   where,
 } from 'firebase/firestore'
 import React, { useEffect, useState } from 'react'
-import {
-  Image,
-  Pressable,
-  ScrollView,
-  Text,
-  TouchableOpacity,
-  View,
-} from 'react-native'
+import { Image, ScrollView, Text, TouchableOpacity, View } from 'react-native'
 
 interface UserListProps {
   role?: string
@@ -77,17 +70,7 @@ const UserList = ({ role, search = '' }: UserListProps) => {
     }
   }
 
-  const navigateToFormNote = () => {
-    role === 'teacher' ? router.push('/teacher/(tabs)/messages/add-note') : null
-  }
-  const navigateToViewNote = (user: DocumentData) => {
-    router.push({
-      pathname: `/teacher/(tabs)/messages/view-note`,
-      params: {
-        user: JSON.stringify(user), // Convert user object to JSON string
-      },
-    })
-  }
+  const navigateToFormNote = '/teacher/(tabs)/messages/add-note'
 
   useEffect(() => {
     // filter users based on query
@@ -120,14 +103,14 @@ const UserList = ({ role, search = '' }: UserListProps) => {
           justifyContent: 'flex-end',
         }}
       >
-        <Pressable
+        <Link
           style={{
             position: 'absolute',
             top: -0,
             right: -0,
             zIndex: 100,
           }}
-          onPress={navigateToFormNote}
+          href={navigateToFormNote}
         >
           <View style={{ position: 'relative' }}>
             <View
@@ -147,46 +130,48 @@ const UserList = ({ role, search = '' }: UserListProps) => {
               className="h-8 w-8  rounded-full bg-white shadow"
             />
           </View>
-        </Pressable>
-        <TouchableOpacity
-          key={currentUser?.uid}
-          style={{ marginRight: 10, alignItems: 'center' }}
-          activeOpacity={0.8}
-          onPress={navigateToFormNote}
-        >
-          <View
-            style={{
-              height: 64,
-              width: 64,
-              justifyContent: 'center',
-              alignItems: 'center',
-              borderWidth: 1,
-              borderRadius: 50,
-              // padding: 16,
-            }}
+        </Link>
+        <Link href={navigateToFormNote} asChild>
+          <TouchableOpacity
+            key={currentUser?.uid}
+            style={{ marginRight: 10, alignItems: 'center' }}
+            activeOpacity={0.8}
           >
-            {currentUser?.photoURL && currentUser?.photoURL !== 'undefined' ? (
-              <Image
-                src={currentUser?.photoURL}
-                alt="avatar"
-                style={{
-                  width: '100%',
-                  height: '100%',
-                  borderRadius: 50,
-                }}
-              />
-            ) : (
-              <Feather name="user" size={24} />
-            )}
-          </View>
-          <Text
-            numberOfLines={1}
-            ellipsizeMode="tail"
-            style={{ fontSize: 10, textAlign: 'center' }}
-          >
-            Me
-          </Text>
-        </TouchableOpacity>
+            <View
+              style={{
+                height: 64,
+                width: 64,
+                justifyContent: 'center',
+                alignItems: 'center',
+                borderWidth: 1,
+                borderRadius: 50,
+                // padding: 16,
+              }}
+            >
+              {currentUser?.photoURL &&
+              currentUser?.photoURL !== 'undefined' ? (
+                <Image
+                  src={currentUser?.photoURL}
+                  alt="avatar"
+                  style={{
+                    width: '100%',
+                    height: '100%',
+                    borderRadius: 50,
+                  }}
+                />
+              ) : (
+                <Feather name="user" size={24} />
+              )}
+            </View>
+            <Text
+              numberOfLines={1}
+              ellipsizeMode="tail"
+              style={{ fontSize: 10, textAlign: 'center' }}
+            >
+              Me
+            </Text>
+          </TouchableOpacity>
+        </Link>
       </View>
 
       {filteredUsers?.map((user: DocumentData) => {
@@ -204,36 +189,46 @@ const UserList = ({ role, search = '' }: UserListProps) => {
               }}
             >
               {user.note && (
-                <TouchableOpacity
-                  onPress={() => navigateToViewNote(user)}
-                  style={{
-                    position: 'absolute',
-                    top: -0,
-                    right: -0,
-                    zIndex: 100,
+                <Link
+                  href={{
+                    pathname: `/teacher/(tabs)/messages/view-note`,
+                    params: {
+                      user: JSON.stringify(user), // Convert user object to JSON string
+                    },
                   }}
+                  asChild
                 >
-                  <View style={{ position: 'relative' }}>
-                    <View
-                      style={{ zIndex: 100 }}
-                      className="h-16 w-24 p-2 items-center justify-center  rounded-3xl bg-white shadow shadow-black "
-                    >
-                      <Text
-                        style={{ fontSize: 8 }}
-                        className=" text-gray-300 text-ellipsis"
-                        numberOfLines={2}
+                  <TouchableOpacity
+                    style={{
+                      position: 'absolute',
+                      top: -0,
+                      right: -0,
+                      zIndex: 100,
+                    }}
+                  >
+                    <View style={{ position: 'relative' }}>
+                      <View
+                        style={{ zIndex: 100 }}
+                        className="h-16 w-24 p-2 items-center justify-center  rounded-3xl bg-white shadow shadow-black "
                       >
-                        {user?.note || 'Add note'}
-                      </Text>
+                        <Text
+                          style={{ fontSize: 8 }}
+                          className=" text-gray-300 text-ellipsis"
+                          numberOfLines={2}
+                        >
+                          {user?.note || 'Add note'}
+                        </Text>
+                      </View>
+                      <View
+                        style={{ position: 'absolute', bottom: -20, left: 0 }}
+                        className="h-8 w-8  rounded-full bg-white shadow"
+                      />
                     </View>
-                    <View
-                      style={{ position: 'absolute', bottom: -20, left: 0 }}
-                      className="h-8 w-8  rounded-full bg-white shadow"
-                    />
-                  </View>
-                </TouchableOpacity>
+                  </TouchableOpacity>
+                </Link>
               )}
 
+              {/* <Link href={} asChild> */}
               <TouchableOpacity
                 key={user.id}
                 style={{ marginRight: 10, alignItems: 'center' }}
@@ -273,6 +268,7 @@ const UserList = ({ role, search = '' }: UserListProps) => {
                   {firstWord}
                 </Text>
               </TouchableOpacity>
+              {/* </Link> */}
             </View>
           </>
         )

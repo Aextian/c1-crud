@@ -2,6 +2,7 @@ import { db } from '@/config'
 import useAuth from '@/hooks/useAuth'
 import useGradeLevel from '@/hooks/useGradeLevel'
 import useImageUploads from '@/hooks/useImageUploads'
+import useRole from '@/hooks/useRole'
 import { Feather } from '@expo/vector-icons'
 import { Picker } from '@react-native-picker/picker'
 import { useRouter } from 'expo-router'
@@ -11,6 +12,8 @@ import { Image, Text, TextInput, TouchableOpacity, View } from 'react-native'
 
 const PostsForm = () => {
   const router = useRouter()
+  const { role } = useRole()
+
   const { years, courses } = useGradeLevel<string>()
 
   // const [imageUrl, setImageUrl] = useState('')
@@ -44,7 +47,7 @@ const PostsForm = () => {
 
       addPost('')
       clearImage()
-      router.push('/teacher/posts')
+      router.push('/user/posts')
     } catch (error) {
       console.error('Error adding post: ', error)
       alert('Post added error')
@@ -54,7 +57,7 @@ const PostsForm = () => {
   const handleClose = () => {
     addPost('')
     clearImage()
-    router.push('/teacher/posts')
+    router.push('/user/posts')
   }
 
   return (
@@ -94,67 +97,66 @@ const PostsForm = () => {
         </View>
 
         <View className="px-10">
-          <View className="flex flex-row items-center justify-center gap-2 ">
-            <View
-              style={{ width: 150 }}
-              className="border flex flex-row  h-12 border-gray-200 outline-none ring-0 rounded-2xl  "
-            >
-              <Picker
-                selectedValue={course}
-                onValueChange={(course) => setCourse(course)}
-                style={{
-                  width: '100%',
-                  height: '100%',
-                  fontSize: 10, // Adjust the font size for the picker
-                }}
-                // itemStyle={{
-                //   fontSize: 12, // Adjust the font size for picker items
-                // }}
+          {role === 'teacher' && (
+            <View className="flex flex-row items-center justify-center gap-2 ">
+              <View
+                style={{ width: 150 }}
+                className="border flex flex-row  h-12 border-gray-200 outline-none ring-0 rounded-2xl  "
               >
-                <Picker.Item
-                  label="Course"
-                  value=""
-                  style={{ fontSize: 10 }} // Adjust font size of this item
-                />
-                {courses.map((course: any) => (
+                <Picker
+                  selectedValue={course}
+                  onValueChange={(course) => setCourse(course)}
+                  style={{
+                    width: '100%',
+                    height: '100%',
+                    fontSize: 10, // Adjust the font size for the picker
+                  }}
+                >
                   <Picker.Item
+                    label="Course"
+                    value=""
                     style={{ fontSize: 10 }} // Adjust font size of this item
-                    key={course.id}
-                    label={course.name}
-                    value={course.name}
                   />
-                ))}
-              </Picker>
-            </View>
-            <View
-              style={{ width: 150 }}
-              className="border flex flex-row  h-12 border-gray-200 outline-none ring-0 rounded-2xl  "
-            >
-              <Picker
-                selectedValue={year}
-                onValueChange={(course) => setYear(course)}
-                style={{
-                  width: '100%',
-                  height: '100%',
-                  fontSize: 10, // Adjust the font size for the picker
-                }}
+                  {courses.map((course: any) => (
+                    <Picker.Item
+                      style={{ fontSize: 10 }} // Adjust font size of this item
+                      key={course.id}
+                      label={course.name}
+                      value={course.name}
+                    />
+                  ))}
+                </Picker>
+              </View>
+              <View
+                style={{ width: 150 }}
+                className="border flex flex-row  h-12 border-gray-200 outline-none ring-0 rounded-2xl  "
               >
-                <Picker.Item
-                  label="Level"
-                  value=""
-                  style={{ fontSize: 10 }} // Adjust font size of this item
-                />
-                {years.map((year: any) => (
+                <Picker
+                  selectedValue={year}
+                  onValueChange={(course) => setYear(course)}
+                  style={{
+                    width: '100%',
+                    height: '100%',
+                    fontSize: 10, // Adjust the font size for the picker
+                  }}
+                >
                   <Picker.Item
+                    label="Level"
+                    value=""
                     style={{ fontSize: 10 }} // Adjust font size of this item
-                    key={year}
-                    label={year.name}
-                    value={year.name}
                   />
-                ))}
-              </Picker>
+                  {years.map((year: any) => (
+                    <Picker.Item
+                      style={{ fontSize: 10 }} // Adjust font size of this item
+                      key={year}
+                      label={year.name}
+                      value={year.name}
+                    />
+                  ))}
+                </Picker>
+              </View>
             </View>
-          </View>
+          )}
 
           {/* footer */}
           <View className="flex flex-row mt-5  justify-between gap-5 items-center ">
