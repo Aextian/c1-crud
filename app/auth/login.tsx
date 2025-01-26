@@ -52,9 +52,10 @@ const login = () => {
 
   return (
     <View style={styles.container}>
-      <View className="flex items-center justify-between gap-10">
+      <View className="flex items-center justify-between gap-5 w-full ">
         <Image
-          className="h-64 w-64"
+          // className="h-72 w-72"
+          style={{ width: '100%', height: 350 }}
           source={require('../../assets/images/logo.png')}
         />
         <View>

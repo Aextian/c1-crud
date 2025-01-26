@@ -38,11 +38,11 @@ const Notification = (data: any) => {
         isRead: true, // Mark the notification as read
       })
       // Navigate to the comment section after the update
-      router.push(`/teacher/posts/comments/${postId}`)
+      router.push(`/user/posts/comments/${postId}`)
     } catch (error) {
       console.error('Error updating notification:', error)
     }
-    router.push(`/teacher/posts/comments/${postId}`)
+    router.push(`/user/posts/comments/${postId}`)
   }
 
   return loading ? (

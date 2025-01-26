@@ -238,7 +238,7 @@ const meeting = () => {
                     />
                   ) : (
                     <View style={styles.usernameOverlay}>
-                      <Text>{participant.user_name} NO Video</Text>
+                      <Text>{participant.user_name}</Text>
                     </View>
                   )}
                 </>
