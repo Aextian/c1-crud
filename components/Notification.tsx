@@ -17,6 +17,9 @@ const Notification = (data: any) => {
       const userSnapshot = await getDoc(userDoc)
       if (userSnapshot.exists()) {
         const userData = userSnapshot.data()
+        console.log('userData', userData)
+        console.log('userDatad', userData)
+
         setUser(userData)
         setLoading(false)
       }

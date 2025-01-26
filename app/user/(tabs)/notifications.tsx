@@ -20,7 +20,7 @@ const notifications = () => {
     if (currentUser?.uid) {
       const notificationQuery = query(
         collection(db, 'notifications'),
-        where('fromUserId', '==', currentUser.uid),
+        where('fromUserId', '!=', currentUser.uid),
       )
 
       // Set up the real-time listener

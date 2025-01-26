@@ -81,7 +81,7 @@ const profile = () => {
             )}
 
             <Text className="text-2xl font-semibold first-letter:uppercase">
-              {currentUser?.displayName}
+              {user?.name}
             </Text>
             <View className="flex flex-row gap-10">
               <View className="flex flex-col items-center">
@@ -119,10 +119,7 @@ const profile = () => {
                   }}
                   asChild
                 >
-                  <TouchableOpacity
-                    // onPress={() => handleSelectUser(user, 'teacher')}
-                    className="bg-green-200 px-5 py-2 rounded-xl flex flex-row items-center gap-5"
-                  >
+                  <TouchableOpacity className="bg-green-200 px-5 py-2 rounded-xl flex flex-row items-center gap-5">
                     <Feather name="message-square" size={24} color="black" />
                     <Text className="text-lg font-semibold">Message</Text>
                   </TouchableOpacity>

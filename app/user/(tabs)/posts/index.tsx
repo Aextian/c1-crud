@@ -40,7 +40,7 @@ const index = () => {
   // This will be used to detect scroll position
   const handleScroll = (event: any) => {
     const contentOffsetY = event.nativeEvent.contentOffset.y
-    if (contentOffsetY > 50) {
+    if (contentOffsetY > 30) {
       // If scrolled down more than 50 pixels
       if (isButtonVisible) {
         setIsButtonVisible(false)
