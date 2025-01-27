@@ -1,13 +1,11 @@
 import { auth, db } from '@/config'
-import useUploadMultiples from '@/hooks/shared/useUploadMultiples'
-import useFileUpload from '@/hooks/useFileUpload'
 import useGradeLevel from '@/hooks/useGradeLevel'
 import useRole from '@/hooks/useRole'
 import { Feather } from '@expo/vector-icons'
 import { Picker } from '@react-native-picker/picker'
 import { useRouter } from 'expo-router'
-import { addDoc, collection } from 'firebase/firestore'
-import React, { useState } from 'react'
+import { DocumentData, doc, updateDoc } from 'firebase/firestore'
+import React, { useEffect, useState } from 'react'
 import {
   FlatList,
   Image,
@@ -16,9 +14,9 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native'
-import FileView from '../FileView'
+import FileView from './FileView'
 
-const PostsForm = () => {
+const EditFormPost = ({ data }: { data: DocumentData }) => {
   const router = useRouter()
   const { role } = useRole()
   const { years, courses } = useGradeLevel<string>()
@@ -27,55 +25,56 @@ const PostsForm = () => {
   const [course, setCourse] = useState('')
   const currentUser = auth.currentUser
   const [isLoading, setLoading] = useState(false)
+  const [parsedData, setParsedData] = useState<DocumentData | null>(null)
+  useEffect(() => {
+    if (data) {
+      const parsedData = JSON.parse(data as any)
+      setParsedData(parsedData)
+    }
+  }, [data])
 
-  const { images, pickImages, uploadImages, clearImages } = useUploadMultiples() //hooks to handle image
-  const { filePath, fileType, fileName, resetState, pickFile } = useFileUpload()
+  useEffect(() => {
+    if (parsedData) {
+      addPost(parsedData.post)
+      setYear(parsedData.year)
+      setCourse(parsedData.course)
+    }
+  }, [parsedData])
 
   const handleSubmit = async () => {
-    setLoading(true)
-    try {
-      const imageUrls = await uploadImages()
+    setLoading(true) // Start loading before the process starts
 
-      await addDoc(collection(db, 'posts'), {
+    try {
+      // Update the post in the Firestore
+      await updateDoc(doc(db, 'posts', data.id), {
         createdAt: new Date().toISOString(),
         authorId: currentUser?.uid, // Store the UID of the author
         authorName: currentUser?.displayName || 'Anonymous', // Store the author's name
         authorAvatar: currentUser?.photoURL,
         post: post,
-        likes: [],
-        likesCount: 0,
-        dislikes: [],
-        dislikesCount: 0,
-        commentCount: 0,
-        status: false,
-        file: {
-          type: fileType,
-          url: filePath,
-          name: fileName,
-        },
-        imageUrls: imageUrls,
         year: year,
         course: course,
       })
 
+      // Reset the state after the post has been successfully added
       addPost('')
-      clearImages()
-      resetState()
-      setLoading(false)
+      setLoading(false) // Stop loading after successful operation
+
+      // Redirect to the posts page
       router.push('/user/posts')
     } catch (error) {
-      console.error('Error adding post: ', error)
-      alert('Post added error')
-      setLoading(false)
+      console.error('Error updating post: ', error) // Log the error
+      alert('Error while updating post. Please try again later.') // Show a more informative error alert
+      setLoading(false) // Stop loading in case of error
     }
   }
 
   const handleClose = () => {
     addPost('')
-    resetState()
-    clearImages()
+
     router.push('/user/posts')
   }
+  console.log('parseData', parsedData?.post)
 
   return (
     <>
@@ -177,16 +176,6 @@ const PostsForm = () => {
 
           {/* footer */}
           <View className="flex flex-row mt-5  justify-between gap-5 items-center ">
-            <View className="flex flex-row  gap-10 ">
-              {/* select file */}
-              <TouchableOpacity onPress={pickFile}>
-                <Feather name="file" size={24} color={'green'} />
-              </TouchableOpacity>
-              {/* select image */}
-              <TouchableOpacity onPress={pickImages}>
-                <Feather name="image" size={24} color={'green'} />
-              </TouchableOpacity>
-            </View>
             <TouchableOpacity
               className="bg-green-400 px-5 py-3 w-1/2 items-center  text-sm rounded-3xl"
               onPress={handleSubmit}
@@ -197,11 +186,13 @@ const PostsForm = () => {
           </View>
         </View>
         <View className="flex-1 mt-10 bg-white items-center justify-center">
-          {fileName && <FileView fileName={fileName} />}
-          {images.length > 0 && (
+          {parsedData && parsedData?.file.url && (
+            <FileView fileName={parsedData?.file.name} />
+          )}
+          {parsedData && (
             <View className="mt-5">
               <FlatList
-                data={images}
+                data={data.imageUrls}
                 renderItem={({ item }) => (
                   <View className="mr-5">
                     <Image
@@ -225,4 +216,4 @@ const PostsForm = () => {
   )
 }
 
-export default PostsForm
+export default EditFormPost

@@ -37,11 +37,10 @@ export default function Modal() {
                 uri: image,
               }}
               style={{
-                height: 200,
+                height: 300,
                 width: 300,
                 borderRadius: 10,
                 resizeMode: 'cover',
-                // backgroundColor: '#e0e0e0', // Placeholder background
               }}
             />
           )}

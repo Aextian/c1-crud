@@ -41,8 +41,8 @@ const PostSkLoader = () => {
 
               <View
                 style={{
-                  width: 200,
-                  height: 90,
+                  width: 300,
+                  height: 200,
                   backgroundColor: '#adadad',
                   borderRadius: 20,
                 }}

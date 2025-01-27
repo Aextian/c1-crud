@@ -9,6 +9,7 @@ const useFileUpload = () => {
   const [imagePath, setImagePath] = useState('')
   const [filePath, setFilePath] = useState('')
   const [fileType, setFileType] = useState('')
+  const [fileName, setFileName] = useState('')
   const resetState = () => {
     setIsAttachImage(false)
     setIsAttachFile(false)
@@ -46,16 +47,19 @@ const useFileUpload = () => {
       if (!result.canceled && result.assets && result.assets.length > 0) {
         const fileUri = result.assets[0].uri // Access the file URI
         const fileType = result.assets[0].mimeType || '' // Get file type (if available)
+        const fileName = result.assets[0].name // Get the actual file name
         const fileUrl = await uploadFileToFirebase(fileUri) // Upload to Firebase
 
         // Update state based on file type
         if (fileType.includes('image/')) {
           setImagePath(fileUrl || '')
           setFileType(fileType)
+          setFileName(fileName || '')
           setIsAttachImage(true)
         } else {
           setFilePath(fileUrl || '')
           setFileType(fileType)
+          setFileName(fileName || '')
           setIsAttachFile(true)
         }
 
@@ -85,6 +89,7 @@ const useFileUpload = () => {
     imagePath,
     filePath,
     fileType,
+    fileName,
     pickFile,
     shareFile,
     resetState,

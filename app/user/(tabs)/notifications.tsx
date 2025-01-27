@@ -1,4 +1,5 @@
 import Notification from '@/components/Notification'
+import SkUserLoader from '@/components/SkLoader'
 import { auth, db } from '@/config'
 import {
   DocumentData,
@@ -13,10 +14,14 @@ import { FlatList, Text, View } from 'react-native'
 const notifications = () => {
   const currentUser = auth.currentUser
   const [notifications, setNotifications] = useState<DocumentData[]>([])
+  const [loading, setLoading] = useState(true)
 
   // find who send the notifications
 
   useEffect(() => {
+    // Start by setting loading to true
+    setLoading(true)
+
     if (currentUser?.uid) {
       const notificationQuery = query(
         collection(db, 'notifications'),
@@ -29,7 +34,12 @@ const notifications = () => {
           id: doc.id, // Get document ID
           ...doc.data(), // Get document data
         }))
-        setNotifications(notificationsData) // Store the notifications
+
+        // Update the state with the notifications
+        setNotifications(notificationsData)
+
+        // Set loading to false once data is fetched
+        setLoading(false)
       })
 
       // Cleanup the listener on unmount or when currentUser changes
@@ -44,15 +54,18 @@ const notifications = () => {
       </View>
 
       {/* FlatList to render notifications */}
-      {notifications.length === 0 && (
+      {notifications.length === 0 && !loading && (
         <Text className="text-center text-gray-500">
           No notifications found.
         </Text>
       )}
+      {loading && <SkUserLoader />}
       <FlatList
         data={notifications}
-        keyExtractor={(item, index) => index.toString()}
-        renderItem={({ item }) => <Notification {...item} />}
+        keyExtractor={(item: DocumentData, index: string) => index.toString()}
+        renderItem={({ item }: { item: DocumentData }) => (
+          <Notification {...item} />
+        )}
       />
     </View>
   )

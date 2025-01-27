@@ -177,24 +177,6 @@ export default function userConversation() {
               </Text>
             </TouchableOpacity>
           ),
-
-          // headerRight: () => (
-          //   <TouchableOpacity
-          //     className="bg-green-100 px-5 py-2 rounded-xl"
-          //     style={{ marginRight: 10 }} // Adjust the margin if needed
-          //     onPress={() =>
-          //       router.push({
-          //         pathname:
-          //           '/student/(tabs)/messages/video-calls/video-call-screen',
-          //         params: {
-          //           callId: id,
-          //         },
-          //       })
-          //     }
-          //   >
-          //     <Ionicons name="videocam" size={24} color="black" />
-          //   </TouchableOpacity>
-          // ),
         }}
       />
       {fileUrl && (
