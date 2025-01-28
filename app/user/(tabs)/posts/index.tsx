@@ -36,7 +36,7 @@ const index = () => {
 
   return (
     // <SafeAreaView className="flex-1 px-5  gap-10 bg-gray-200 ">
-    <View style={{ flex: 1, marginTop: 20 }}>
+    <View style={{ flex: 1, marginTop: 20, backgroundColor: '#fff' }}>
       <PostsHeader />
 
       {isLoading ? (
@@ -65,7 +65,10 @@ const index = () => {
                       style={{ width: 45, height: 45, borderRadius: 100 }}
                     />
                   ) : (
-                    <View style={{ width: 45, height: 45 }}>
+                    <View
+                      className="text-center flex items-center justify-center"
+                      style={{ width: 45, height: 45 }}
+                    >
                       <Feather name="user" size={24} color="black" />
                     </View>
                   )}

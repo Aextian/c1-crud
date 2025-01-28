@@ -174,10 +174,10 @@ const Posts = ({ item, index }: { item: any; index: number }) => {
   }
 
   return (
-    <View key={index} className="border-b border-b-slate-200 p-4  ">
+    <View key={index} className="border-b border-b-slate-200 shadow">
       {showOptions && <PostOptions data={item} />}
 
-      <View className="flex flex-row justify-between">
+      <View className="flex flex-row justify-between py-2 px-2 ">
         <View className="flex flex-row items-center justify-start gap-2">
           <View className="rounded-full w-12 h-12 border  items-center justify-center">
             {item?.authorData.avatar &&
@@ -207,7 +207,7 @@ const Posts = ({ item, index }: { item: any; index: number }) => {
         </View>
         {currentUser?.uid === item.authorId ? (
           <TouchableOpacity onPress={() => setShowOptions(!showOptions)}>
-            <Text>...</Text>
+            <Text className="text-2xl font-bold">...</Text>
           </TouchableOpacity>
         ) : (
           <TouchableOpacity onPress={() => toggleFavorite(item.id)}>
@@ -216,19 +216,21 @@ const Posts = ({ item, index }: { item: any; index: number }) => {
         )}
       </View>
 
-      <View className="px-9 pb-10">
-        <Text className="text-black leading-loose">{item.post} </Text>
-        {item.file.url !== '' && (
-          <TouchableOpacity
-            className=" p-2 w-8/12 mt-5 mb-5 mx-auto rounded-xl  border border-gray-300"
-            onPress={() => Linking.openURL(item.file.url)}
-          >
-            <View className="flex flex-row items-center gap-2">
-              <Feather name="file" size={24} color={'green'} />
-              <Text className="text-xs font-semibold">{item.file.name}</Text>
-            </View>
-          </TouchableOpacity>
-        )}
+      <View className="pb-10">
+        <View className="px-10">
+          <Text className="text-black leading-loose">{item.post} </Text>
+          {item.file.url !== '' && (
+            <TouchableOpacity
+              className=" p-2 w-8/12 mt-5 mb-5 mx-auto rounded-xl  border border-gray-300"
+              onPress={() => Linking.openURL(item.file.url)}
+            >
+              <View className="flex flex-row items-center gap-2">
+                <Feather name="file" size={24} color={'green'} />
+                <Text className="text-xs font-semibold">{item.file.name}</Text>
+              </View>
+            </TouchableOpacity>
+          )}
+        </View>
 
         <FlatList
           data={item.imageUrls} // Your data array

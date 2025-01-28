@@ -16,8 +16,6 @@ const notifications = () => {
   const [notifications, setNotifications] = useState<DocumentData[]>([])
   const [loading, setLoading] = useState(true)
 
-  // find who send the notifications
-
   useEffect(() => {
     // Start by setting loading to true
     setLoading(true)
@@ -25,23 +23,19 @@ const notifications = () => {
     if (currentUser?.uid) {
       const notificationQuery = query(
         collection(db, 'notifications'),
-        where('fromUserId', '!=', currentUser.uid),
+        where('toUserId', '==', currentUser.uid),
       )
-
       // Set up the real-time listener
       const unsubscribe = onSnapshot(notificationQuery, (querySnapshot) => {
         const notificationsData = querySnapshot.docs.map((doc) => ({
           id: doc.id, // Get document ID
           ...doc.data(), // Get document data
         }))
-
         // Update the state with the notifications
         setNotifications(notificationsData)
-
         // Set loading to false once data is fetched
         setLoading(false)
       })
-
       // Cleanup the listener on unmount or when currentUser changes
       return () => unsubscribe()
     }

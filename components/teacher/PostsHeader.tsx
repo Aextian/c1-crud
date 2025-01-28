@@ -1,12 +1,20 @@
 import { Feather } from '@expo/vector-icons'
 import { Link } from 'expo-router'
 import React from 'react'
-import { Text, TouchableOpacity, View } from 'react-native'
+import { Image, Text, TouchableOpacity, View } from 'react-native'
 
 const PostsHeader = () => {
   return (
     <View className="flex flex-row justify-between px-5 my-10">
-      <Text className="text-3xl font-semibold">WeConnect</Text>
+      <View className="flex flex-row items-center gap-2">
+        <Image
+          source={require('../../assets/images/logo.png')}
+          style={{ width: 35, height: 35, borderRadius: 100 }}
+          resizeMode="contain" // Ensure the image scales correctly
+        />
+        <Text className="text-3xl font-semibold">WeConnect</Text>
+      </View>
+
       <View className="flex flex-row gap-5">
         <Link href={'/user/(tabs)/posts/search'} asChild>
           <TouchableOpacity>

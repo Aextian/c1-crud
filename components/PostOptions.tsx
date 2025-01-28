@@ -34,16 +34,17 @@ const PostOptions = ({ data }: IPostOptionsProps) => {
     <View
       style={{
         position: 'absolute',
-        top: 35,
-        right: 20,
+        top: 25,
+        right: 25,
         borderBottomStartRadius: 10,
         borderBottomEndRadius: 10,
         borderTopStartRadius: 10,
-        padding: 10,
+        paddingHorizontal: 30,
+        paddingVertical: 20,
         backgroundColor: 'white',
         zIndex: 1,
       }}
-      className="shadow-md"
+      className="shadow"
     >
       <View className="flex gap-5">
         <Link
