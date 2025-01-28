@@ -1,11 +1,12 @@
 import { auth, db } from '@/config'
 import useGradeLevel from '@/hooks/useGradeLevel'
+import useHideTabBarOnFocus from '@/hooks/useHideTabBarOnFocus'
 import useRole from '@/hooks/useRole'
 import { Feather } from '@expo/vector-icons'
 import { Picker } from '@react-native-picker/picker'
-import { useRouter } from 'expo-router'
+import { Link, useRouter } from 'expo-router'
 import { DocumentData, doc, updateDoc } from 'firebase/firestore'
-import React, { useEffect, useState } from 'react'
+import React, { memo, useState } from 'react'
 import {
   FlatList,
   Image,
@@ -17,29 +18,16 @@ import {
 import FileView from './FileView'
 
 const EditFormPost = ({ data }: { data: DocumentData }) => {
+  useHideTabBarOnFocus()
   const router = useRouter()
   const { role } = useRole()
   const { years, courses } = useGradeLevel<string>()
-  const [post, addPost] = useState('')
-  const [year, setYear] = useState('')
-  const [course, setCourse] = useState('')
+  const [post, addPost] = useState(data.post)
+  const [year, setYear] = useState(data.year)
+  const [course, setCourse] = useState(data.course)
   const currentUser = auth.currentUser
   const [isLoading, setLoading] = useState(false)
-  const [parsedData, setParsedData] = useState<DocumentData | null>(null)
-  useEffect(() => {
-    if (data) {
-      const parsedData = JSON.parse(data as any)
-      setParsedData(parsedData)
-    }
-  }, [data])
-
-  useEffect(() => {
-    if (parsedData) {
-      addPost(parsedData.post)
-      setYear(parsedData.year)
-      setCourse(parsedData.course)
-    }
-  }, [parsedData])
+  console.log(data.id)
 
   const handleSubmit = async () => {
     setLoading(true) // Start loading before the process starts
@@ -55,11 +43,8 @@ const EditFormPost = ({ data }: { data: DocumentData }) => {
         year: year,
         course: course,
       })
-
-      // Reset the state after the post has been successfully added
       addPost('')
-      setLoading(false) // Stop loading after successful operation
-
+      setLoading(false)
       // Redirect to the posts page
       router.push('/user/posts')
     } catch (error) {
@@ -69,19 +54,14 @@ const EditFormPost = ({ data }: { data: DocumentData }) => {
     }
   }
 
-  const handleClose = () => {
-    addPost('')
-
-    router.push('/user/posts')
-  }
-  console.log('parseData', parsedData?.post)
-
   return (
     <>
       <View className="w-full bg-white border-b border-b-slate-100 flex justify-start ">
-        <TouchableOpacity onPress={handleClose} className="p-4">
-          <Feather name="x" size={20} />
-        </TouchableOpacity>
+        <Link asChild href={'/user/(tabs)/posts'}>
+          <TouchableOpacity className="p-4">
+            <Feather name="x" size={20} />
+          </TouchableOpacity>
+        </Link>
       </View>
       <View className="flex-1 bg-white">
         <View className="flex px-10 flex-row  items-center  p-4 gap-5">
@@ -173,23 +153,10 @@ const EditFormPost = ({ data }: { data: DocumentData }) => {
               </View>
             </View>
           )}
-
-          {/* footer */}
-          <View className="flex flex-row mt-5  justify-between gap-5 items-center ">
-            <TouchableOpacity
-              className="bg-green-400 px-5 py-3 w-1/2 items-center  text-sm rounded-3xl"
-              onPress={handleSubmit}
-              disabled={isLoading}
-            >
-              <Text className="text-white">Post</Text>
-            </TouchableOpacity>
-          </View>
         </View>
         <View className="flex-1 mt-10 bg-white items-center justify-center">
-          {parsedData && parsedData?.file.url && (
-            <FileView fileName={parsedData?.file.name} />
-          )}
-          {parsedData && (
+          {data && data?.file.url && <FileView fileName={data?.file.name} />}
+          {data && (
             <View className="mt-5">
               <FlatList
                 data={data.imageUrls}
@@ -211,9 +178,21 @@ const EditFormPost = ({ data }: { data: DocumentData }) => {
             </View>
           )}
         </View>
+        {/* footer */}
+        <View className="flex flex-row items-center mb- justify-center mb-10">
+          <TouchableOpacity
+            className="bg-green-400 justify-center p-5 w-10/12 items-center  text-sm rounded-xl"
+            onPress={handleSubmit}
+            disabled={isLoading}
+          >
+            <Text className="text-white">
+              {isLoading ? 'Updating...' : 'Update'}
+            </Text>
+          </TouchableOpacity>
+        </View>
       </View>
     </>
   )
 }
 
-export default EditFormPost
+export default memo(EditFormPost)

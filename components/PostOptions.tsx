@@ -1,13 +1,35 @@
+import { db } from '@/config'
 import { Link } from 'expo-router'
-import { DocumentData } from 'firebase/firestore'
+import { DocumentData, deleteDoc, doc } from 'firebase/firestore'
 import React from 'react'
-import { Text, TouchableOpacity, View } from 'react-native'
+import { Alert, Text, TouchableOpacity, View } from 'react-native'
 
-interface PostOptionsProps {
+interface IPostOptionsProps {
   data: DocumentData
 }
 
-const PostOptions = ({ data }: PostOptionsProps) => {
+const PostOptions = ({ data }: IPostOptionsProps) => {
+  const handleRemovePost = async () => {
+    try {
+      await deleteDoc(doc(db, 'posts', data.id)) // Delete the post from Firestore
+      Alert.alert('Success', 'Post has been removed successfully.')
+    } catch (error) {
+      console.error('Error removing post:', error)
+      Alert.alert('Error', 'Failed to remove the post. Please try again later.')
+    }
+  }
+
+  const confirmRemovePost = () => {
+    Alert.alert(
+      'Confirm Deletion',
+      'Are you sure you want to delete this post?',
+      [
+        { text: 'Cancel', style: 'cancel' },
+        { text: 'Delete', style: 'destructive', onPress: handleRemovePost },
+      ],
+    )
+  }
+
   return (
     <View
       style={{
@@ -27,7 +49,7 @@ const PostOptions = ({ data }: PostOptionsProps) => {
         <Link
           href={{
             pathname: '/user/(tabs)/posts/edit-post',
-            params: { data: JSON.stringify(data) }, // Serialize the data to pass it
+            params: { id: data.id }, // Serialize the data to pass it
           }}
           asChild
         >
@@ -35,14 +57,8 @@ const PostOptions = ({ data }: PostOptionsProps) => {
             <Text>Edit Post</Text>
           </TouchableOpacity>
         </Link>
-        <TouchableOpacity
-          style={{
-            backgroundColor: 'red',
-            padding: 10,
-            borderRadius: 5,
-          }}
-        >
-          <Text style={{ color: 'white' }}>Remove Post</Text>
+        <TouchableOpacity onPress={confirmRemovePost}>
+          <Text>Delete Post</Text>
         </TouchableOpacity>
       </View>
     </View>

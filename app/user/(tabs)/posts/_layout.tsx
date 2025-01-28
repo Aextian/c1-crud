@@ -10,6 +10,7 @@ const _layout = () => {
         options={{ headerShown: false, presentation: 'transparentModal' }}
       />
       <Stack.Screen name="profile" options={{ headerShown: false }} />
+      <Stack.Screen name="edit-post" options={{ headerShown: false }} />
       <Stack.Screen
         name="image-modal"
         options={{

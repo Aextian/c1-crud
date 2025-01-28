@@ -205,12 +205,15 @@ const Posts = ({ item, index }: { item: any; index: number }) => {
             </TouchableOpacity>
           </Link>
         </View>
-        <TouchableOpacity onPress={() => toggleFavorite(item.id)}>
-          <Ionicons name={isFavorite ? 'heart' : 'heart-outline'} size={24} />
-        </TouchableOpacity>
-        <TouchableOpacity onPress={() => setShowOptions(!showOptions)}>
-          <Text>...</Text>
-        </TouchableOpacity>
+        {currentUser?.uid === item.authorId ? (
+          <TouchableOpacity onPress={() => setShowOptions(!showOptions)}>
+            <Text>...</Text>
+          </TouchableOpacity>
+        ) : (
+          <TouchableOpacity onPress={() => toggleFavorite(item.id)}>
+            <Ionicons name={isFavorite ? 'heart' : 'heart-outline'} size={24} />
+          </TouchableOpacity>
+        )}
       </View>
 
       <View className="px-9 pb-10">

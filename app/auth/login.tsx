@@ -1,11 +1,12 @@
 import { auth, db } from '@/config'
-import { useUserStore } from '@/store/useUserStore'
 import { useRouter } from 'expo-router'
 import { signInWithEmailAndPassword, signOut } from 'firebase/auth'
 import { doc, getDoc } from 'firebase/firestore'
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import {
   Image,
+  ImageBackground,
+  Keyboard,
   StyleSheet,
   Text,
   TextInput,
@@ -16,11 +17,32 @@ import {
 const login = () => {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
-
   const router = useRouter()
-  const { setUser } = useUserStore()
+  const [imageSize, setImageSize] = useState({ height: 300, width: '100%' })
 
   const [loading, setLoading] = useState(false)
+
+  useEffect(() => {
+    const keyboardDidShowListener = Keyboard.addListener(
+      'keyboardDidShow',
+      () => {
+        setImageSize({ height: 150, width: '80%' }) // Smaller size when keyboard is visible
+      },
+    )
+    const keyboardDidHideListener = Keyboard.addListener(
+      'keyboardDidHide',
+      () => {
+        setImageSize({ height: 300, width: '100%' }) // Reset size when keyboard is hidden
+      },
+    )
+
+    return () => {
+      // Clean up the listeners on component unmount
+      keyboardDidHideListener.remove()
+      keyboardDidShowListener.remove()
+    }
+  }, [])
+
   const handleLogin = async () => {
     setLoading(true)
     try {
@@ -52,17 +74,29 @@ const login = () => {
 
   return (
     <View style={styles.container}>
-      <View className="flex items-center justify-between gap-10">
+      <ImageBackground
+        source={require('../../assets/images/background.jpg')} // Add your background image here
+        style={styles.overlay}
+      />
+      <View className="flex items-center justify-between  w-full">
         <Image
-          className="h-64 w-64"
+          // className="h-64 w-64"
+          // style={{ height: 300, width: '100%' }}
+          style={{ height: imageSize.height, width: imageSize.width }} // Dynamic image size
           source={require('../../assets/images/logo.png')}
+          resizeMode="contain"
         />
+        <Text style={{ fontSize: 55, fontWeight: 'bold', fontFamily: 'serif' }}>
+          WeConnect
+        </Text>
         <View>
-          <Text className="text-2xl tracking-widest">Welcome back !</Text>
+          <Text className="text-2xl tracking-widest font-semibold shadow shadow-black">
+            Welcome back !
+          </Text>
         </View>
       </View>
       <TextInput
-        className=" mt-5 rounded-2xl text-2xl border border-slate-200 bg-slate-200 w-10/12 p-4"
+        className=" mt-5 rounded-xl text-xl border border-slate-200 bg-slate-50 w-10/12 p-4"
         value={email}
         onChangeText={(text) => setEmail(text)}
         placeholder="Email"
@@ -72,12 +106,12 @@ const login = () => {
         onChangeText={(text) => setPassword(text)}
         placeholder="Password"
         secureTextEntry
-        className=" mt-5 rounded-2xl text-2xl border border-slate-200 bg-slate-200 w-10/12 p-4"
+        className=" mt-5 rounded-xl text-xl border border-slate-200 bg-slate-50 w-10/12 p-4"
       />
       <TouchableOpacity
         disabled={loading}
         onPress={handleLogin}
-        className="p-3 mt-5  border-green-500 border-2 items-center rounded-3xl  w-10/12"
+        className="p-3 mt-5  border-green-500 border-2 items-center rounded-xl  w-10/12"
       >
         <Text className="text-3xl font-bold text-green-500">
           {loading ? 'Loging...' : 'Login'}
@@ -96,11 +130,20 @@ const login = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    position: 'relative',
     justifyContent: 'center', // Center content vertically
     alignItems: 'center', // Center content horizontally
     padding: 20,
     gap: 5,
-    backgroundColor: '#f0f0f0', // Light background for contrast
+    backgroundColor: 'white', // Light background for contrast
+  },
+  overlay: {
+    position: 'absolute',
+    top: 250,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    opacity: 0.3,
   },
   loginInput: {
     width: '80%', // Input width takes 80% of screen width

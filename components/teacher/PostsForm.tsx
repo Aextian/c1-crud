@@ -74,7 +74,7 @@ const PostsForm = () => {
     addPost('')
     resetState()
     clearImages()
-    router.push('/user/posts')
+    router.back()
   }
 
   return (

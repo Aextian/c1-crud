@@ -21,9 +21,7 @@ const _layout = () => {
         ? router.replace('/admin/home')
         : router.replace('/user/posts')
     } else if (!currentUser && !inAuthGroup) {
-      // router.replace('/auth/login')
       router.replace('/auth/login')
-      // router.replace('/teacher/settings/profile')
     }
   }, [currentUser, loading, user])
 
