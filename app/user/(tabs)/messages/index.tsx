@@ -1,8 +1,11 @@
 import MessageCard from '@/components/MessageCard'
+import MessageGroupCard from '@/components/MessageGroupCard'
 import SkUserLoader from '@/components/SkLoader'
 import SearchUser from '@/components/shared/SearchUser'
 import UserLists from '@/components/teacher/UserLists'
+import { auth } from '@/config'
 import { useChat } from '@/hooks/useChat'
+import { useGetUserGroups } from '@/hooks/useGroupChat'
 import { Link } from 'expo-router'
 import { DocumentData } from 'firebase/firestore'
 
@@ -19,10 +22,24 @@ import {
 const index = () => {
   const { conversations, loading, fetchConversations } = useChat()
   const [refreshing, setRefreshing] = useState(false)
+  const currentUser = auth?.currentUser
+  const getUserGroups = useGetUserGroups()
+
+  const [userGroups, setUserGroups] = useState<DocumentData[]>([])
 
   useEffect(() => {
     fetchConversations()
   }, [])
+
+  useEffect(() => {
+    const fetchUserGroups = async () => {
+      const groups = await getUserGroups(String(currentUser?.uid))
+
+      setUserGroups(groups)
+    }
+
+    fetchUserGroups()
+  }, [currentUser?.uid, getUserGroups])
 
   const onRefresh = useCallback(async () => {
     setRefreshing(true)
@@ -71,37 +88,26 @@ const index = () => {
           </View>
           <Text>Messages</Text>
         </View>
-        {/* <ScrollView contentContainerStyle={{ display: 'flex', gap: 30 }}>
-          {conversations && conversations?.length > 0 ? (
-            <>
-              {conversations?.map((conversation) =>
-                conversation.messages && conversation.messages.length > 0 ? (
-                  <MessageCard
-                    key={conversation.id}
-                    conversation={conversation}
-                  />
-                ) : null,
-              )}
-            </>
-          ) : (
-            <>
-              {loading ? (
-                <SkUserLoader />
-              ) : (
-                <View>
-                  <Text style={{ textAlign: 'center' }}>
-                    No conversation found
-                  </Text>
-                </View>
-              )}
-            </>
-          )}
-        </ScrollView> */}
 
         <FlatList
           data={conversations} // Pass conversations to FlatList
           keyExtractor={(item) => item.id} // Extract unique key for each conversation
           renderItem={renderItem} // Render each conversation
+          ListEmptyComponent={renderEmptyComponent} // Show when no conversations exist
+          contentContainerStyle={{ paddingVertical: 20, gap: 30 }} // Styling for the container
+          refreshControl={
+            <RefreshControl
+              refreshing={refreshing}
+              onRefresh={onRefresh} // This triggers the refresh logic
+              colors={['#ff0000']} // Optional, for custom colors
+              progressBackgroundColor="#ffffff" // Optional, for the background color of the spinner
+            />
+          }
+        />
+        <FlatList
+          data={userGroups} // Pass conversations to FlatList
+          keyExtractor={(item) => item.id} // Extract unique key for each conversation
+          renderItem={({ item }) => <MessageGroupCard group={item} />} // Render each conversation
           ListEmptyComponent={renderEmptyComponent} // Show when no conversations exist
           contentContainerStyle={{ paddingVertical: 20, gap: 30 }} // Styling for the container
           refreshControl={

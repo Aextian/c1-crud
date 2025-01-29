@@ -24,19 +24,8 @@ const createGroup = () => {
   }
 
   return (
-    <View className="flex flex-col gap-5 px-5 mt-5">
-      <View
-        style={{
-          flexDirection: 'row',
-          justifyContent: 'space-around',
-          gap: 20,
-          alignItems: 'center',
-          borderColor: 'grey',
-          borderWidth: 1,
-          paddingHorizontal: 20,
-          borderRadius: 10,
-        }}
-      >
+    <View className="flex flex-1 flex-col gap-5 px-5  bg-white">
+      <View className="flex flex-row mt-5 items-center justify-between gap-5 border border-gray-300 px-3 rounded-xl">
         <Feather name="message-circle" size={24} />
         <TextInput
           style={{

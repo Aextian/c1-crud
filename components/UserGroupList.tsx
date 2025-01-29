@@ -3,7 +3,7 @@ import { Feather } from '@expo/vector-icons'
 import Checkbox from 'expo-checkbox'
 import { DocumentData, collection, onSnapshot } from 'firebase/firestore'
 import React, { useEffect, useState } from 'react'
-import { ScrollView, Text, View } from 'react-native'
+import { Image, ScrollView, Text, TextInput, View } from 'react-native'
 import SkUserLoader from './SkLoader'
 
 interface IProps {
@@ -11,8 +11,8 @@ interface IProps {
   userIds: string[]
 }
 const UserGroupList = ({ userIds, setUserIds }: IProps) => {
-  const [users, setUsers] = useState<DocumentData>([])
-  //   const [userIds, setUserIds] = useState<string[]>([])
+  const [users, setUsers] = useState<DocumentData[]>([])
+  const [filteredUsers, setFilteredUsers] = useState<DocumentData>([])
   const currentUser = auth.currentUser
 
   useEffect(() => {
@@ -25,6 +25,7 @@ const UserGroupList = ({ userIds, setUserIds }: IProps) => {
         }))
         .filter((user) => user.id !== currentUser?.uid)
       setUsers(usersData)
+      setFilteredUsers(usersData)
     })
     return unsubscribe
   }, [])
@@ -36,6 +37,18 @@ const UserGroupList = ({ userIds, setUserIds }: IProps) => {
         : userIds.filter((id) => id !== userId), // Remove userId if unchecked
     )
   }
+  const handleSearch = (text: string) => {
+    const filtered = users.filter(
+      (user) =>
+        user.name?.toLowerCase().includes(text.toLowerCase()) ||
+        user.email?.toLowerCase().includes(text.toLowerCase()), // Include email search
+    )
+    if (text === '') {
+      setFilteredUsers(users)
+    } else {
+      setFilteredUsers(filtered)
+    }
+  }
 
   return users.length > 0 ? (
     <ScrollView
@@ -43,10 +56,18 @@ const UserGroupList = ({ userIds, setUserIds }: IProps) => {
       contentContainerStyle={{
         alignItems: 'flex-start',
         justifyContent: 'flex-start',
-        paddingHorizontal: 10,
+        // paddingHorizontal: 10,
       }}
     >
-      {users.map((user: DocumentData) => (
+      <View className="w-full bg-white shadow mb-10">
+        <TextInput
+          className="w-full rounded-xl p-5"
+          autoFocus
+          placeholder="Search by name or email"
+          onChangeText={(text) => handleSearch(text)}
+        />
+      </View>
+      {filteredUsers.map((user: DocumentData) => (
         <View
           className="flex flex-row justify-between w-full items-center "
           key={user.id}
@@ -55,9 +76,32 @@ const UserGroupList = ({ userIds, setUserIds }: IProps) => {
             className="flex flex-row items-center "
             style={{ marginBottom: 10 }}
           >
-            <View className="item-center  h-16 w-16  justify-center border p-4 rounded-full">
-              <Feather name="user" size={24} />
+            <View
+              style={{
+                height: 50,
+                width: 50,
+                justifyContent: 'center',
+                alignItems: 'center',
+                borderWidth: 1,
+                borderRadius: 50,
+                // padding: 16,
+              }}
+            >
+              {user?.avatar && user?.avatar !== 'undefined' ? (
+                <Image
+                  src={user?.avatar}
+                  alt="avatar"
+                  style={{
+                    width: '100%',
+                    height: '100%',
+                    borderRadius: 50,
+                  }}
+                />
+              ) : (
+                <Feather name="user" size={20} />
+              )}
             </View>
+
             <Text
               style={{ fontWeight: 'bold', marginLeft: 10 }}
               className="text-[10px] text-center"

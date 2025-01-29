@@ -35,20 +35,6 @@ const group = () => {
     fetchUserGroups()
   }, [userId, getUserGroups])
 
-  // useEffect(() => {
-  //   const unsubscribe = listenForIncomingCalls('WERv7Naf4VdEiyGq5rnE')
-  //   return () => unsubscribe()
-  // }, [])
-
-  const handleAnswer = () => {
-    router.push({
-      pathname: '/user/(tabs)/messages/group-calls/answer-call-screen',
-      params: {
-        callId: 'WERv7Naf4VdEiyGq5rnE',
-      },
-    })
-    console.log('Call Answered')
-  }
   return (
     <SafeAreaView style={styles.container}>
       {/* {incomingCall && (

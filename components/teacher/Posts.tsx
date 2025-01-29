@@ -174,10 +174,10 @@ const Posts = ({ item, index }: { item: any; index: number }) => {
   }
 
   return (
-    <View key={index} className="border-b border-b-slate-200 shadow">
+    <View key={index} className="border-b border-b-slate-200  shadow">
       {showOptions && <PostOptions data={item} />}
 
-      <View className="flex flex-row justify-between py-2 px-2 ">
+      <View className="flex flex-row justify-between py-2 mt-5 px-5 ">
         <View className="flex flex-row items-center justify-start gap-2">
           <View className="rounded-full w-12 h-12 border  items-center justify-center">
             {item?.authorData.avatar &&

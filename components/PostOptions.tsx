@@ -34,8 +34,8 @@ const PostOptions = ({ data }: IPostOptionsProps) => {
     <View
       style={{
         position: 'absolute',
-        top: 25,
-        right: 25,
+        top: 50,
+        right: 30,
         borderBottomStartRadius: 10,
         borderBottomEndRadius: 10,
         borderTopStartRadius: 10,

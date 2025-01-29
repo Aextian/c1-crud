@@ -1,6 +1,6 @@
 import { db } from '@/config'
 import { Feather } from '@expo/vector-icons'
-import { useRouter } from 'expo-router'
+import { Link, useRouter } from 'expo-router'
 import {
   DocumentData,
   collection,
@@ -36,38 +36,33 @@ const MessageGroupCard = ({ group }: { group: DocumentData }) => {
     }
   }, [group.id]) // Add conversation.id as a dependency
 
-  const CONVERSATION_GROUP_PATH = '/teacher/(tabs)/messages/conversations/group'
+  const CONVERSATION_GROUP_PATH = '/user/(tabs)/messages/conversations/group'
 
   return (
-    <TouchableOpacity
-      style={styles.messageCardContainer}
-      onPress={() =>
-        router.push({
-          pathname: CONVERSATION_GROUP_PATH,
-          params: {
-            id: group.id,
-          },
-        })
-      }
+    <Link
+      href={{ pathname: CONVERSATION_GROUP_PATH, params: { id: group.id } }}
+      asChild
     >
-      <View style={styles.messsageCardIcon}>
-        <Feather name="user" size={24} color="black" />
-      </View>
-      {/* content */}
-      <View
-        style={{
-          flex: 1,
-          alignItems: 'flex-start',
-          marginLeft: 1,
-          justifyContent: 'flex-start',
-        }}
-      >
-        <Text>{group?.name}</Text>
-        <Text className="text-xs text-gray-500" numberOfLines={1}>
-          {lastMessage}{' '}
-        </Text>
-      </View>
-    </TouchableOpacity>
+      <TouchableOpacity style={styles.messageCardContainer}>
+        <View style={styles.messsageCardIcon}>
+          <Feather name="users" size={24} color="black" />
+        </View>
+        {/* content */}
+        <View
+          style={{
+            flex: 1,
+            alignItems: 'flex-start',
+            marginLeft: 1,
+            justifyContent: 'flex-start',
+          }}
+        >
+          <Text>{group?.name}</Text>
+          <Text className="text-xs text-gray-500" numberOfLines={1}>
+            {lastMessage}{' '}
+          </Text>
+        </View>
+      </TouchableOpacity>
+    </Link>
   )
 }
 
@@ -82,8 +77,8 @@ const styles = StyleSheet.create({
   messsageCardIcon: {
     width: 45,
     height: 45,
-    borderColor: 'green',
-    borderWidth: 2,
+    // borderColor: 'green',
+    // borderWidth: 2,
     borderRadius: 100,
     marginRight: 10,
     alignItems: 'center',

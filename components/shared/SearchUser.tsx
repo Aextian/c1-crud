@@ -6,19 +6,7 @@ import { Text, TouchableOpacity, View } from 'react-native'
 const SearchUser = () => {
   return (
     <Link href={'/user/messages/search-user'} asChild>
-      <TouchableOpacity
-        style={{
-          flexDirection: 'row',
-          justifyContent: 'space-between',
-          // gap: 20,
-          alignItems: 'center',
-          borderColor: 'grey',
-          borderWidth: 1,
-          paddingVertical: 10,
-          paddingHorizontal: 20,
-          borderRadius: 10,
-        }}
-      >
+      <TouchableOpacity className="flex flex-row items-center justify-between gap-5 border border-gray-300 p-3 rounded-xl">
         <View className="flex flex-row items-start gap-5 justify-start">
           <Feather name="users" size={24} />
           <Text>Search by name or email</Text>

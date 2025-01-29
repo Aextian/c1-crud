@@ -1,3 +1,4 @@
+import useRecordingStore from '@/store/useRecordingStore'
 import {
   addDoc,
   arrayUnion,
@@ -13,12 +14,14 @@ import {
 } from 'firebase/firestore'
 import { useCallback, useEffect, useState } from 'react'
 import { IMessage } from 'react-native-gifted-chat'
-import { db } from '../config' // Import your Firebase configuration here
+import { auth, db } from '../config' // Import your Firebase configuration here
+import useFileUpload from './useFileUpload'
 
 // Hook for sending messages
 
 export const useGroupMessage = (groupId: string) => {
   const [messages, setMessages] = useState<IMessage[]>([])
+  const currenUser = auth?.currentUser
 
   useEffect(() => {
     if (!groupId) return // Check if conversationId is valid
@@ -35,43 +38,124 @@ export const useGroupMessage = (groupId: string) => {
         text: doc.data().text,
         createdAt: doc.data().createdAt.toDate(),
         user: doc.data().user,
+        image: doc.data().image,
+        file: doc.data().file,
+        audio: doc.data().audio,
       }))
       setMessages(allMessages)
     })
-
     return () => unsubscribe() // Cleanup subscription on unmount
   }, [groupId])
 
+  const {
+    shareFile,
+    isAttachFile,
+    isAttachImage,
+    filePath,
+    imagePath,
+    fileType,
+    setImagePath,
+    setFilePath,
+    resetState,
+  } = useFileUpload()
+
+  const { recordingUri, recording, setRecordingUri } = useRecordingStore()
+
   const onSend = useCallback(
-    async (messages: IMessage[] = []) => {
-      if (messages.length === 0) return // Ensure there is a message to send
-      const { createdAt, text, user } = messages[0]
-      try {
-        // Reference to the messages collection
-        const messagesCollection = collection(
-          db,
-          'groupChats',
-          groupId,
-          'messages',
-        )
-        // Add a new message document to Firestore
-        await addDoc(messagesCollection, {
-          createdAt,
-          text,
-          user,
-        })
+    async (messages = [] as IMessage[]) => {
+      const [messageToSend] = messages
+
+      const messagesCollection = collection(
+        db,
+        'groupChats',
+        groupId,
+        'messages',
+      )
+
+      if (isAttachImage) {
+        const newMessage = {
+          _id: messages[0]._id + 1,
+          text: messageToSend.text,
+          createdAt: new Date(),
+          user: {
+            _id: currenUser?.uid,
+            avatar: '',
+          },
+          image: imagePath,
+          file: {
+            url: '',
+          },
+        }
+
+        await addDoc(messagesCollection, newMessage)
+        resetState()
+      } else if (isAttachFile) {
+        const newMessage = {
+          _id: messages[0]._id + 1,
+          text: messageToSend.text,
+          createdAt: new Date(),
+          user: {
+            _id: currenUser?.uid,
+            avatar: '',
+          },
+          image: '',
+          file: {
+            url: filePath,
+            type: fileType,
+          },
+        }
+        await addDoc(messagesCollection, newMessage)
+        setFilePath('')
+
         // setMessages((previousMessages) =>
-        //   GiftedChat.append(previousMessages, messages),
+        //   GiftedChat.append(previousMessages, newMessage),
         // )
-      } catch (error) {
-        console.error('Error sending message: ', error)
-        alert(error)
+        // resetState()
+      } else if (recordingUri) {
+        const newMessage = {
+          _id: messages[0]._id + 1,
+          text: messageToSend.text,
+          createdAt: new Date(),
+          user: {
+            _id: currenUser?.uid,
+            avatar: '',
+          },
+          image: '',
+          file: {
+            url: '',
+            type: '',
+          },
+          audio: recordingUri,
+        }
+        await addDoc(messagesCollection, newMessage)
+        setRecordingUri(null)
+      } else {
+        const newMessage = {
+          _id: messageToSend._id,
+          text: messageToSend.text,
+          createdAt: new Date(),
+          user: {
+            _id: currenUser?.uid,
+            avatar: '',
+          },
+        }
+        await addDoc(messagesCollection, newMessage)
       }
     },
-    [groupId],
+    [filePath, imagePath, isAttachFile, isAttachImage, recordingUri, groupId],
   )
 
-  return { messages, onSend }
+  return {
+    messages,
+    onSend,
+    isAttachFile,
+    shareFile,
+    isAttachImage,
+    imagePath,
+    filePath,
+    setFilePath,
+    setImagePath,
+  }
 }
 
 // Hook for creating a group

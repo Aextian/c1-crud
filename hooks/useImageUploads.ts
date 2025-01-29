@@ -6,7 +6,7 @@ import { useState } from 'react'
 const useImageUploads = () => {
   const [image, setImage] = useState<string | null>(null)
 
-  const uploadImage = async () => {
+  const uploadImage = async (image: string) => {
     if (image) {
       const response = await fetch(image)
       const blob = await response.blob()

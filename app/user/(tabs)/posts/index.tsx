@@ -43,6 +43,7 @@ const index = () => {
         <PostSkLoader />
       ) : (
         <FlatList
+          style={{ marginBottom: 30 }}
           data={posts}
           keyExtractor={(item) => item.id}
           refreshControl={

@@ -37,7 +37,7 @@ const UserList = ({ search = '' }: UserListProps) => {
       horizontal
       showsHorizontalScrollIndicator={false}
       contentContainerStyle={{
-        alignItems: 'center',
+        alignItems: 'flex-start',
         paddingHorizontal: 10,
         // height: 150,
         paddingVertical: 5,
@@ -150,14 +150,19 @@ const UserList = ({ search = '' }: UserListProps) => {
                     style={{
                       position: 'absolute',
                       top: -0,
-                      right: -0,
+                      right: -30,
                       zIndex: 100,
                     }}
                   >
                     <View style={{ position: 'relative' }}>
                       <View
-                        style={{ zIndex: 100 }}
-                        className="h-16 w-24 p-2 items-center justify-center  rounded-3xl bg-white shadow shadow-black "
+                        style={{
+                          zIndex: 100,
+                          borderTopEndRadius: 10,
+                          borderTopStartRadius: 20,
+                          borderBottomRightRadius: 20,
+                        }}
+                        className="h-16 w-24  items-center justify-center  bg-white shadow shadow-black "
                       >
                         <Text
                           style={{ fontSize: 8 }}
@@ -168,7 +173,7 @@ const UserList = ({ search = '' }: UserListProps) => {
                         </Text>
                       </View>
                       <View
-                        style={{ position: 'absolute', bottom: -20, left: 0 }}
+                        style={{ position: 'absolute', bottom: -20, left: -15 }}
                         className="h-8 w-8  rounded-full bg-white shadow"
                       />
                     </View>
