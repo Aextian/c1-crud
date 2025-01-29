@@ -119,8 +119,8 @@ const styles = StyleSheet.create({
   messsageCardIcon: {
     width: 45,
     height: 45,
-    // borderColor: 'green',
-    // borderWidth: 2,
+    borderColor: 'gray',
+    borderWidth: 1,
     borderRadius: 100,
     marginRight: 10,
     alignItems: 'center',

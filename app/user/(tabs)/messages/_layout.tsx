@@ -46,7 +46,6 @@ const _layout = () => {
           ),
         }}
       />
-      <Stack.Screen name="group" options={{ headerShown: false }} />
       <Stack.Screen
         name="create-group"
         options={({ navigation }) => ({

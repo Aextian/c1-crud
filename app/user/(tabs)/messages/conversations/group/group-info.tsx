@@ -1,12 +1,19 @@
 import { auth, db } from '@/config'
 import useImageUploads from '@/hooks/useImageUploads'
 import { Feather } from '@expo/vector-icons'
-import { Link, Stack, useLocalSearchParams } from 'expo-router'
-import { DocumentData, doc, getDoc, updateDoc } from 'firebase/firestore'
+import { Link, Stack, router, useLocalSearchParams } from 'expo-router'
+import {
+  DocumentData,
+  arrayRemove,
+  doc,
+  getDoc,
+  onSnapshot,
+  updateDoc,
+} from 'firebase/firestore'
 import React, { useEffect, useState } from 'react'
 import {
+  Alert,
   Image,
-  Pressable,
   ScrollView,
   Text,
   TouchableOpacity,
@@ -18,43 +25,39 @@ const GroupInfo = () => {
   const [group, setGroup] = useState<DocumentData>()
   const [members, setMembers] = useState<DocumentData[]>([])
   const [option, setOptions] = useState(false)
-  const currentUser = auth?.currentUser
   const { image, pickImage, uploadImage } = useImageUploads() //hooks to handle image
 
   useEffect(() => {
-    const fetchGroup = async () => {
-      try {
-        const groupRef = doc(db, 'groupChats', id)
-        const groupSnapshot = await getDoc(groupRef)
+    if (!id) return
 
-        if (groupSnapshot.exists()) {
-          const groupData = groupSnapshot.data()
-          setGroup(groupData)
+    const groupRef = doc(db, 'groupChats', id)
 
-          // Fetch all members' details
-          const memberPromises = groupData.members.map(
-            async (memberId: string) => {
-              const memberRef = doc(db, 'users', memberId)
-              const memberSnapshot = await getDoc(memberRef)
-              return memberSnapshot.exists()
-                ? { id: memberId, ...memberSnapshot.data() }
-                : null
-            },
-          )
+    // Real-time listener for group data
+    const unsubscribeGroup = onSnapshot(groupRef, async (groupSnapshot) => {
+      if (groupSnapshot.exists()) {
+        const groupData = groupSnapshot.data()
+        setGroup(groupData)
 
-          const membersData = await Promise.all(memberPromises)
-          setMembers(membersData.filter((member) => member !== null)) // Remove nulls if any
-        } else {
-          console.log('Group does not exist')
-        }
-      } catch (error) {
-        console.error('Error fetching group:', error)
+        // Fetch members' details
+        const memberPromises = groupData.members.map(
+          async (memberId: string) => {
+            const memberRef = doc(db, 'users', memberId)
+            const memberSnapshot = await getDoc(memberRef)
+            return memberSnapshot.exists()
+              ? { id: memberId, ...memberSnapshot.data() }
+              : null
+          },
+        )
+
+        const membersData = await Promise.all(memberPromises)
+        setMembers(membersData.filter((member) => member !== null)) // Remove null values
+      } else {
+        console.log('Group does not exist')
+        setMembers([])
       }
-    }
+    })
 
-    if (id) {
-      fetchGroup()
-    }
+    return () => unsubscribeGroup() // Cleanup listener on unmount
   }, [id])
 
   const updateGroupImage = async () => {
@@ -65,10 +68,40 @@ const GroupInfo = () => {
         const groupRef = doc(db, 'groupChats', id)
         await updateDoc(groupRef, { image: imageUrl })
         alert('Group image updated successfully')
+        //reload the page
+        window.location.reload()
       }
     } catch (error) {
       console.error('Error updating group image:', error)
     }
+  }
+
+  const handleLeaveGroup = async (currentUserId: string, groupId: string) => {
+    Alert.alert('Leave Group', 'Are you sure you want to leave this group?', [
+      {
+        text: 'Cancel',
+        style: 'cancel',
+      },
+      {
+        text: 'Yes, Leave',
+        onPress: async () => {
+          try {
+            const groupRef = doc(db, 'groupChats', groupId)
+
+            // Remove only the current user from the members array
+            await updateDoc(groupRef, {
+              members: arrayRemove(currentUserId),
+            })
+
+            alert('You have left the group')
+
+            router.push('/user/messages')
+          } catch (error) {
+            console.error('Error leaving group:', error)
+          }
+        },
+      },
+    ])
   }
 
   return (
@@ -105,28 +138,35 @@ const GroupInfo = () => {
               <Text>Add member</Text>
             </TouchableOpacity>
           </Link>
-          <TouchableOpacity className="mt-5">
+          <TouchableOpacity
+            onPress={() => handleLeaveGroup(String(auth?.currentUser?.uid), id)}
+            className="mt-5"
+          >
             <Text className="text-red-500 font-semibold">Leave group</Text>
           </TouchableOpacity>
         </View>
       )}
 
       <View className="mt-10 flex items-center justify-center">
-        <View className="rounded-full w-36 h-36   p-3 items-center justify-center">
+        <View
+          style={{ borderRadius: 100 }}
+          className=" relative border bg-gray-200 border-gray-300 w-36 h-36  p-3 items-center justify-center"
+        >
           {group?.image && group?.image !== 'undefined' ? (
             <Image
               source={{ uri: group?.image }}
               style={{ width: '100%', height: '100%', borderRadius: 100 }}
             />
           ) : (
-            <Feather name="users" size={24} color="black" />
+            <Feather name="users" size={50} color="black" />
           )}
-          <View className="absolute bottom-5 right-8">
-            <Pressable onPress={updateGroupImage}>
-              <Feather name="camera" size={28} color="white" />
-            </Pressable>
+          <View className="absolute -bottom-2 right-0">
+            <TouchableOpacity onPress={updateGroupImage}>
+              <Feather name="camera" size={40} color="gray" />
+            </TouchableOpacity>
           </View>
         </View>
+
         <View>
           <Text className="font-bold text-lg">{group?.name}</Text>
         </View>

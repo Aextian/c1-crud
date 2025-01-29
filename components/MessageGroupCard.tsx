@@ -1,6 +1,6 @@
 import { db } from '@/config'
 import { Feather } from '@expo/vector-icons'
-import { Link, useRouter } from 'expo-router'
+import { Link } from 'expo-router'
 import {
   DocumentData,
   collection,
@@ -13,7 +13,6 @@ import React, { useEffect, useState } from 'react'
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native'
 
 const MessageGroupCard = ({ group }: { group: DocumentData }) => {
-  const router = useRouter()
   const [lastMessage, setLastMessage] = useState<string | null>(null)
 
   useEffect(() => {
@@ -77,8 +76,8 @@ const styles = StyleSheet.create({
   messsageCardIcon: {
     width: 45,
     height: 45,
-    // borderColor: 'green',
-    // borderWidth: 2,
+    borderColor: 'gray',
+    borderWidth: 1,
     borderRadius: 100,
     marginRight: 10,
     alignItems: 'center',

@@ -101,7 +101,7 @@ export default function groupConversation() {
           headerTitle: group?.name || '',
           headerRight: () => (
             <TouchableOpacity
-              style={{ marginRight: 10 }} // Adjust the margin if needed
+              // style={{ marginRight: 5 }} // Adjust the margin if needed
               onPress={() =>
                 router.push({
                   pathname:
@@ -112,7 +112,9 @@ export default function groupConversation() {
                 })
               }
             >
-              <Feather name="info" size={24} color="black" />
+              <View className="p-2 bg-green-50 rounded-full">
+                <Feather name="info" size={24} color="black" />
+              </View>
             </TouchableOpacity>
           ),
         }}

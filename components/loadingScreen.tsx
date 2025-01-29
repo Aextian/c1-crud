@@ -14,7 +14,7 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: '#f2f2f2', // You can customize this color
+    // backgroundColor: '#f2f2f2', // You can customize this color
   },
   text: {
     marginTop: 20,

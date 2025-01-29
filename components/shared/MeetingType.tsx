@@ -11,7 +11,7 @@ const MeetingType = ({ setType }: IProps) => {
         onPress={() => setType('create')}
         activeOpacity={0.8}
       >
-        <Text className="text-center text-xl font-semibold">
+        <Text className="text-center text-white text-xl font-semibold">
           Create a Meeting
         </Text>
       </TouchableOpacity>
@@ -20,7 +20,7 @@ const MeetingType = ({ setType }: IProps) => {
         onPress={() => setType('join')}
         activeOpacity={0.8}
       >
-        <Text className="text-xl font-semibold text-center">
+        <Text className="text-xl text-white font-semibold text-center">
           Join Your Meeting
         </Text>
       </TouchableOpacity>

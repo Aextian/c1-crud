@@ -1,5 +1,6 @@
 import React from 'react'
 import { Text, TextInput, TouchableOpacity, View } from 'react-native'
+import LoadingScreen from '../loadingScreen'
 interface IProps {
   setRoom: React.Dispatch<React.SetStateAction<string>>
   joinCall: () => void
@@ -16,9 +17,10 @@ const JoinMeeting = ({ setRoom, joinCall, isLoading }: IProps) => {
       <TouchableOpacity
         className="bg-green-400 rounded-lg p-4"
         onPress={joinCall}
+        disabled={isLoading}
       >
-        <Text className="text-white text-center" disabled={isLoading}>
-          Join Room
+        <Text className="text-white text-center">
+          {isLoading ? <LoadingScreen /> : 'Join Room'}
         </Text>
       </TouchableOpacity>
     </View>

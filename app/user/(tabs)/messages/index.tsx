@@ -6,10 +6,9 @@ import UserLists from '@/components/teacher/UserLists'
 import { auth } from '@/config'
 import { useChat } from '@/hooks/useChat'
 import { useGetUserGroups } from '@/hooks/useGroupChat'
-import { Link } from 'expo-router'
 import { DocumentData } from 'firebase/firestore'
 
-import React, { useCallback, useEffect, useState } from 'react'
+import React, { useCallback, useState } from 'react'
 import {
   FlatList,
   RefreshControl,
@@ -20,30 +19,14 @@ import {
 } from 'react-native'
 
 const index = () => {
-  const { conversations, loading, fetchConversations } = useChat()
+  const { conversations, loading, refreshConversations } = useChat()
   const [refreshing, setRefreshing] = useState(false)
   const currentUser = auth?.currentUser
-  const getUserGroups = useGetUserGroups()
-
-  const [userGroups, setUserGroups] = useState<DocumentData[]>([])
-
-  useEffect(() => {
-    fetchConversations()
-  }, [])
-
-  useEffect(() => {
-    const fetchUserGroups = async () => {
-      const groups = await getUserGroups(String(currentUser?.uid))
-
-      setUserGroups(groups)
-    }
-
-    fetchUserGroups()
-  }, [currentUser?.uid, getUserGroups])
+  const { userGroups } = useGetUserGroups(String(currentUser?.uid))
 
   const onRefresh = useCallback(async () => {
     setRefreshing(true)
-    await fetchConversations() // Fetch new data
+    await refreshConversations()
     setRefreshing(false) // Hide the spinner
   }, [])
 
@@ -71,23 +54,6 @@ const index = () => {
       <View>
         <SearchUser />
         <UserLists />
-        <View style={{ paddingHorizontal: 10, marginVertical: 10 }}>
-          <View className="flex flex-row items-center justify-center gap-5">
-            <Link
-              className="bg-gray-500 rounded-lg p-2 text-xs font-bold text-white"
-              href="/user/messages"
-            >
-              Chats
-            </Link>
-            <Link
-              href="/user/messages/group"
-              className="bg-green-300 rounded-lg p-2 text-xs font-bold text-black"
-            >
-              Group Chats
-            </Link>
-          </View>
-          <Text>Messages</Text>
-        </View>
 
         <FlatList
           data={conversations} // Pass conversations to FlatList
@@ -108,16 +74,7 @@ const index = () => {
           data={userGroups} // Pass conversations to FlatList
           keyExtractor={(item) => item.id} // Extract unique key for each conversation
           renderItem={({ item }) => <MessageGroupCard group={item} />} // Render each conversation
-          ListEmptyComponent={renderEmptyComponent} // Show when no conversations exist
           contentContainerStyle={{ paddingVertical: 20, gap: 30 }} // Styling for the container
-          refreshControl={
-            <RefreshControl
-              refreshing={refreshing}
-              onRefresh={onRefresh} // This triggers the refresh logic
-              colors={['#ff0000']} // Optional, for custom colors
-              progressBackgroundColor="#ffffff" // Optional, for the background color of the spinner
-            />
-          }
         />
       </View>
     </SafeAreaView>

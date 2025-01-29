@@ -4,7 +4,6 @@ import {
   arrayUnion,
   collection,
   doc,
-  getDocs,
   onSnapshot,
   orderBy,
   query,
@@ -167,7 +166,6 @@ export const useCreateGroup = () => {
         members: memberIds,
         createdAt: serverTimestamp(),
       })
-      console.log('Group created with ID:', groupRef.id)
       return groupRef.id
     } catch (error) {
       console.error('Error creating group:', error)
@@ -185,7 +183,6 @@ export const useAddMemberToGroup = () => {
       await updateDoc(groupRef, {
         members: arrayUnion(userId),
       })
-      console.log('Member added to group:', groupId)
     } catch (error) {
       console.error('Error adding member:', error)
     }
@@ -195,18 +192,27 @@ export const useAddMemberToGroup = () => {
 }
 
 // Hook for retrieving groups a user is part of
-export const useGetUserGroups = () => {
-  const getUserGroups = useCallback(async (userId: string) => {
-    if (!userId) return [] // Ensure userId is defined
+export const useGetUserGroups = (userId: string) => {
+  const [userGroups, setUserGroups] = useState<any[]>([]) // Adjust the type as needed
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    if (!userId) return
+
     const groupsRef = collection(db, 'groupChats')
     const q = query(groupsRef, where('members', 'array-contains', userId))
-    const querySnapshot = await getDocs(q)
-    const userGroups = querySnapshot.docs.map((doc) => ({
-      id: doc.id,
-      ...doc.data(),
-    }))
-    return userGroups
-  }, [])
 
-  return getUserGroups
+    const unsubscribe = onSnapshot(q, (querySnapshot) => {
+      const groups = querySnapshot.docs.map((doc) => ({
+        id: doc.id,
+        ...doc.data(),
+      }))
+      setUserGroups(groups)
+      setLoading(false)
+    })
+
+    return () => unsubscribe() // Cleanup listener on unmount
+  }, [userId])
+
+  return { userGroups, loading }
 }

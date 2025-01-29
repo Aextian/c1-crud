@@ -20,7 +20,7 @@ const createGroup = () => {
     await createGroup(groupChatName, [currentUser?.uid, ...userIds])
     setLoading(false)
     setGroupChatName('')
-    router.push('/user/(tabs)/messages/group')
+    router.push('/user/(tabs)/messages')
   }
 
   return (

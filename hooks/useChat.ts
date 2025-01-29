@@ -7,28 +7,26 @@ import {
   query,
   where,
 } from 'firebase/firestore'
-import { useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 
 const useChat = () => {
-  const [conversations, setConversations] = useState<
-    DocumentData[] | undefined
-  >([])
+  const [conversations, setConversations] = useState<DocumentData[]>([])
   const [loading, setLoading] = useState(true)
   const currentUser = auth.currentUser
 
-  const fetchConversations = async () => {
-    setLoading(true)
+  const fetchConversations = useCallback(async () => {
+    if (!currentUser) return
 
     const conversationCollection = query(
       collection(db, 'conversations'),
-      where('users', 'array-contains', currentUser?.uid),
+      where('users', 'array-contains', currentUser.uid),
     )
+
     const unsubscribe = onSnapshot(
       conversationCollection,
       async (querySnapshot) => {
         const conversationList = await Promise.all(
           querySnapshot.docs.map(async (doc) => {
-            // Fetch messages for each conversation
             const messagesRef = collection(
               db,
               `conversations/${doc.id}/messages`,
@@ -43,19 +41,26 @@ const useChat = () => {
             return {
               id: doc.id,
               ...doc.data(),
-              messages, // Attach messages to conversation object
+              messages,
             }
           }),
         )
 
         setConversations(conversationList)
-        setLoading(false) // Stop loading after fetching data
+        setLoading(false)
       },
     )
-    return () => unsubscribe() // Cleanup subscription on unmount
-  }
 
-  return { conversations, loading, fetchConversations }
+    return () => unsubscribe()
+  }, [currentUser])
+
+  useEffect(() => {
+    fetchConversations().then((unsubscribe) => {
+      return () => unsubscribe?.()
+    })
+  }, [fetchConversations])
+
+  return { conversations, loading, refreshConversations: fetchConversations }
 }
 
 export { useChat }

@@ -10,8 +10,9 @@ import Daily, {
   DailyMediaView,
 } from '@daily-co/react-native-daily-js'
 import axios from 'axios'
+import { Stack } from 'expo-router'
 import React, { useEffect, useRef, useState } from 'react'
-import { LogBox, StyleSheet, Text, View } from 'react-native'
+import { FlatList, LogBox, StyleSheet, Text, View } from 'react-native'
 
 // Ignore warnings
 LogBox.ignoreLogs(['new NativeEventEmitter'])
@@ -99,14 +100,15 @@ const meeting = () => {
 
   const joinCall = async () => {
     // Ensure a room ID is provided
+    setIsLoading(true)
     if (!room || room.trim() === '') {
       alert('Please enter a valid room ID.')
+      setIsLoading(false)
       return
     }
 
     try {
       // Optional: Show a loading indicator
-      setIsLoading(true)
 
       // Attempt to join the call
       await callObject.current?.join({
@@ -116,6 +118,7 @@ const meeting = () => {
 
       // Update state after successfully joining
       setJoined(true)
+      setIsLoading(false)
     } catch (error) {
       setJoined(false)
 
@@ -137,6 +140,9 @@ const meeting = () => {
     }
     setJoined(false) // Reset state
     setParticipants({})
+    setRoomUrl(null)
+    setRoom('')
+    setType('')
   }
 
   const toggleMute = () => {
@@ -203,8 +209,38 @@ const meeting = () => {
     }
   }
 
+  const renderParticipant = ({ item: userId }) => {
+    const participant = participants[userId]
+    const videoTrack = participant.tracks?.video?.persistentTrack
+
+    if (!videoTrack || videoTrack === 'undefined') return null
+
+    return (
+      <View style={styles.videoTile}>
+        <DailyMediaView
+          key={userId}
+          videoTrack={videoTrack}
+          audioTrack={participant.tracks?.audio?.persistentTrack}
+          style={{ width: '100%', height: '100%' }}
+          zOrder={participant.local ? 1 : 0}
+          objectFit="cover"
+        />
+        <View className="absolute bottom-5 w-full bg-black/30 rounded-lg p-2">
+          <Text className="text-white text-center">
+            {participant.local ? 'You' : participant.user_name || 'Unknown'}
+          </Text>
+        </View>
+        <Text className="text-white"></Text>
+      </View>
+    )
+  }
+
   return (
     <View style={styles.container}>
+      <Stack.Screen
+        options={{ headerShown: !joined, headerTitle: 'Meeting' }}
+      />
+
       {!joined ? (
         <>
           {type === '' && <MeetingType setType={setType} />}
@@ -222,29 +258,13 @@ const meeting = () => {
         </>
       ) : (
         <View style={styles.callContainer}>
-          <View style={styles.videoGrid}>
-            {Object.keys(participants).map((userId) => {
-              const participant = participants[userId]
-              const videoTrack = participant.tracks?.video?.persistentTrack
-              return (
-                <>
-                  {videoTrack && videoTrack !== 'undefined' ? (
-                    <DailyMediaView
-                      key={userId}
-                      videoTrack={videoTrack}
-                      audioTrack={participant.tracks?.audio?.persistentTrack}
-                      style={styles.videoTile}
-                      zOrder={participant.local ? 1 : 0}
-                    />
-                  ) : (
-                    <View style={styles.usernameOverlay}>
-                      <Text>{participant.user_name}</Text>
-                    </View>
-                  )}
-                </>
-              )
-            })}
-          </View>
+          <FlatList
+            data={Object.keys(participants)}
+            keyExtractor={(userId) => userId}
+            renderItem={renderParticipant}
+            horizontal={false} // Set to true if you want horizontal scrolling
+            numColumns={2} // Adjust columns as needed
+          />
           <OptionsMeeting
             toggleCamera={toggleCamera}
             switchCamera={switchCamera}
@@ -280,6 +300,7 @@ const styles = StyleSheet.create({
   },
   callContainer: {
     flex: 1,
+    marginTop: 20,
     width: '100%',
   },
   videoGrid: {
@@ -291,10 +312,11 @@ const styles = StyleSheet.create({
     padding: 10,
   },
   videoTile: {
+    position: 'relative',
     width: '45%',
     height: 200,
-    backgroundColor: '#333',
-    borderRadius: 10,
+    // backgroundColor: 'red',
+    borderRadius: 20,
     margin: 5,
     overflow: 'hidden',
   },
