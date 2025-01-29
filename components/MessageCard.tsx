@@ -1,6 +1,6 @@
 import { auth, db } from '@/config'
 import { Feather } from '@expo/vector-icons'
-import { Link, useRouter } from 'expo-router'
+import { Link } from 'expo-router'
 import {
   DocumentData,
   collection,
@@ -15,11 +15,9 @@ import React, { useEffect, useState } from 'react'
 import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
 
 const MessageCard = ({ conversation }: { conversation: DocumentData }) => {
-  const router = useRouter()
   const currentUser = auth.currentUser
   const [user, setUser] = useState<DocumentData>()
   const [lastMessage, setLastMessage] = useState<string | null>(null)
-  console.log('user', user)
 
   useEffect(() => {
     const docRef = doc(db, 'conversations', conversation.id)
@@ -100,7 +98,7 @@ const MessageCard = ({ conversation }: { conversation: DocumentData }) => {
         >
           <Text>{user?.name}</Text>
           <Text className="text-xs text-gray-500" numberOfLines={1}>
-            {lastMessage}{' '}
+            {conversation.isRead ? lastMessage : ' (unread)'}
           </Text>
         </View>
       </TouchableOpacity>

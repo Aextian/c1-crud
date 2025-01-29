@@ -100,15 +100,14 @@ const comments = () => {
         >
           {comments?.map((comment, key) => (
             <View key={key} className="flex flex-row gap-5 mt-10">
-              <View className="rounded-full w-8 h-8 border  items-center justify-center">
-                {comment?.authorAvatar &&
-                comment?.authorAvatar !== 'undefined' ? (
+              <View className="rounded-full w-8 h-8 border p-3 items-center justify-center">
+                {comment?.authorAvatar ? (
                   <Image
                     source={{ uri: comment?.authorAvatar }}
-                    style={{ width: '100%', height: '100%', borderRadius: 100 }}
+                    style={{ width: 30, height: 30, borderRadius: 100 }}
                   />
                 ) : (
-                  <Feather name="user" size={12} color="black" />
+                  <Feather name="user" size={24} color="black" />
                 )}
               </View>
 

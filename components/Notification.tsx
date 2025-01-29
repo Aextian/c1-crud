@@ -23,10 +23,14 @@ const Notification = (data: DocumentData) => {
   const router = useRouter()
 
   const navigateToCommentSection = async (data: DocumentData) => {
-    if (data.type !== 'comment') return
     const { id: notificationId, postId } = data
-    // Create a reference to the notification document
     const notificationRef = doc(db, 'notifications', notificationId)
+    if (data.type !== 'comment') {
+      await updateDoc(notificationRef, {
+        isRead: true, // Mark the notification as read
+      })
+      return
+    }
 
     try {
       // Update the isRead field in Firestore

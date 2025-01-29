@@ -65,7 +65,6 @@ const _layout = () => {
         })}
       />
       <Stack.Screen name="search-user" options={{ headerTitle: '' }} />
-      <Stack.Screen name="meeting" options={{ headerTitle: '' }} />
     </Stack>
   )
 }

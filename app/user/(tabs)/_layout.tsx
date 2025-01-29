@@ -1,9 +1,46 @@
+import { auth, db } from '@/config'
 import { Feather, FontAwesome } from '@expo/vector-icons'
 import { Tabs, router } from 'expo-router'
-import React from 'react'
+import {
+  DocumentData,
+  collection,
+  onSnapshot,
+  query,
+  where,
+} from 'firebase/firestore'
+import React, { useEffect, useState } from 'react'
 import { StyleSheet, TouchableOpacity, View } from 'react-native'
 
 const _layout = () => {
+  const currentUser = auth.currentUser
+  const [newNotification, setNewNotification] = useState(false)
+
+  useEffect(() => {
+    // Start by setting loading to true
+    if (currentUser?.uid) {
+      const notificationQuery = query(
+        collection(db, 'notifications'),
+        where('toUserId', '==', currentUser.uid),
+      )
+      // Set up the real-time listener
+      const unsubscribe = onSnapshot(notificationQuery, (querySnapshot) => {
+        const notificationsData: DocumentData[] = querySnapshot.docs.map(
+          (doc) => ({
+            id: doc.id, // Get document ID
+            ...doc.data(), // Get document data
+          }),
+        )
+        const unreadNotifications = notificationsData.filter(
+          (notification) => !notification.isRead,
+        )
+        // Update the state with the notifications
+        setNewNotification(unreadNotifications.length > 0)
+      })
+      // Cleanup the listener on unmount or when currentUser changes
+      return () => unsubscribe()
+    }
+  }, []) // Dependency array to run the effect when currentUser changes
+
   return (
     <Tabs
       screenOptions={{
@@ -52,7 +89,12 @@ const _layout = () => {
         options={{
           headerShown: false,
           tabBarIcon: ({ color }) => (
-            <FontAwesome size={24} name="bell" color={color} />
+            <View>
+              <FontAwesome size={24} name="bell" color={color} />
+              {newNotification && (
+                <View className="absolute top-0 right-0 w-2 h-2 bg-red-400 rounded-full" />
+              )}
+            </View>
           ),
         }}
       />

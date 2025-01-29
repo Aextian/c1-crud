@@ -3,9 +3,11 @@ import useRecordingStore from '@/store/useRecordingStore'
 import {
   addDoc,
   collection,
+  doc,
   onSnapshot,
   orderBy,
   query,
+  updateDoc,
 } from 'firebase/firestore'
 import { useCallback, useEffect, useState } from 'react'
 import { IMessage } from 'react-native-gifted-chat' // Adjust import based on your project structure
@@ -129,7 +131,10 @@ const useMessages = (id: string) => {
         }
         await addDoc(messagesCollection, newMessage)
       }
+      // update conversation to status unread
+      await updateDoc(doc(db, 'conversations', id), { isRead: false })
     },
+
     [filePath, imagePath, isAttachFile, isAttachImage, recordingUri, id],
   )
 

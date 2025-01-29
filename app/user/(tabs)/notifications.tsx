@@ -41,6 +41,9 @@ const notifications = () => {
     }
   }, [currentUser?.uid]) // Dependency array to run the effect when currentUser changes
 
+  console.log(currentUser?.uid)
+  console.log(notifications)
+
   return (
     <View style={{ flex: 1, paddingTop: 35, padding: 10 }}>
       <View className="mb-10">

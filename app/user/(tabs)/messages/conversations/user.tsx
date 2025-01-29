@@ -16,6 +16,7 @@ import {
   getDoc,
   getDocs,
   query,
+  updateDoc,
   where,
 } from 'firebase/firestore'
 import React, { useCallback, useEffect, useState } from 'react'
@@ -29,6 +30,18 @@ export default function userConversation() {
 
   const [user, setUser] = useState<DocumentData>()
   const currentUser = auth.currentUser
+
+  useEffect(() => {
+    const updateConversation = async () => {
+      await updateDoc(doc(db, 'conversations', conversationId), {
+        isRead: true,
+      })
+    }
+
+    if (conversationId) {
+      updateConversation()
+    }
+  }, [conversationId])
 
   useEffect(() => {
     if (!currentUser?.uid || !id) return

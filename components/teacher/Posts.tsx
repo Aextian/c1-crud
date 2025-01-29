@@ -1,4 +1,5 @@
 import { auth, db } from '@/config'
+import addNotifications from '@/hooks/useNotifications'
 import { formatDate } from '@/utils/date-utils'
 import { AntDesign, Feather, Ionicons } from '@expo/vector-icons'
 import { Link } from 'expo-router'
@@ -90,7 +91,13 @@ const Posts = ({ item, index }: { item: any; index: number }) => {
           likes: arrayUnion(userId), // Add the userId to the likes array
           likesCount: item.likesCount + 1, // Optionally, increment the likes count
         })
-        console.log('Like added successfully')
+
+        addNotifications({
+          fromUserId: currentUser?.uid || '',
+          postId: item.id,
+          type: 'like',
+          liketype: 'like',
+        })
         setIsLikes(true)
       }
     } catch (error) {
@@ -129,6 +136,12 @@ const Posts = ({ item, index }: { item: any; index: number }) => {
         await updateDoc(postRef, {
           dislikes: arrayUnion(userId), // Add the userId to the likes array
           dislikesCount: item.dislikesCount + 1, // Optionally, increment the likes count
+        })
+        addNotifications({
+          fromUserId: currentUser?.uid || '',
+          postId: item.id,
+          type: 'like',
+          liketype: 'disliked',
         })
         setIsDislikes(true)
       }
