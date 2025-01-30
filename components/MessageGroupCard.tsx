@@ -1,4 +1,4 @@
-import { db } from '@/config'
+import { auth, db } from '@/config'
 import { Feather } from '@expo/vector-icons'
 import { Link } from 'expo-router'
 import {
@@ -14,6 +14,7 @@ import { StyleSheet, Text, TouchableOpacity, View } from 'react-native'
 
 const MessageGroupCard = ({ group }: { group: DocumentData }) => {
   const [lastMessage, setLastMessage] = useState<string | null>(null)
+  const currentUser = auth.currentUser
 
   useEffect(() => {
     const groupRef = collection(db, 'groupChats', group.id, 'messages')
@@ -57,7 +58,11 @@ const MessageGroupCard = ({ group }: { group: DocumentData }) => {
         >
           <Text>{group?.name}</Text>
           <Text className="text-xs text-gray-500" numberOfLines={1}>
-            {lastMessage}{' '}
+            <Text className="text-xs text-gray-500" numberOfLines={1}>
+              {currentUser?.uid && group?.unread?.includes(currentUser?.uid)
+                ? ' (unread)'
+                : lastMessage}
+            </Text>
           </Text>
         </View>
       </TouchableOpacity>

@@ -46,7 +46,7 @@ const Notification = (data: DocumentData) => {
   }
 
   return (
-    <View className="flex flex-row gap-5 mt-5">
+    <View className="flex flex-row gap-5 mt-5  bg-white ">
       <View className="rounded-full h-12 w-12 border items-center justify-center ">
         {user?.avatar ? (
           <Image

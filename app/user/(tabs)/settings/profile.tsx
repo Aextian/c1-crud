@@ -128,8 +128,6 @@ const profile = () => {
 
         {/* User Posts */}
         <View className="mt-60 flex  justify-center  w-full">
-          {isLoading && <PostSkLoader />}
-
           <FlatList
             data={posts}
             keyExtractor={(item) => item.id}
@@ -141,6 +139,7 @@ const profile = () => {
                 progressBackgroundColor="#ffffff" // Optional, for the background color of the spinner
               />
             }
+            ListEmptyComponent={<PostSkLoader />}
             renderItem={({ item, index }) => (
               <Posts item={item} index={index} />
             )}

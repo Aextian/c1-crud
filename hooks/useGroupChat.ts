@@ -4,6 +4,7 @@ import {
   arrayUnion,
   collection,
   doc,
+  getDoc,
   onSnapshot,
   orderBy,
   query,
@@ -139,6 +140,25 @@ export const useGroupMessage = (groupId: string) => {
           },
         }
         await addDoc(messagesCollection, newMessage)
+      }
+
+      // add unread status
+      const groupRef = doc(db, 'groupChats', groupId)
+      // Fetch the document asynchronously
+      const docGroup = await getDoc(groupRef)
+      if (docGroup.exists()) {
+        // Access the group data if it exists
+        const groupData = docGroup.data()
+        // Now you can use groupData, e.g., to get members
+        const members = groupData.members.filter(
+          (memberId: string) => memberId !== currenUser?.uid,
+        )
+
+        await updateDoc(groupRef, {
+          unread: members,
+        })
+      } else {
+        console.log('Group not found')
       }
     },
     [filePath, imagePath, isAttachFile, isAttachImage, recordingUri, groupId],

@@ -9,7 +9,13 @@ import useRenderGiftedChat from '@/hooks/useRenderGiftedChat'
 import useRecordingStore from '@/store/useRecordingStore'
 import { Feather } from '@expo/vector-icons'
 import { Stack, useLocalSearchParams, useRouter } from 'expo-router'
-import { doc, DocumentData, getDoc } from 'firebase/firestore'
+import {
+  arrayRemove,
+  doc,
+  DocumentData,
+  getDoc,
+  updateDoc,
+} from 'firebase/firestore'
 import React, { useCallback, useEffect, useState } from 'react'
 import { Image, Text, TouchableOpacity, View } from 'react-native'
 import { GiftedChat } from 'react-native-gifted-chat'
@@ -31,6 +37,18 @@ export default function groupConversation() {
     setFilePath,
     setImagePath,
   } = useGroupMessage(id) // Pass the id to the custom hook
+
+  // update read status
+
+  useEffect(() => {
+    const fetchGroup = async () => {
+      const groupRef = doc(db, 'groupChats', id)
+      await updateDoc(groupRef, {
+        unread: arrayRemove(currentUser?.uid),
+      })
+    }
+    fetchGroup()
+  }, [id])
 
   const { renderBubble, fileUrl, setFileUrl } = useRenderGiftedChat()
   const { recordingUri, setRecordingUri } = useRecordingStore()

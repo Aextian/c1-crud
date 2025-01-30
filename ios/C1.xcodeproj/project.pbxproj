@@ -303,7 +303,7 @@
 					"-lc++",
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = "com.anonymous.C1";
-				PRODUCT_NAME = "C1";
+				PRODUCT_NAME = "WeConnect";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 5.0;
 				VERSIONING_SYSTEM = "apple-generic";
@@ -330,7 +330,7 @@
 					"-lc++",
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = "com.anonymous.C1";
-				PRODUCT_NAME = "C1";
+				PRODUCT_NAME = "WeConnect";
 				SWIFT_VERSION = 5.0;
 				VERSIONING_SYSTEM = "apple-generic";
 				ENABLE_BITCODE = NO;

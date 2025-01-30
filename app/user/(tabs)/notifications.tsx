@@ -9,7 +9,7 @@ import {
   where,
 } from 'firebase/firestore'
 import React, { useEffect, useState } from 'react'
-import { FlatList, Text, View } from 'react-native'
+import { FlatList, SafeAreaView, Text, View } from 'react-native'
 
 const notifications = () => {
   const currentUser = auth.currentUser
@@ -41,30 +41,28 @@ const notifications = () => {
     }
   }, [currentUser?.uid]) // Dependency array to run the effect when currentUser changes
 
-  console.log(currentUser?.uid)
-  console.log(notifications)
-
   return (
-    <View style={{ flex: 1, paddingTop: 35, padding: 10 }}>
+    <SafeAreaView
+      style={{ flex: 1, backgroundColor: '#fff', paddingTop: 35, padding: 10 }}
+    >
       <View className="mb-10">
         <Text className="text-2xl font-bold">Notifications</Text>
       </View>
 
-      {/* FlatList to render notifications */}
-      {notifications.length === 0 && !loading && (
-        <Text className="text-center text-gray-500">
-          No notifications found.
-        </Text>
-      )}
       {loading && <SkUserLoader />}
       <FlatList
         data={notifications}
         keyExtractor={(item: DocumentData, index: string) => index.toString()}
+        ListEmptyComponent={
+          <Text className="text-center text-gray-500">
+            No notifications found.
+          </Text>
+        }
         renderItem={({ item }: { item: DocumentData }) => (
           <Notification {...item} />
         )}
       />
-    </View>
+    </SafeAreaView>
   )
 }
 

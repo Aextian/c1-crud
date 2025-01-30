@@ -6,7 +6,7 @@ import PostsHeader from '@/components/teacher/PostsHeader'
 import { db } from '@/config'
 import { useRouter } from 'expo-router'
 import React, { useCallback, useEffect, useState } from 'react'
-import { FlatList, RefreshControl, View } from 'react-native'
+import { FlatList, RefreshControl, SafeAreaView } from 'react-native'
 
 const index = () => {
   const { posts, fetchPostsAndComments, isLoading, filterPosts } =
@@ -28,8 +28,7 @@ const index = () => {
   }, [])
 
   return (
-    // <SafeAreaView className="flex-1 px-5  gap-10 bg-gray-200 ">
-    <View style={{ flex: 1, marginTop: 20, backgroundColor: '#fff' }}>
+    <SafeAreaView style={{ flex: 1, backgroundColor: '#fff' }}>
       <PostsHeader />
 
       {isLoading ? (
@@ -51,7 +50,7 @@ const index = () => {
           ListHeaderComponent={<PostHeader filterPosts={filterPosts} />}
         />
       )}
-    </View>
+    </SafeAreaView>
   )
 }
 

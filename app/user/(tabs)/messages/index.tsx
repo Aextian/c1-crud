@@ -19,10 +19,10 @@ import {
 } from 'react-native'
 
 const index = () => {
-  const { conversations, loading, refreshConversations } = useChat()
   const [refreshing, setRefreshing] = useState(false)
   const currentUser = auth?.currentUser
   const { userGroups } = useGetUserGroups(String(currentUser?.uid))
+  const { conversations, loading, refreshConversations } = useChat()
 
   const onRefresh = useCallback(async () => {
     setRefreshing(true)

@@ -44,7 +44,7 @@ if (getRNMinorVersion() >= 75) {
   }
 }
 
-rootProject.name = 'C1'
+rootProject.name = 'WeConnect'
 
 dependencyResolutionManagement {
   versionCatalogs {
