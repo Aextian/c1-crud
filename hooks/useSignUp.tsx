@@ -33,7 +33,7 @@ const useSignUp = () => {
         avatar: imageUrl,
         role: data.role,
         year: data.year,
-        course: data.course,
+        section: data.section,
         providerData: user.providerData[0],
       }
       // Update user profile with display name
@@ -47,6 +47,7 @@ const useSignUp = () => {
       return user
     } catch (error: any) {
       setLoading(false)
+      console.log(error)
       // Handle specific Firebase Auth errors
       switch (error.code) {
         case 'auth/email-already-in-use':

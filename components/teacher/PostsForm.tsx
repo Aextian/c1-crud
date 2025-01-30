@@ -21,10 +21,10 @@ import FileView from '../FileView'
 const PostsForm = () => {
   const router = useRouter()
   const { role } = useRole()
-  const { years, courses } = useGradeLevel<string>()
+  const { years, sections } = useGradeLevel<string>()
   const [post, addPost] = useState('')
   const [year, setYear] = useState('')
-  const [course, setCourse] = useState('')
+  const [section, setSection] = useState('')
   const currentUser = auth.currentUser
   const [isLoading, setLoading] = useState(false)
 
@@ -55,7 +55,7 @@ const PostsForm = () => {
         },
         imageUrls: imageUrls,
         year: year,
-        course: course,
+        section: section,
       })
 
       addPost('')
@@ -121,8 +121,8 @@ const PostsForm = () => {
                 className="border flex flex-row  h-12 border-gray-200 outline-none ring-0 rounded-2xl  "
               >
                 <Picker
-                  selectedValue={course}
-                  onValueChange={(course) => setCourse(course)}
+                  selectedValue={section}
+                  onValueChange={(section) => setSection(section)}
                   style={{
                     width: '100%',
                     height: '100%',
@@ -130,16 +130,16 @@ const PostsForm = () => {
                   }}
                 >
                   <Picker.Item
-                    label="Course"
+                    label="Select Section"
                     value=""
                     style={{ fontSize: 10 }} // Adjust font size of this item
                   />
-                  {courses.map((course: any) => (
+                  {sections.map((section: any) => (
                     <Picker.Item
                       style={{ fontSize: 10 }} // Adjust font size of this item
-                      key={course.id}
-                      label={course.name}
-                      value={course.name}
+                      key={section.id}
+                      label={section.name}
+                      value={section.name}
                     />
                   ))}
                 </Picker>
@@ -150,7 +150,7 @@ const PostsForm = () => {
               >
                 <Picker
                   selectedValue={year}
-                  onValueChange={(course) => setYear(course)}
+                  onValueChange={(year) => setYear(year)}
                   style={{
                     width: '100%',
                     height: '100%',
@@ -158,7 +158,7 @@ const PostsForm = () => {
                   }}
                 >
                   <Picker.Item
-                    label="Level"
+                    label="Select Level"
                     value=""
                     style={{ fontSize: 10 }} // Adjust font size of this item
                   />

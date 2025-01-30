@@ -23,14 +23,14 @@ import Animated, { FadeIn, SlideInDown } from 'react-native-reanimated'
 export type TDataProps = {
   role: string
   year: string
-  course: string
+  section: string
 }
 
 const addUser = () => {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [name, setName] = useState('')
-  const { years, courses } = useGradeLevel<string>()
+  const { years, sections } = useGradeLevel<string>()
   const [isFormValid, setIsFormValid] = useState(false)
   const [errors, setErrors] = useState({} as any)
   const { image, pickImage, uploadImage, clearImage } = useImageUploads() //hooks to handle image
@@ -60,8 +60,8 @@ const addUser = () => {
       errors.year = 'Year is required'
     }
 
-    if (!data.course && data.role === 'student') {
-      errors.course = 'Course is required'
+    if (!data.section && data.role === 'student') {
+      errors.section = 'Section is required'
     }
 
     setErrors(errors)
@@ -71,7 +71,7 @@ const addUser = () => {
   const [data, setData] = useState<TDataProps>({
     role: '',
     year: '',
-    course: '',
+    section: '',
   })
 
   const { signUp, loading, error } = useSignUp() // Using the custom hook
@@ -94,10 +94,11 @@ const addUser = () => {
         setData({
           role: '',
           year: '',
-          course: '',
+          section: '',
         })
       }
     } catch (error) {
+      console.log(error)
       alert(error)
     }
   }
@@ -200,7 +201,7 @@ const addUser = () => {
                         width: 350,
                       }}
                     >
-                      <Picker.Item label="Please Select Year Level" value="" />
+                      <Picker.Item label="Please Select Level" value="" />
 
                       {years.map((year: any) => (
                         <Picker.Item
@@ -217,24 +218,26 @@ const addUser = () => {
                 <View className="items-center flex justify-center w-full">
                   <View className="border border-slate-200 rounded-2xl bg-slate-200 w-10/12 ">
                     <Picker
-                      selectedValue={data.course}
-                      onValueChange={(course) => setData({ ...data, course })}
+                      selectedValue={data.section}
+                      onValueChange={(section) => setData({ ...data, section })}
                       style={{
                         // height: 50,
                         width: 350,
                       }}
                     >
-                      <Picker.Item label="Please Select Course" value="" />
-                      {courses.map((course: any) => (
+                      <Picker.Item label="Please Select Section" value="" />
+                      {sections.map((section: any) => (
                         <Picker.Item
-                          key={course.id}
-                          label={course.name}
-                          value={course.name}
+                          key={section.id}
+                          label={section.name}
+                          value={section.name}
                         />
                       ))}
                     </Picker>
                   </View>
-                  <Text className="text-red-500 text-sm">{errors.course} </Text>
+                  <Text className="text-red-500 text-sm">
+                    {errors.section}{' '}
+                  </Text>
                 </View>
               </>
             )}

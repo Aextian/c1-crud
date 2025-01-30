@@ -22,7 +22,6 @@ export const useFetchPosts = () => {
     setLoading(true)
 
     const documentRef = getDoc(doc(db, 'users', String(currentUser?.uid)))
-
     const documentSnapshot = await documentRef
     const userData = documentSnapshot.data()
 
@@ -71,16 +70,15 @@ export const useFetchPosts = () => {
         // Filter posts that either have no `year` and `course`, or have matching `year` and `course`
         const filteredPosts = postsWithComments.filter((p) => {
           // Include posts with no `year` and `course`
-          if (!p.year || !p.course) return true
+          if (!p.year || !p.section) return true
           // Include posts with matching `year` and `course`
-          return p.year === userData.year && p.course === userData.course
+          return p.year === userData.year && p.section === userData.section
         })
         setPosts(filteredPosts) // Sets the posts to be displayed
       } else {
         setPosts(postsWithComments)
       }
 
-      // setPosts(postsWithComments.filter((p) => p.year === role))
       setLoading(false)
     })
 
@@ -88,5 +86,42 @@ export const useFetchPosts = () => {
     return () => unsubscribe()
   }
 
-  return { posts, fetchPostsAndComments, isLoading }
+  const filterPosts = async ({
+    section,
+    year,
+  }: {
+    section: string
+    year: string
+  }) => {
+    console.log(section, year)
+
+    if (
+      section == '' ||
+      year === '' ||
+      section === undefined ||
+      year === undefined
+    )
+      return
+
+    setLoading(true)
+    const usersRef = collection(db, 'users')
+    const usersDocs = await getDocs(usersRef)
+
+    // Extract user data and filter by section and year
+    const filteredUsers = usersDocs.docs
+      .map((doc) => ({ id: doc.id, ...doc.data() })) // Extract ID and data
+      .filter((u) => u.section === section && u.year === year)
+
+    // Get user IDs
+    const userIds = filteredUsers.map((user) => user.id)
+
+    // Filter posts where authorId is in the userIds array
+    const filteredPosts = posts.filter((p) => userIds.includes(p.authorId))
+
+    setLoading(false)
+
+    setPosts(filteredPosts)
+  }
+
+  return { posts, fetchPostsAndComments, isLoading, filterPosts }
 }

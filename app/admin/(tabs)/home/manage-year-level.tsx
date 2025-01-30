@@ -10,7 +10,7 @@ import {
 import React, { useEffect, useState } from 'react'
 import { Alert, Text, TextInput, TouchableOpacity, View } from 'react-native'
 
-const manageYearLevel = () => {
+const ManageYearLevel = () => {
   const [year, setYear] = useState('')
   const [years, setYears] = useState<DocumentData[]>([])
 
@@ -99,4 +99,4 @@ const manageYearLevel = () => {
   )
 }
 
-export default manageYearLevel
+export default ManageYearLevel

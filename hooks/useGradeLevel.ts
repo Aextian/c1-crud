@@ -4,10 +4,11 @@ import { useEffect, useState } from 'react'
 
 const useGradeLevel = <T>() => {
   const [years, setYears] = useState<DocumentData | T[]>([])
-  const [courses, setCourses] = useState<DocumentData | T[]>([])
+  const [sections, setSections] = useState<DocumentData | T[]>([])
 
   const yearCollectionRef = collection(db, 'years')
-  const courseCollectionRef = collection(db, 'courses')
+  const sectionsCollectionRef = collection(db, 'sections')
+
   useEffect(() => {
     const unsubscribeYear = onSnapshot(yearCollectionRef, (querySnapshot) => {
       const postsData = querySnapshot.docs.map((doc) => ({
@@ -18,13 +19,13 @@ const useGradeLevel = <T>() => {
     })
 
     const unsubscribeCourse = onSnapshot(
-      courseCollectionRef,
+      sectionsCollectionRef,
       (querySnapshot) => {
-        const postsData = querySnapshot.docs.map((doc) => ({
+        const sectionsData = querySnapshot.docs.map((doc) => ({
           id: doc.id,
           ...doc.data(),
         }))
-        setCourses(postsData)
+        setSections(sectionsData)
       },
     )
 
@@ -33,7 +34,7 @@ const useGradeLevel = <T>() => {
     } // Cleanup the subscription on unmount
   }, [])
 
-  return { years, courses }
+  return { years, sections }
 }
 
 export default useGradeLevel

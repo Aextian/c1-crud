@@ -11,12 +11,12 @@ const _layout = () => {
         options={{ headerTitle: 'Manage Posts' }}
       />
       <Stack.Screen
-        name="manage-course"
-        options={{ headerTitle: 'Manage Course' }}
+        name="manage-section"
+        options={{ headerTitle: 'Manage Section' }}
       />
       <Stack.Screen
         name="manage-year-level"
-        options={{ headerTitle: 'Manage Year' }}
+        options={{ headerTitle: 'Manage Level' }}
       />
     </Stack>
   )

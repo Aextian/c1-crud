@@ -3,14 +3,14 @@ import PostHeader from '@/components/PostHeader'
 import PostSkLoader from '@/components/shared/PostSkLoader'
 import Posts from '@/components/teacher/Posts'
 import PostsHeader from '@/components/teacher/PostsHeader'
-import { auth, db } from '@/config'
+import { db } from '@/config'
 import { useRouter } from 'expo-router'
 import React, { useCallback, useEffect, useState } from 'react'
 import { FlatList, RefreshControl, View } from 'react-native'
 
 const index = () => {
-  const currentUser = auth?.currentUser
-  const { posts, fetchPostsAndComments, isLoading } = useFetchPosts()
+  const { posts, fetchPostsAndComments, isLoading, filterPosts } =
+    useFetchPosts()
 
   // Fetch posts from Firestore
   useEffect(() => {
@@ -48,7 +48,7 @@ const index = () => {
             />
           }
           renderItem={({ item, index }) => <Posts item={item} index={index} />}
-          ListHeaderComponent={<PostHeader />}
+          ListHeaderComponent={<PostHeader filterPosts={filterPosts} />}
         />
       )}
     </View>

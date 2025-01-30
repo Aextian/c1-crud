@@ -10,14 +10,14 @@ import {
 import React, { useEffect, useState } from 'react'
 import { Alert, Text, TextInput, TouchableOpacity, View } from 'react-native'
 
-const manageCourses = () => {
-  const [course, setCouse] = useState('')
-  const [courses, setcourses] = useState<DocumentData[]>([])
+const ManageSection = () => {
+  const [section, setSection] = useState('')
+  const [sections, setSections] = useState<DocumentData[]>([])
 
   const handleDelete = (id: string) => {
     Alert.alert(
       'Delete Confirmation',
-      'Are you sure you want to delete this course?',
+      'Are you sure you want to delete this section?',
       [
         {
           text: 'Cancel',
@@ -28,11 +28,11 @@ const manageCourses = () => {
           style: 'destructive', // Highlights the delete action (iOS-specific)
           onPress: async () => {
             try {
-              const courseDocRef = doc(db, 'courses', id) // Reference to the document
-              await deleteDoc(courseDocRef) // Deletes the document from Firestore
-              console.log('Course deleted successfully')
+              const sectionDocRef = doc(db, 'sections', id) // Reference to the document
+              await deleteDoc(sectionDocRef) // Deletes the document from Firestore
+              console.log('Section deleted successfully')
             } catch (error) {
-              console.error('Error deleting course:', error)
+              console.error('Error deleting section:', error)
             }
           },
         },
@@ -41,21 +41,21 @@ const manageCourses = () => {
   }
 
   const handleSubmit = async () => {
-    await addDoc(collection(db, 'courses'), {
+    await addDoc(collection(db, 'sections'), {
       createdAt: new Date().toISOString(),
-      name: course,
+      name: section,
     })
   }
 
   useEffect(() => {
-    const collectionRef = collection(db, 'courses')
+    const collectionRef = collection(db, 'sections')
 
     const unsubscribe = onSnapshot(collectionRef, (querySnapshot) => {
-      const postsData = querySnapshot.docs.map((doc) => ({
+      const sectionsData = querySnapshot.docs.map((doc) => ({
         id: doc.id,
         ...doc.data(),
       }))
-      setcourses(postsData)
+      setSections(sectionsData)
     })
 
     return () => unsubscribe() // Cleanup the subscription on unmount
@@ -66,8 +66,8 @@ const manageCourses = () => {
       <View className="flex flex-row gap-5 items-center justify-center my-10 ">
         <TextInput
           className="bg-slate-200 rounded-xl p-2  w-8/12"
-          placeholder="Course Name"
-          onChangeText={(text) => setCouse(text)}
+          placeholder="Section Name"
+          onChangeText={(text) => setSection(text)}
         />
         <TouchableOpacity
           onPress={handleSubmit}
@@ -76,15 +76,15 @@ const manageCourses = () => {
           <Text>Add</Text>
         </TouchableOpacity>
       </View>
-      {courses.map((course, key) => (
+      {sections.map((section, key) => (
         <View
           key={key}
           className="flex items-start flex-row justify-between mt-5"
         >
-          <Text>{course.name}</Text>
+          <Text>{section.name}</Text>
           <View className="flex items-center flex-row gap-2">
             <TouchableOpacity
-              onPress={() => handleDelete(course.id)}
+              onPress={() => handleDelete(section.id)}
               className="bg-red-300 p-2 rounded-xl py-2 px-16"
             >
               <Text>Delete</Text>
@@ -96,4 +96,4 @@ const manageCourses = () => {
   )
 }
 
-export default manageCourses
+export default ManageSection

@@ -3,7 +3,6 @@ import { DocumentData, doc, getDoc } from 'firebase/firestore'
 import { useEffect, useState } from 'react'
 
 const useAuth = () => {
-  // const [currentUser, setCurrentUser] = useState<DocumentData | null>(null) // Adjust the type based on your user object
   const [loading, setLoading] = useState(true)
   const [user, setUser] = useState<DocumentData | null>(null)
 
