@@ -45,19 +45,21 @@ const notifications = () => {
     <SafeAreaView
       style={{ flex: 1, backgroundColor: '#fff', paddingTop: 35, padding: 10 }}
     >
-      <View className="mb-10">
-        <Text className="text-2xl font-bold">Notifications</Text>
-      </View>
-
-      {loading && <SkUserLoader />}
+      {!loading && notifications.length === 0 && (
+        <Text className="text-center text-gray-500">
+          No notifications found.
+        </Text>
+      )}
       <FlatList
+        style={{ marginBottom: 50 }}
         data={notifications}
-        keyExtractor={(item: DocumentData, index: string) => index.toString()}
-        ListEmptyComponent={
-          <Text className="text-center text-gray-500">
-            No notifications found.
-          </Text>
+        keyExtractor={(item) => item.id}
+        ListHeaderComponent={
+          <View className="mb-10">
+            <Text className="text-2xl font-bold">Notifications</Text>
+          </View>
         }
+        ListEmptyComponent={<SkUserLoader />}
         renderItem={({ item }: { item: DocumentData }) => (
           <Notification {...item} />
         )}

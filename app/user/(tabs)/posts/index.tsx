@@ -4,7 +4,6 @@ import PostSkLoader from '@/components/shared/PostSkLoader'
 import Posts from '@/components/teacher/Posts'
 import PostsHeader from '@/components/teacher/PostsHeader'
 import { db } from '@/config'
-import { useRouter } from 'expo-router'
 import React, { useCallback, useEffect, useState } from 'react'
 import { FlatList, RefreshControl, SafeAreaView } from 'react-native'
 
@@ -16,8 +15,6 @@ const index = () => {
   useEffect(() => {
     fetchPostsAndComments()
   }, [db]) // Include db as a dependency if it can change
-
-  const router = useRouter()
 
   const [refreshing, setRefreshing] = useState(false)
 

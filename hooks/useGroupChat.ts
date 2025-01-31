@@ -77,10 +77,7 @@ export const useGroupMessage = (groupId: string) => {
           _id: messages[0]._id + 1,
           text: messageToSend.text,
           createdAt: new Date(),
-          user: {
-            _id: currenUser?.uid,
-            avatar: '',
-          },
+          user: messageToSend.user,
           image: imagePath,
           file: {
             url: '',
@@ -94,10 +91,8 @@ export const useGroupMessage = (groupId: string) => {
           _id: messages[0]._id + 1,
           text: messageToSend.text,
           createdAt: new Date(),
-          user: {
-            _id: currenUser?.uid,
-            avatar: '',
-          },
+          user: messageToSend.user,
+
           image: '',
           file: {
             url: filePath,
@@ -116,10 +111,8 @@ export const useGroupMessage = (groupId: string) => {
           _id: messages[0]._id + 1,
           text: messageToSend.text,
           createdAt: new Date(),
-          user: {
-            _id: currenUser?.uid,
-            avatar: '',
-          },
+          user: messageToSend.user,
+
           image: '',
           file: {
             url: '',
@@ -134,10 +127,7 @@ export const useGroupMessage = (groupId: string) => {
           _id: messageToSend._id,
           text: messageToSend.text,
           createdAt: new Date(),
-          user: {
-            _id: currenUser?.uid,
-            avatar: '',
-          },
+          user: messageToSend.user,
         }
         await addDoc(messagesCollection, newMessage)
       }

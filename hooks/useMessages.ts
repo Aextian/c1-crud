@@ -67,10 +67,7 @@ const useMessages = (id: string) => {
           _id: messages[0]._id + 1,
           text: messageToSend.text,
           createdAt: new Date(),
-          user: {
-            _id: currenUser?.uid,
-            avatar: '',
-          },
+          user: messageToSend.user,
           image: imagePath,
           file: {
             url: '',
@@ -84,10 +81,7 @@ const useMessages = (id: string) => {
           _id: messages[0]._id + 1,
           text: messageToSend.text,
           createdAt: new Date(),
-          user: {
-            _id: currenUser?.uid,
-            avatar: '',
-          },
+          user: messageToSend.user,
           image: '',
           file: {
             url: filePath,
@@ -106,10 +100,7 @@ const useMessages = (id: string) => {
           _id: messages[0]._id + 1,
           text: messageToSend.text,
           createdAt: new Date(),
-          user: {
-            _id: currenUser?.uid,
-            avatar: '',
-          },
+          user: messageToSend.user,
           image: '',
           file: {
             url: '',
@@ -124,14 +115,12 @@ const useMessages = (id: string) => {
           _id: messageToSend._id,
           text: messageToSend.text,
           createdAt: new Date(),
-          user: {
-            _id: currenUser?.uid,
-            avatar: '',
-          },
+          user: messageToSend.user,
         }
         await addDoc(messagesCollection, newMessage)
       }
       // update conversation to status unread
+
       await updateDoc(doc(db, 'conversations', id), { isRead: false })
     },
 

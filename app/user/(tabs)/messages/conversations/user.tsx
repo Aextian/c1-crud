@@ -21,7 +21,7 @@ import {
 } from 'firebase/firestore'
 import React, { useCallback, useEffect, useState } from 'react'
 import { Image, Text, TouchableOpacity, View } from 'react-native'
-import { GiftedChat } from 'react-native-gifted-chat'
+import { GiftedChat, MessageImage } from 'react-native-gifted-chat'
 
 export default function userConversation() {
   useHideTabBarOnFocus()
@@ -199,10 +199,17 @@ export default function userConversation() {
         messages={messages}
         onSend={(messages) => onSend(messages)}
         user={{
-          _id: currentUser?.uid ?? '',
-          name: currentUser?.displayName ?? '',
+          _id: String(currentUser?.uid),
+          name: String(currentUser?.displayName),
+          avatar: String(currentUser?.photoURL),
         }}
+        showUserAvatar={true}
+        renderUsernameOnMessage={true}
+        isLoadingEarlier={true}
+        showAvatarForEveryMessage={true}
+        renderAvatarOnTop={true}
         renderMessageAudio={(props) => <MessageAudio {...props} />}
+        renderMessageImage={(props) => <MessageImage {...props} />}
         renderChatFooter={renderChatFooter}
         renderBubble={renderBubble}
         renderInputToolbar={(props) => (

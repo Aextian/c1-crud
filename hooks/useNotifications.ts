@@ -20,7 +20,7 @@ async function addNotifications({
   if (postSnapshot.exists()) {
     // Check if the document exists
     const authorid = postSnapshot.data()?.authorId
-
+    if (fromUserId === authorid) return
     // Save notification to Firestore
     await addDoc(collection(db, 'notifications'), {
       fromUserId: fromUserId, // who sent the notification

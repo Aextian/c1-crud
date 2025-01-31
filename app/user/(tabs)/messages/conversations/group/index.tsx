@@ -1,7 +1,7 @@
 import CustomInputToolbar from '@/components/CustomeToolbar'
-import InChatFileTransfer from '@/components/inChatFileTransfer'
-import InChatViewFile from '@/components/inChatViewFile'
 import MessageAudio from '@/components/MessageAudio'
+import MessageImage from '@/components/MessageImage'
+import InChatFileTransfer from '@/components/inChatFileTransfer'
 import { auth, db } from '@/config'
 import { useGroupMessage } from '@/hooks/useGroupChat'
 import useHideTabBarOnFocus from '@/hooks/useHideTabBarOnFocus'
@@ -10,9 +10,9 @@ import useRecordingStore from '@/store/useRecordingStore'
 import { Feather } from '@expo/vector-icons'
 import { Stack, useLocalSearchParams, useRouter } from 'expo-router'
 import {
+  DocumentData,
   arrayRemove,
   doc,
-  DocumentData,
   getDoc,
   updateDoc,
 } from 'firebase/firestore'
@@ -39,7 +39,6 @@ export default function groupConversation() {
   } = useGroupMessage(id) // Pass the id to the custom hook
 
   // update read status
-
   useEffect(() => {
     const fetchGroup = async () => {
       const groupRef = doc(db, 'groupChats', id)
@@ -119,7 +118,6 @@ export default function groupConversation() {
           headerTitle: group?.name || '',
           headerRight: () => (
             <TouchableOpacity
-              // style={{ marginRight: 5 }} // Adjust the margin if needed
               onPress={() =>
                 router.push({
                   pathname:
@@ -137,23 +135,32 @@ export default function groupConversation() {
           ),
         }}
       />
-      {fileUrl && (
+      {/* {fileUrl && (
         <InChatViewFile url={fileUrl} onClose={() => setFileUrl('')} />
+      )} */}
+      {currentUser && (
+        <GiftedChat
+          messages={messages}
+          onSend={(messages) => onSend(messages)}
+          user={{
+            _id: currentUser?.uid,
+            name: String(currentUser?.displayName),
+            avatar: String(currentUser?.photoURL),
+          }}
+          showUserAvatar={true}
+          renderUsernameOnMessage={true}
+          isLoadingEarlier={true}
+          showAvatarForEveryMessage={true}
+          renderAvatarOnTop={true}
+          renderMessageAudio={(props) => <MessageAudio {...props} />}
+          renderMessageImage={(props) => <MessageImage {...props} />}
+          renderChatFooter={renderChatFooter} // it show instant when select image
+          renderBubble={renderBubble}
+          renderInputToolbar={(props) => (
+            <CustomInputToolbar {...props} onFilePress={shareFile} />
+          )}
+        />
       )}
-      <GiftedChat
-        messages={messages}
-        onSend={(messages) => onSend(messages)}
-        user={{
-          _id: currentUser?.uid ?? '',
-          name: currentUser?.displayName ?? '',
-        }}
-        renderMessageAudio={(props) => <MessageAudio {...props} />}
-        renderChatFooter={renderChatFooter}
-        renderBubble={renderBubble}
-        renderInputToolbar={(props) => (
-          <CustomInputToolbar {...props} onFilePress={shareFile} />
-        )}
-      />
     </>
   )
 }
