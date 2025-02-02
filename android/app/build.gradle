@@ -221,3 +221,5 @@ android.packagingOptions.jniLibs.useLegacyPackaging = true
 android.packagingOptions.jniLibs.useLegacyPackaging = true
 
 android.packagingOptions.jniLibs.useLegacyPackaging = true
+
+android.packagingOptions.jniLibs.useLegacyPackaging = true
