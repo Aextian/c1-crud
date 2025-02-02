@@ -46,12 +46,12 @@ const useRenderGiftedChat = () => {
         {...props}
         wrapperStyle={{
           right: {
-            backgroundColor: '#2e64e5',
+            backgroundColor: '#2e64e5', //set the color green
           },
         }}
         textStyle={{
           right: {
-            color: '#efefef',
+            color: '#efefef', // Set the text color to white
           },
         }}
       />

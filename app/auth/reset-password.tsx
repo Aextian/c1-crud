@@ -2,6 +2,7 @@ import { auth } from '@/config'
 import { sendPasswordResetEmail } from 'firebase/auth'
 import React, { useState } from 'react'
 import {
+  ImageBackground,
   StyleSheet,
   Text,
   TextInput,
@@ -30,8 +31,12 @@ const resetPassword = () => {
 
   return (
     <View style={styles.container}>
+      <ImageBackground
+        source={require('../../assets/images/background.jpg')} // Add your background image here
+        style={styles.overlay}
+      />
       <TextInput
-        className=" rounded-2xl text-xl border border-slate-200 bg-slate-200 w-10/12 p-4"
+        className=" mt-5 rounded-xl text-xl border border-slate-200 bg-slate-50 w-10/12 p-4"
         value={email}
         onChangeText={(text) => setEmail(text)}
         placeholder="Enter your email"
@@ -53,12 +58,22 @@ const resetPassword = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    position: 'relative',
+
     // justifyContent: 'center', // Center content vertically
     alignItems: 'center', // Center content horizontally
     // marginTop: 50,
     padding: 20,
     gap: 5,
-    backgroundColor: '#f0f0f0', // Light background for contrast
+    backgroundColor: 'white',
+  },
+  overlay: {
+    position: 'absolute',
+    top: 250,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    opacity: 0.3,
   },
   loginInput: {
     width: '80%', // Input width takes 80% of screen width

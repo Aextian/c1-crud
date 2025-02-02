@@ -3,7 +3,7 @@ const { withNativeWind } = require('nativewind/metro')
 
 const config = getDefaultConfig(__dirname)
 
-config.resolver.assetExts.push('tflite')
+// config.resolver.assetExts.push('tflite')
 
 // NOTE: Update this to include the paths to all of your component files.
 
