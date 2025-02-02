@@ -1,6 +1,7 @@
 import CustomInputToolbar from '@/components/CustomeToolbar'
 import InChatFileTransfer from '@/components/inChatFileTransfer'
 import InChatViewFile from '@/components/inChatViewFile'
+import LoadingScreen from '@/components/loadingScreen'
 import MessageAudio from '@/components/MessageAudio'
 import { auth, db } from '@/config'
 import useHideTabBarOnFocus from '@/hooks/useHideTabBarOnFocus'
@@ -185,13 +186,16 @@ export default function userConversation() {
         options={{
           headerTitle: () => (
             <TouchableOpacity onPress={navigateToProfile}>
-              <Text style={{ fontWeight: 'bold', fontSize: 18 }}>
-                {user?.name || 'User'}
-              </Text>
+              <View className="p-2  bg-white shadow rounded-lg">
+                <Text style={{ fontWeight: 'semibold', fontSize: 18 }}>
+                  {user?.name || <LoadingScreen />}
+                </Text>
+              </View>
             </TouchableOpacity>
           ),
         }}
       />
+
       {fileUrl && (
         <InChatViewFile url={fileUrl} onClose={() => setFileUrl('')} />
       )}

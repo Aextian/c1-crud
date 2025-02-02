@@ -21,13 +21,12 @@ const EditFormPost = ({ data }: { data: DocumentData }) => {
   useHideTabBarOnFocus()
   const router = useRouter()
   const { role } = useRole()
-  const { years, courses } = useGradeLevel<string>()
+  const { years, sections } = useGradeLevel<string>()
   const [post, addPost] = useState(data.post)
   const [year, setYear] = useState(data.year)
-  const [course, setCourse] = useState(data.course)
+  const [section, setSection] = useState(data.section)
   const currentUser = auth.currentUser
   const [isLoading, setLoading] = useState(false)
-  console.log(data.id)
 
   const handleSubmit = async () => {
     setLoading(true) // Start loading before the process starts
@@ -41,7 +40,7 @@ const EditFormPost = ({ data }: { data: DocumentData }) => {
         authorAvatar: currentUser?.photoURL,
         post: post,
         year: year,
-        course: course,
+        section: section,
       })
       addPost('')
       setLoading(false)
@@ -100,8 +99,8 @@ const EditFormPost = ({ data }: { data: DocumentData }) => {
                 className="border flex flex-row  h-12 border-gray-200 outline-none ring-0 rounded-2xl  "
               >
                 <Picker
-                  selectedValue={course}
-                  onValueChange={(course) => setCourse(course)}
+                  selectedValue={section}
+                  onValueChange={(section) => setSection(section)}
                   style={{
                     width: '100%',
                     height: '100%',
@@ -109,16 +108,16 @@ const EditFormPost = ({ data }: { data: DocumentData }) => {
                   }}
                 >
                   <Picker.Item
-                    label="Course"
+                    label="Section"
                     value=""
                     style={{ fontSize: 10 }} // Adjust font size of this item
                   />
-                  {courses.map((course: any) => (
+                  {sections.map((section: any) => (
                     <Picker.Item
                       style={{ fontSize: 10 }} // Adjust font size of this item
-                      key={course.id}
-                      label={course.name}
-                      value={course.name}
+                      key={section.id}
+                      label={section.name}
+                      value={section.name}
                     />
                   ))}
                 </Picker>
@@ -129,7 +128,7 @@ const EditFormPost = ({ data }: { data: DocumentData }) => {
               >
                 <Picker
                   selectedValue={year}
-                  onValueChange={(course) => setYear(course)}
+                  onValueChange={(year) => setYear(year)}
                   style={{
                     width: '100%',
                     height: '100%',

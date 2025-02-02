@@ -2,6 +2,7 @@ import CustomInputToolbar from '@/components/CustomeToolbar'
 import MessageAudio from '@/components/MessageAudio'
 import MessageImage from '@/components/MessageImage'
 import InChatFileTransfer from '@/components/inChatFileTransfer'
+import InChatViewFile from '@/components/inChatViewFile'
 import { auth, db } from '@/config'
 import { useGroupMessage } from '@/hooks/useGroupChat'
 import useHideTabBarOnFocus from '@/hooks/useHideTabBarOnFocus'
@@ -135,9 +136,9 @@ export default function groupConversation() {
           ),
         }}
       />
-      {/* {fileUrl && (
+      {fileUrl && (
         <InChatViewFile url={fileUrl} onClose={() => setFileUrl('')} />
-      )} */}
+      )}
       {currentUser && (
         <GiftedChat
           messages={messages}

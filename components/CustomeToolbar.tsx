@@ -55,6 +55,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row', // Align input and button horizontally
     alignItems: 'center',
     padding: 8,
+    borderRadius: 30,
   },
   fileButton: {
     marginHorizontal: 8,

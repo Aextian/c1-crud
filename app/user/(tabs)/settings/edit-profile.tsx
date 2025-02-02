@@ -193,6 +193,7 @@ const editProfile = () => {
           justifyContent: 'center',
           alignItems: 'center',
           padding: 10,
+          backgroundColor: 'white',
         }}
       >
         {/* edit form */}

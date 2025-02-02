@@ -80,8 +80,6 @@ const login = () => {
       />
       <View className="flex items-center justify-between  w-full">
         <Image
-          // className="h-64 w-64"
-          // style={{ height: 300, width: '100%' }}
           style={{ height: imageSize.height, width: imageSize.width }} // Dynamic image size
           source={require('../../assets/images/logo.png')}
           resizeMode="contain"

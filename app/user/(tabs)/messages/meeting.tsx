@@ -38,10 +38,10 @@ const meeting = () => {
     '850dd356d41c9f5feae7e21be16e5c4fabcbb3cd2902d2e235e32eb2e6781d4e'
 
   const createRoom = async () => {
-    // const room = Math.random().toString(36).substring(7) //generate random text
+    const room = Math.random().toString(36).substring(7) //generate random text
     try {
       const response = await axios.post(
-        // 'https://api.daily.co/v1/rooms',
+        'https://api.daily.co/v1/rooms',
         {
           name: room, // A unique room name
           properties: {
@@ -112,7 +112,7 @@ const meeting = () => {
 
       // Attempt to join the call
       await callObject.current?.join({
-        // url: `https://weconn.daily.co/${room}`,
+        url: `https://weconn.daily.co/${room}`,
         userName: currentUser?.displayName || '', // Custom username
       })
 
