@@ -9,14 +9,8 @@ import { useGetUserGroups } from '@/hooks/useGroupChat'
 import { DocumentData } from 'firebase/firestore'
 
 import React, { useCallback, useState } from 'react'
-import {
-  FlatList,
-  RefreshControl,
-  SafeAreaView,
-  StyleSheet,
-  Text,
-  View,
-} from 'react-native'
+import { FlatList, RefreshControl, StyleSheet, Text, View } from 'react-native'
+import { SafeAreaView } from 'react-native-safe-area-context'
 
 const index = () => {
   const [refreshing, setRefreshing] = useState(false)

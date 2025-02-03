@@ -5,7 +5,8 @@ import Posts from '@/components/teacher/Posts'
 import PostsHeader from '@/components/teacher/PostsHeader'
 import { db } from '@/config'
 import React, { useCallback, useEffect, useState } from 'react'
-import { FlatList, RefreshControl, SafeAreaView } from 'react-native'
+import { FlatList, RefreshControl } from 'react-native'
+import { SafeAreaView } from 'react-native-safe-area-context'
 
 const index = () => {
   const { posts, fetchPostsAndComments, isLoading, filterPosts } =
@@ -23,10 +24,6 @@ const index = () => {
     await fetchPostsAndComments() // Fetch new data
     setRefreshing(false) // Hide the spinner
   }, [])
-
-  // const sortedPosts = [...posts].sort(
-  //   (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
-  // )
 
   const sortedPosts = [...posts].sort(
     (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
