@@ -10,7 +10,7 @@ import {
   query,
 } from 'firebase/firestore'
 import React, { useEffect, useState } from 'react'
-import { StyleSheet, Text, TouchableOpacity, View } from 'react-native'
+import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
 
 const MessageGroupCard = ({ group }: { group: DocumentData }) => {
   const [lastMessage, setLastMessage] = useState<string | null>(null)
@@ -45,9 +45,16 @@ const MessageGroupCard = ({ group }: { group: DocumentData }) => {
     >
       <TouchableOpacity style={styles.messageCardContainer}>
         <View style={styles.messsageCardIcon}>
-          <Feather name="users" size={24} color="black" />
+          {group.image && group?.image !== 'undefined' ? (
+            <Image
+              source={{ uri: group?.image }}
+              style={{ width: '100%', height: '100%', borderRadius: 100 }}
+            />
+          ) : (
+            <Feather name="users" size={24} color="black" />
+          )}
         </View>
-        {/* content */}
+
         <View
           style={{
             flex: 1,

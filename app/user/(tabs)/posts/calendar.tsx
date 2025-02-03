@@ -1,8 +1,18 @@
 import { auth, db } from '@/config'
 import useHideTabBarOnFocus from '@/hooks/useHideTabBarOnFocus'
-import { DocumentData, addDoc, collection, getDocs } from 'firebase/firestore'
+import {
+  DocumentData,
+  addDoc,
+  collection,
+  deleteDoc,
+  doc,
+  getDoc,
+  onSnapshot,
+  updateDoc,
+} from 'firebase/firestore'
 import React, { useEffect, useState } from 'react'
 import {
+  Alert,
   StyleSheet,
   Text,
   TextInput,
@@ -12,87 +22,117 @@ import {
 import { Agenda } from 'react-native-calendars'
 
 const App = () => {
-  const [items, setItems] = useState<DocumentData>({})
   useHideTabBarOnFocus()
+  const [items, setItems] = useState<DocumentData>({})
+  const [isLoading, setLoading] = useState(false)
 
   const dateToday = new Date().toISOString().split('T')[0]
   const [selectedDate, setSelectedDate] = useState(dateToday)
   const [newEvent, setNewEvent] = useState('')
+  const [event, setEvent] = useState<DocumentData>({})
   const currentUser = auth?.currentUser
 
   // Add new event to Firestore and update the local state
-  const addEvent = async () => {
+  const handleAddSubmit = async () => {
     if (!currentUser || newEvent.trim() === '') return
+    setLoading(true)
 
     try {
       // Save event data to Firestore
-      const eventRef = await addDoc(
-        collection(db, 'events', currentUser?.uid, 'userEvents'),
-        {
-          date: selectedDate,
-          name: newEvent,
-          time: 'All Day', // You can include an input for the event time as well
-        },
-      )
-
-      // Update local state to reflect the new event
-      setItems((prevItems) => {
-        const updatedItems = { ...prevItems }
-        if (updatedItems[selectedDate]) {
-          updatedItems[selectedDate].push({ name: newEvent, time: 'All Day' })
-        } else {
-          updatedItems[selectedDate] = [{ name: newEvent, time: 'All Day' }]
-        }
-        return updatedItems
+      await addDoc(collection(db, 'events', currentUser.uid, 'userEvents'), {
+        date: selectedDate,
+        name: newEvent,
+        time: 'All Day',
       })
 
       // Clear the input field after saving the event
       setNewEvent('')
     } catch (error) {
       console.error('Error adding event: ', error)
+    } finally {
+      setLoading(false)
     }
   }
 
-  //   functio to get all events from firebase
+  const handleUpdateSubmit = async () => {
+    setLoading(true)
+    try {
+      const eventsRef = doc(
+        db,
+        'events',
+        String(currentUser?.uid),
+        'userEvents',
+        event.id,
+      )
+      const docEvent = await getDoc(eventsRef)
+      if (docEvent.exists()) {
+        await updateDoc(eventsRef, {
+          name: newEvent,
+        })
+      }
+      setLoading(false)
+      setEvent({})
+      setNewEvent('')
+    } catch (error) {
+      console.error('Error updating event: ', error)
+      setLoading(false)
+    }
+  }
+
+  const handleDelete = (id: string) => {
+    Alert.alert('Delete', 'Are you sure you want to delete this event?', [
+      { text: 'Cancel', style: 'cancel' },
+      {
+        text: 'Delete',
+        style: 'destructive',
+        onPress: async () => {
+          try {
+            const eventsRef = doc(
+              db,
+              'events',
+              String(currentUser?.uid),
+              'userEvents',
+              id,
+            )
+            await deleteDoc(eventsRef)
+          } catch (error) {
+            console.error('Error deleting event:', error)
+          }
+        },
+      },
+    ])
+  }
 
   useEffect(() => {
-    const fetchEvents = async () => {
-      if (!currentUser) return
+    if (!currentUser) return
 
-      try {
-        const querySnapshot = await getDocs(
-          collection(db, 'events', currentUser?.uid, 'userEvents'),
-        )
-        const fetchedItems: {
-          [key: string]: { name: string; time: string }[]
-        } = {}
+    const eventsRef = collection(db, 'events', currentUser.uid, 'userEvents')
 
-        querySnapshot.forEach((doc) => {
-          const event = doc.data()
-          const eventDate = event.date
+    const unsubscribe = onSnapshot(eventsRef, (querySnapshot) => {
+      const fetchedItems: {
+        [key: string]: { id: string; name: string; time: string }[]
+      } = {}
 
-          if (!fetchedItems[eventDate]) {
-            fetchedItems[eventDate] = []
-          }
+      querySnapshot.forEach((doc) => {
+        const event = doc.data()
+        const eventDate = event.date
 
-          fetchedItems[eventDate].push({ name: event.name, time: event.time })
+        if (!fetchedItems[eventDate]) {
+          fetchedItems[eventDate] = []
+        }
+
+        fetchedItems[eventDate].push({
+          id: doc.id,
+          name: event.name,
+          time: event.time,
         })
+      })
 
-        setItems(fetchedItems) // Update the state with the fetched events
-      } catch (error) {
-        console.error('Error fetching events: ', error)
-      }
-    }
+      setItems(fetchedItems) // ✅ This will now update in real time
+    })
 
-    fetchEvents() // Call the function to fetch events
-  }, [selectedDate, currentUser]) // Re-fetch when selectedDate or currentUser changes
-
-  const renderItem = (item: { name: string; time: string }) => (
-    <View style={styles.item}>
-      <Text style={styles.itemName}>{item.name}</Text>
-      <Text style={styles.itemTime}>{item.time}</Text>
-    </View>
-  )
+    return () => unsubscribe() // Cleanup function
+  }, [currentUser])
 
   return (
     <View style={styles.container}>
@@ -109,19 +149,50 @@ const App = () => {
         </View>
 
         <TouchableOpacity
-          className="bg-green-400 w-full text-center p-3 rounded-lg "
-          onPress={addEvent}
+          className={`${!newEvent ? 'bg-green-300' : 'bg-green-400'} w-full text-center p-3 rounded-lg `}
+          onPress={event.id ? handleUpdateSubmit : handleAddSubmit}
+          disabled={isLoading || !newEvent}
         >
-          <Text className="text-white text-center">Add</Text>
+          <Text className="text-white text-center">
+            {event.id
+              ? isLoading
+                ? 'Updating'
+                : 'Update'
+              : isLoading
+                ? 'Adding'
+                : 'Add'}
+          </Text>
         </TouchableOpacity>
       </View>
 
       <Agenda
         items={items}
-        renderItem={renderItem}
-        selected={selectedDate}
+        // renderItem={renderItem}
         onRefresh={() => console.log('Refreshed!')}
-        onDayPress={(day) => setSelectedDate(day.dateString)}
+        onDayPress={(day: any) => setSelectedDate(day.dateString)}
+        renderItem={(item: DocumentData) => (
+          <View style={styles.item}>
+            <View className="flex flex-row justify-between ">
+              <View>
+                <Text style={styles.itemName}>{item.name}</Text>
+                <Text style={styles.itemTime}>{item.time}</Text>
+              </View>
+              <View>
+                <TouchableOpacity
+                  onPress={() => {
+                    setEvent(item)
+                    setNewEvent(item.name)
+                  }}
+                >
+                  <Text className="text-green-400">Edit</Text>
+                </TouchableOpacity>
+                <TouchableOpacity onPress={() => handleDelete(item.id)}>
+                  <Text className="text-red-400">Delete</Text>
+                </TouchableOpacity>
+              </View>
+            </View>
+          </View>
+        )}
         renderEmptyData={() => (
           <View style={styles.emptyItem}>
             <Text>No events for this day!</Text>

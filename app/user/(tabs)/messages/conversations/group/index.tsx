@@ -152,6 +152,9 @@ export default function groupConversation() {
           isLoadingEarlier={true}
           showAvatarForEveryMessage={true}
           renderAvatarOnTop={true}
+          messagesContainerStyle={{
+            backgroundColor: '#fff',
+          }}
           renderMessageAudio={(props) => <MessageAudio {...props} />}
           renderMessageImage={(props) => <MessageImage {...props} />}
           renderChatFooter={renderChatFooter} // it show instant when select image

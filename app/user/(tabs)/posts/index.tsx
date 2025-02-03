@@ -25,6 +25,7 @@ const index = () => {
     setRefreshing(false) // Hide the spinner
   }, [])
 
+  // Sort the posts by creation time
   const sortedPosts = [...posts].sort(
     (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
   )

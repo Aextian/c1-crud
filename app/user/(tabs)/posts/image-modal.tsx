@@ -1,4 +1,4 @@
-import { Link, useLocalSearchParams } from 'expo-router'
+import { router, useLocalSearchParams } from 'expo-router'
 import { Image, Pressable, StyleSheet, View } from 'react-native'
 import Animated, { FadeIn, ZoomIn } from 'react-native-reanimated'
 
@@ -15,10 +15,15 @@ export default function Modal() {
         backgroundColor: '#00000040',
       }}
     >
+      <Pressable
+        style={StyleSheet.absoluteFill}
+        onPress={() => router.back()}
+      />
+
       {/* Dismiss modal when pressing outside */}
-      <Link href={'/user/(tabs)/posts'} asChild>
+      {/* <Link href={'/user/(tabs)/posts'} asChild>
         <Pressable style={StyleSheet.absoluteFill} />
-      </Link>
+      </Link> */}
       <Animated.View
         entering={ZoomIn}
         style={{
