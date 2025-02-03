@@ -5,7 +5,7 @@ import { Image, Text, TouchableOpacity, View } from 'react-native'
 
 const PostsHeader = () => {
   return (
-    <View className="flex flex-row justify-between px-5 my-10">
+    <View className="flex flex-row justify-between px-5 mt-5 mb-10">
       <View className="flex flex-row items-center gap-2">
         <Image
           source={require('../../assets/images/logo.png')}

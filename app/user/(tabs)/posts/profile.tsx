@@ -8,13 +8,8 @@ import useHideTabBarOnFocus from '@/hooks/useHideTabBarOnFocus'
 import userCoverUploads from '@/hooks/userCoverUploads'
 import { Stack, useLocalSearchParams } from 'expo-router'
 import React, { useCallback, useState } from 'react'
-import {
-  FlatList,
-  RefreshControl,
-  SafeAreaView,
-  Text,
-  View,
-} from 'react-native'
+import { FlatList, RefreshControl, Text, View } from 'react-native'
+import { SafeAreaView } from 'react-native-safe-area-context'
 
 const profile = () => {
   useHideTabBarOnFocus()

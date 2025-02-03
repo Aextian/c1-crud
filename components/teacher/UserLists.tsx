@@ -67,7 +67,7 @@ const UserList = ({ search = '' }: UserListProps) => {
             >
               <Text
                 style={{ fontSize: 8 }}
-                className=" text-gray-300 text-ellipsis"
+                className=" text-gray-400 text-ellipsis"
                 numberOfLines={2}
               >
                 {user?.note || 'Add note'}

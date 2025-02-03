@@ -22,7 +22,7 @@ const ProfileHeader = ({ user, pickImage, id }: IProps) => {
         style={{
           height: 200,
           width: '100%',
-          marginTop: 10,
+          // marginTop: 10,
           shadowOffset: { width: 0, height: 2 },
         }}
         className="bg-white shadow"
@@ -36,7 +36,7 @@ const ProfileHeader = ({ user, pickImage, id }: IProps) => {
         <TouchableOpacity
           style={{
             position: 'absolute',
-            top: 10,
+            top: 5,
             left: 5,
             backgroundColor: 'rgba(0,0,0,0.2)',
             borderRadius: 100,
