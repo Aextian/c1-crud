@@ -21,10 +21,11 @@ const ProfileHeader = ({ user, pickImage, id }: IProps) => {
       <View
         style={{
           height: 200,
-          backgroundColor: '#adadad',
           width: '100%',
           marginTop: 10,
+          shadowOffset: { width: 0, height: 2 },
         }}
+        className="bg-white shadow"
       >
         {user?.coverImage && (
           <Image
@@ -35,7 +36,7 @@ const ProfileHeader = ({ user, pickImage, id }: IProps) => {
         <TouchableOpacity
           style={{
             position: 'absolute',
-            top: 0,
+            top: 10,
             left: 5,
             backgroundColor: 'rgba(0,0,0,0.2)',
             borderRadius: 100,

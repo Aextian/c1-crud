@@ -25,7 +25,7 @@ const index = () => {
   return (
     <>
       <ModalLoadingScreen isModalVisible={isLoading} />
-      <SafeAreaView className="flex-1 px-5 bg-white  gap-5">
+      <SafeAreaView style={{ flex: 1, backgroundColor: '#fff' }}>
         <Link
           href={{
             pathname: '/user/(tabs)/settings/profile',
@@ -34,7 +34,7 @@ const index = () => {
           asChild
         >
           <TouchableOpacity>
-            <View className="bg-white shadow p-5 mt-5 items-center rounded-2xl flex justify-start flex-row gap-5 ">
+            <View className="bg-white shadow p-5 mt-10 items-center rounded-2xl flex justify-start flex-row gap-5 ">
               <View className="rounded-full w-16 h-16  p-3 items-center justify-center">
                 {currentUser?.photoURL &&
                 currentUser?.photoURL !== 'undefined' ? (
