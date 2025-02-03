@@ -24,6 +24,14 @@ const index = () => {
     setRefreshing(false) // Hide the spinner
   }, [])
 
+  // const sortedPosts = [...posts].sort(
+  //   (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
+  // )
+
+  const sortedPosts = [...posts].sort(
+    (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
+  )
+
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: '#fff' }}>
       <PostsHeader />
@@ -33,7 +41,7 @@ const index = () => {
       ) : (
         <FlatList
           style={{ marginBottom: 30 }}
-          data={posts}
+          data={sortedPosts}
           keyExtractor={(item) => item.id}
           refreshControl={
             <RefreshControl

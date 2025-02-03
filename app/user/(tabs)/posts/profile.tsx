@@ -6,9 +6,15 @@ import { auth } from '@/config'
 import useUserAndPosts from '@/hooks/shared/useUserAndPosts'
 import useHideTabBarOnFocus from '@/hooks/useHideTabBarOnFocus'
 import userCoverUploads from '@/hooks/userCoverUploads'
-import { useLocalSearchParams, useRouter } from 'expo-router'
+import { Stack, useLocalSearchParams } from 'expo-router'
 import React, { useCallback, useState } from 'react'
-import { FlatList, RefreshControl, SafeAreaView, View } from 'react-native'
+import {
+  FlatList,
+  RefreshControl,
+  SafeAreaView,
+  Text,
+  View,
+} from 'react-native'
 
 const profile = () => {
   useHideTabBarOnFocus()
@@ -18,15 +24,12 @@ const profile = () => {
   const { pickImage, image } = userCoverUploads(currentUser?.uid || '')
   const [refreshing, setRefreshing] = useState(false)
   const onRefresh = useCallback(() => {}, [])
-  const router = useRouter()
-
   const { posts, user, isLoading } = useUserAndPosts(id)
 
   return (
     <>
-      <SafeAreaView style={{ flex: 1 }}>
-        {/* User Posts */}
-        {/* <View className="mt-60 flex  justify-center  w-full"> */}
+      <SafeAreaView style={{ flex: 1, backgroundColor: '#fff' }}>
+        <Stack.Screen options={{ headerShown: false }} />
         {isLoading ? (
           <ProfileSkLoader />
         ) : (
@@ -41,12 +44,20 @@ const profile = () => {
                 progressBackgroundColor="#ffffff"
               />
             }
-            ListEmptyComponent={<PostSkLoader />}
+            ListEmptyComponent={
+              isLoading ? (
+                <PostSkLoader />
+              ) : (
+                <View className="flex justify-center items-center">
+                  <Text>No posts yet</Text>
+                </View>
+              )
+            }
             renderItem={({ item, index }) => (
               <Posts item={item} index={index} />
             )}
             ListHeaderComponent={
-              <View className="flex mb-96  justify-center  w-full">
+              <View className="flex mb-20  justify-center  w-full">
                 <ProfileHeader user={user} id={id} pickImage={pickImage} />
               </View>
             }

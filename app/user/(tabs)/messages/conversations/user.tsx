@@ -8,7 +8,7 @@ import useHideTabBarOnFocus from '@/hooks/useHideTabBarOnFocus'
 import useMessages from '@/hooks/useMessages'
 import useRenderGiftedChat from '@/hooks/useRenderGiftedChat'
 import useRecordingStore from '@/store/useRecordingStore'
-import { Stack, useLocalSearchParams, useRouter } from 'expo-router'
+import { Link, Stack, useLocalSearchParams, useRouter } from 'expo-router'
 import {
   addDoc,
   collection,
@@ -185,13 +185,18 @@ export default function userConversation() {
       <Stack.Screen
         options={{
           headerTitle: () => (
-            <TouchableOpacity onPress={navigateToProfile}>
-              <View className="p-2  bg-white shadow rounded-lg">
+            <Link
+              href={{
+                pathname: '/user/(tabs)/messages/conversations/profile',
+                params: { id: user?._id },
+              }}
+            >
+              <View className="p-2  bg-white shadow rounded-full">
                 <Text style={{ fontWeight: 'semibold', fontSize: 18 }}>
                   {user?.name || <LoadingScreen />}
                 </Text>
               </View>
-            </TouchableOpacity>
+            </Link>
           ),
         }}
       />

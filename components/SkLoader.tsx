@@ -13,7 +13,7 @@ const SkUserLoader = () => {
           highlight={'#ffffff'}
         >
           <View
-            style={{ flexDirection: 'row', justifyContent: 'space-between' }}
+            style={{ flexDirection: 'row', justifyContent: 'space-between',marginTop:10 }}
           >
             <View
               style={{

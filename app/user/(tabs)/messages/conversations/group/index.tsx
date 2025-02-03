@@ -9,7 +9,7 @@ import useHideTabBarOnFocus from '@/hooks/useHideTabBarOnFocus'
 import useRenderGiftedChat from '@/hooks/useRenderGiftedChat'
 import useRecordingStore from '@/store/useRecordingStore'
 import { Feather } from '@expo/vector-icons'
-import { Stack, useLocalSearchParams, useRouter } from 'expo-router'
+import { Link, Stack, useLocalSearchParams, useRouter } from 'expo-router'
 import {
   DocumentData,
   arrayRemove,
@@ -118,21 +118,20 @@ export default function groupConversation() {
         options={{
           headerTitle: group?.name || '',
           headerRight: () => (
-            <TouchableOpacity
-              onPress={() =>
-                router.push({
-                  pathname:
-                    '/user/(tabs)/messages/conversations/group/group-info',
-                  params: {
-                    id: id,
-                  },
-                })
-              }
+            <Link
+              href={{
+                pathname:
+                  '/user/(tabs)/messages/conversations/group/group-info',
+                params: { id: id },
+              }}
+              asChild
             >
-              <View className="p-2 bg-green-50 rounded-full">
-                <Feather name="info" size={24} color="black" />
-              </View>
-            </TouchableOpacity>
+              <TouchableOpacity activeOpacity={0.8}>
+                <View className="p-2 bg-white shadow rounded-full">
+                  <Feather name="info" size={24} color="black" />
+                </View>
+              </TouchableOpacity>
+            </Link>
           ),
         }}
       />

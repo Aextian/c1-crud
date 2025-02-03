@@ -13,13 +13,19 @@ interface IProps {
 }
 
 const ProfileHeader = ({ user, pickImage, id }: IProps) => {
-  const currentUser = auth.currentUser
   const router = useRouter()
   const { postsCount, likesCount, dislikesCount } = useProfile(id)
 
   return (
     <>
-      <View className="h-48  w-full bg-gray-400 mt-10">
+      <View
+        style={{
+          height: 200,
+          backgroundColor: '#adadad',
+          width: '100%',
+          marginTop: 10,
+        }}
+      >
         {user?.coverImage && (
           <Image
             style={{ width: '100%', height: '100%' }}
@@ -27,22 +33,36 @@ const ProfileHeader = ({ user, pickImage, id }: IProps) => {
           />
         )}
         <TouchableOpacity
+          style={{
+            position: 'absolute',
+            top: 0,
+            left: 5,
+            backgroundColor: 'rgba(0,0,0,0.2)',
+            borderRadius: 100,
+            padding: 5,
+          }}
           onPress={() => router.back()}
-          className="absolute top-0 left-5"
         >
-          <Ionicons name="arrow-back" size={24} color="black" />
+          <Ionicons name="arrow-back" size={24} color="white" />
         </TouchableOpacity>
 
         {id === auth?.currentUser?.uid && (
           <TouchableOpacity
             onPress={() => pickImage()}
-            className="absolute bottom-2 right-2 "
+            style={{
+              position: 'absolute',
+              bottom: 0,
+              right: 5,
+              padding: 10,
+              backgroundColor: 'rgba(0,0,0,0.2)',
+              borderRadius: 100,
+            }}
           >
-            <Ionicons name="images-sharp" size={24} color="black" />
+            <Ionicons name="images-sharp" size={24} color="white" />
           </TouchableOpacity>
         )}
       </View>
-      <View className="flex flex-row gap-10 absolute top-36 w-full justify-center items-center">
+      <View style={{ position: 'relative', marginTop: -80 }}>
         <View className="flex flex-col gap-5 items-center">
           {user?.avatar ? (
             <Image
