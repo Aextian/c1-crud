@@ -57,7 +57,7 @@ const profile = () => {
               <Posts item={item} index={index} />
             )}
             ListHeaderComponent={
-              <View className="flex mb-20  justify-center  w-full">
+              <View className="flex mb-20 justify-center  w-full">
                 <ProfileHeader user={user} id={id} pickImage={pickImage} />
               </View>
             }
