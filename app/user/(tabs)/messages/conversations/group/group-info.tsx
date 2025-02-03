@@ -63,14 +63,12 @@ const GroupInfo = () => {
   const updateGroupImage = async () => {
     try {
       await pickImage()
-      if (image) {
-        const imageUrl = await uploadImage(image)
-        const groupRef = doc(db, 'groupChats', id)
-        await updateDoc(groupRef, { image: imageUrl })
-        alert('Group image updated successfully')
-        //reload the page
-        window.location.reload()
-      }
+      const imageUrl = await uploadImage()
+      const groupRef = doc(db, 'groupChats', id)
+      await updateDoc(groupRef, { image: imageUrl })
+      alert('Group image updated successfully')
+      //reload the pagec
+      window.location.reload()
     } catch (error) {
       console.error('Error updating group image:', error)
     }
@@ -150,7 +148,7 @@ const GroupInfo = () => {
       <View className="mt-10 flex items-center justify-center">
         <View
           style={{ borderRadius: 100 }}
-          className=" relative border bg-gray-200 border-gray-300 w-36 h-36  p-3 items-center justify-center"
+          className=" relative border bg-gray-200 border-gray-300 w-36 h-36   items-center justify-center"
         >
           {group?.image && group?.image !== 'undefined' ? (
             <Image
@@ -160,9 +158,9 @@ const GroupInfo = () => {
           ) : (
             <Feather name="users" size={50} color="black" />
           )}
-          <View className="absolute -bottom-2 right-0">
+          <View className="absolute bg-black/30 rounded-full p-2  -bottom-2 right-0">
             <TouchableOpacity onPress={updateGroupImage}>
-              <Feather name="camera" size={40} color="gray" />
+              <Feather name="camera" size={30} color="white" />
             </TouchableOpacity>
           </View>
         </View>

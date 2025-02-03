@@ -17,7 +17,6 @@ const search = () => {
   const { posts, fetchPostsAndComments } = useFetchPosts()
   const [filteredUsers, setFilteredUsers] = useState<DocumentData[]>([])
   const [isLoading, setLoading] = useState(false)
-  const [history, setHistory] = useState('')
   const [histories, setHistories] = useState<IHistory[]>([])
 
   const currentUser = auth?.currentUser
@@ -55,14 +54,18 @@ const search = () => {
     saveHistories()
   }, [histories])
 
-  const addHistory = () => {
-    if (history.trim()) {
-      setHistories([
-        ...histories,
-        { id: Date.now().toString(), title: history },
-      ])
-      setHistory('')
-    }
+  const addHistory = (query: string) => {
+    setHistories((prevHistories) => {
+      // Check if query already exists in history
+      if (
+        prevHistories.some(
+          (item) => item.title.toLowerCase() === query.toLowerCase(),
+        )
+      ) {
+        return prevHistories // Return the same state if duplicate
+      }
+      return [...prevHistories, { id: Date.now().toString(), title: query }]
+    })
   }
 
   const deleteHistory = (id: string) => {
@@ -73,28 +76,32 @@ const search = () => {
     fetchPostsAndComments()
   }, [db]) // Include db as a dependency if it can change
 
-  const handleSearch = (query: string) => {
+  const handleSearch = async (query: string) => {
     setLoading(true)
-    setHistory(query)
+
     if (!query.trim()) {
-      // If the query is empty or only whitespace
       setFilteredUsers([]) // Clear the filtered results
       setLoading(false)
       return
     }
-    // Filter posts based on the query
-    const filtered = posts?.filter(
-      (post: DocumentData) =>
-        post.post.toLowerCase().includes(query.toLowerCase()) ||
-        post.authorName.toLowerCase().includes(query.toLowerCase()),
-    )
 
-    // Simulate delay (e.g., for API call or UI feedback)
-    setTimeout(() => {
-      addHistory() // Save the search query to history (make sure it handles empty queries appropriately)
-      setFilteredUsers(filtered || []) // Update the state with filtered results
-      setLoading(false) // Stop the loading spinner
-    }, 2000)
+    try {
+      // Simulate an async operation (replace with an actual API call if needed)
+      await new Promise((resolve) => setTimeout(resolve, 2000))
+
+      const filtered = posts?.filter(
+        (post: DocumentData) =>
+          post.post.toLowerCase().includes(query.toLowerCase()) ||
+          post.authorName.toLowerCase().includes(query.toLowerCase()),
+      )
+
+      setFilteredUsers(filtered || [])
+      addHistory(query)
+    } catch (error) {
+      console.error('Error in handleSearch:', error)
+    } finally {
+      setLoading(false) // Ensure loading state is reset
+    }
   }
 
   return (
@@ -110,7 +117,6 @@ const search = () => {
             // onSearchButtonPress: (event) => console.log(event.nativeEvent.text),
             onSearchButtonPress: (event) => {
               const query = event.nativeEvent.text
-              console.log('Search button pressed with query:', query)
               handleSearch(query) // Call your search function
             },
           },
@@ -129,7 +135,9 @@ const search = () => {
                 key={item.id || index} // Prefer item.id for better key uniqueness
                 className="flex flex-row justify-between bg-gray-200 p-1 "
               >
-                <Text>{item.title}</Text>
+                <TouchableOpacity onPress={() => handleSearch(item.title)}>
+                  <Text>{item.title}</Text>
+                </TouchableOpacity>
                 <TouchableOpacity onPress={() => deleteHistory(item.id)}>
                   <Text className="text-red-500">X</Text>
                 </TouchableOpacity>
