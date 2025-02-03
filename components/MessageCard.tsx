@@ -59,12 +59,12 @@ const MessageCard = ({ conversation }: { conversation: DocumentData }) => {
       })
       return unsubcribe
     }
-    fetchData() // Call the async function
+    fetchData()
     const unsubscribeFromMessages = fetchLastMessage()
     return () => {
       unsubscribeFromMessages()
     }
-  }, [conversation.id]) // Add conversation.id as a dependency
+  }, [conversation.id])
 
   const CONVERSATION_USER_PATH = '/user/(tabs)/messages/conversations/user'
 
@@ -87,7 +87,6 @@ const MessageCard = ({ conversation }: { conversation: DocumentData }) => {
             <Feather name="user" size={24} color="black" />
           )}
         </View>
-        {/* content */}
         <View
           style={{
             flex: 1,
@@ -97,8 +96,11 @@ const MessageCard = ({ conversation }: { conversation: DocumentData }) => {
           }}
         >
           <Text>{user?.name}</Text>
-          <Text className="text-xs text-gray-500" numberOfLines={1}>
-            {conversation.isRead ? lastMessage : ' (unread)'}
+          <Text
+            className={`${conversation.unread !== currentUser?.uid ? 'text-gray-500' : 'font-bold text-black'} text-sm `}
+            numberOfLines={1}
+          >
+            {lastMessage}
           </Text>
         </View>
       </TouchableOpacity>

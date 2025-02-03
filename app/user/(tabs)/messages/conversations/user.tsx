@@ -3,12 +3,13 @@ import InChatFileTransfer from '@/components/inChatFileTransfer'
 import InChatViewFile from '@/components/inChatViewFile'
 import LoadingScreen from '@/components/loadingScreen'
 import MessageAudio from '@/components/MessageAudio'
+import MessageImage from '@/components/MessageImage'
 import { auth, db } from '@/config'
 import useHideTabBarOnFocus from '@/hooks/useHideTabBarOnFocus'
 import useMessages from '@/hooks/useMessages'
 import useRenderGiftedChat from '@/hooks/useRenderGiftedChat'
 import useRecordingStore from '@/store/useRecordingStore'
-import { Link, Stack, useLocalSearchParams, useRouter } from 'expo-router'
+import { Link, Stack, useLocalSearchParams } from 'expo-router'
 import {
   addDoc,
   collection,
@@ -22,7 +23,7 @@ import {
 } from 'firebase/firestore'
 import React, { useCallback, useEffect, useState } from 'react'
 import { Image, Text, TouchableOpacity, View } from 'react-native'
-import { GiftedChat, MessageImage } from 'react-native-gifted-chat'
+import { GiftedChat } from 'react-native-gifted-chat'
 
 export default function userConversation() {
   useHideTabBarOnFocus()
@@ -34,9 +35,17 @@ export default function userConversation() {
 
   useEffect(() => {
     const updateConversation = async () => {
-      await updateDoc(doc(db, 'conversations', conversationId), {
-        isRead: true,
-      })
+      const docRef = doc(db, 'conversations', conversationId)
+
+      const docSnap = await getDoc(docRef)
+      if (docSnap.exists()) {
+        const userUnreadId = docSnap.data().unread
+        if (userUnreadId === currentUser?.uid) {
+          await updateDoc(doc(db, 'conversations', conversationId), {
+            unread: '',
+          })
+        }
+      }
     }
 
     if (conversationId) {
@@ -119,8 +128,6 @@ export default function userConversation() {
 
   const { recordingUri, setRecordingUri } = useRecordingStore()
 
-  const router = useRouter()
-
   const renderChatFooter = useCallback(() => {
     if (imagePath) {
       return (
@@ -171,15 +178,6 @@ export default function userConversation() {
 
   const { renderBubble, fileUrl, setFileUrl } = useRenderGiftedChat()
 
-  const navigateToProfile = () => {
-    router.push({
-      pathname: '/user/(tabs)/messages/conversations/profile',
-      params: {
-        id: user?._id,
-      },
-    })
-  }
-
   return (
     <>
       <Stack.Screen
@@ -213,7 +211,10 @@ export default function userConversation() {
           avatar: String(currentUser?.photoURL),
         }}
         showUserAvatar={true}
-        renderUsernameOnMessage={true}
+        // renderUsernameOnMessage={true}
+        messagesContainerStyle={{
+          backgroundColor: '#fff',
+        }}
         isLoadingEarlier={true}
         showAvatarForEveryMessage={true}
         renderAvatarOnTop={true}

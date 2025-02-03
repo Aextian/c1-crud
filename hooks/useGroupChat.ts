@@ -146,6 +146,7 @@ export const useGroupMessage = (groupId: string) => {
 
         await updateDoc(groupRef, {
           unread: members,
+          updatedAt: new Date().toISOString(),
         })
       } else {
         console.log('Group not found')
@@ -169,34 +170,40 @@ export const useGroupMessage = (groupId: string) => {
 
 // Hook for creating a group
 export const useCreateGroup = () => {
-  const createGroup = useCallback(async (groupName, memberIds) => {
-    try {
-      const groupRef = await addDoc(collection(db, 'groupChats'), {
-        name: groupName,
-        members: memberIds,
-        createdAt: serverTimestamp(),
-      })
-      return groupRef.id
-    } catch (error) {
-      console.error('Error creating group:', error)
-    }
-  }, [])
+  const createGroup = useCallback(
+    async (groupName: string, memberIds: string[]) => {
+      try {
+        const groupRef = await addDoc(collection(db, 'groupChats'), {
+          name: groupName,
+          members: memberIds,
+          createdAt: serverTimestamp(),
+        })
+        return groupRef.id
+      } catch (error) {
+        console.error('Error creating group:', error)
+      }
+    },
+    [],
+  )
 
   return createGroup
 }
 
 // Hook for adding a member to a group
 export const useAddMemberToGroup = () => {
-  const addMemberToGroup = useCallback(async (groupId, userId) => {
-    try {
-      const groupRef = doc(db, 'groups', groupId)
-      await updateDoc(groupRef, {
-        members: arrayUnion(userId),
-      })
-    } catch (error) {
-      console.error('Error adding member:', error)
-    }
-  }, [])
+  const addMemberToGroup = useCallback(
+    async (groupId: string, userId: string) => {
+      try {
+        const groupRef = doc(db, 'groups', groupId)
+        await updateDoc(groupRef, {
+          members: arrayUnion(userId),
+        })
+      } catch (error) {
+        console.error('Error adding member:', error)
+      }
+    },
+    [],
+  )
 
   return addMemberToGroup
 }

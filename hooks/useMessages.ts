@@ -4,6 +4,7 @@ import {
   addDoc,
   collection,
   doc,
+  getDoc,
   onSnapshot,
   orderBy,
   query,
@@ -15,6 +16,7 @@ import useFileUpload from './useFileUpload'
 
 const useMessages = (id: string) => {
   const [messages, setMessages] = useState<IMessage[]>([])
+  const currentUser = auth.currentUser
 
   useEffect(() => {
     if (!id) return // Check if conversationId is valid
@@ -53,8 +55,6 @@ const useMessages = (id: string) => {
   } = useFileUpload()
 
   const { recordingUri, recording, setRecordingUri } = useRecordingStore()
-
-  const currenUser = auth.currentUser
 
   const onSend = useCallback(
     async (messages = [] as IMessage[]) => {
@@ -119,9 +119,21 @@ const useMessages = (id: string) => {
         }
         await addDoc(messagesCollection, newMessage)
       }
-      // update conversation to status unread
 
-      await updateDoc(doc(db, 'conversations', id), { isRead: false })
+      // Update the "unread" field in the conversation
+      const conversationRef = doc(db, 'conversations', id)
+      const docConversation = await getDoc(conversationRef)
+      if (docConversation.exists()) {
+        const conversationData = docConversation.data()
+        const userId = conversationData.users.find(
+          (id: string) => id !== currentUser?.uid,
+        )
+
+        await updateDoc(conversationRef, {
+          unread: userId,
+          updatedAt: new Date().toISOString(),
+        })
+      }
     },
 
     [filePath, imagePath, isAttachFile, isAttachImage, recordingUri, id],

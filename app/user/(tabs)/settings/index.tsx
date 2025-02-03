@@ -33,7 +33,7 @@ const index = () => {
           }}
           asChild
         >
-          <TouchableOpacity>
+          <TouchableOpacity activeOpacity={0.8}>
             <View className="bg-white shadow p-5 mt-10 items-center rounded-2xl flex justify-start flex-row gap-5 ">
               <View className="rounded-full w-16 h-16  p-3 items-center justify-center">
                 {currentUser?.photoURL &&
@@ -59,23 +59,17 @@ const index = () => {
 
         <View className="bg-white shadow p-5 rounded-lg flex justify-start  gap-5  ">
           <Text>General</Text>
-          <Link href="/user/(tabs)/settings/edit-profile" asChild>
-            <TouchableOpacity>
-              <Text className="text-sm">Edit Profile</Text>
-              <Text className="text-xs text-gray-200">
-                {currentUser?.displayName}
-              </Text>
-            </TouchableOpacity>
-          </Link>
-        </View>
-        <View className="bg-white shadow p-5 rounded-lg flex justify-start  gap-5  ">
-          <Text>Freferences</Text>
-          <View>
-            <TouchableOpacity onPress={handleSignOut}>
-              <Text className="text-sm">Log out</Text>
-              <Text className="text-xs text-gray-400">
-                Securly log out of account
-              </Text>
+          <View className="px-4">
+            <Link href="/user/(tabs)/settings/edit-profile" asChild>
+              <TouchableOpacity>
+                <Text className="text-sm">Edit Profile</Text>
+                <Text className="text-xs text-gray-200">
+                  {currentUser?.displayName}
+                </Text>
+              </TouchableOpacity>
+            </Link>
+            <TouchableOpacity className="mt-5" onPress={handleSignOut}>
+              <Text className="text-sm text-red-400">Log out</Text>
             </TouchableOpacity>
           </View>
         </View>
