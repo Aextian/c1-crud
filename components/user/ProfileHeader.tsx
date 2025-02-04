@@ -1,6 +1,7 @@
 import { auth } from '@/config'
 import useProfile from '@/hooks/useProfile'
 import { Feather, Ionicons } from '@expo/vector-icons'
+import { LinearGradient } from 'expo-linear-gradient'
 import { Link, useRouter } from 'expo-router'
 import { DocumentData } from 'firebase/firestore'
 import React from 'react'
@@ -39,11 +40,11 @@ const ProfileHeader = ({ user, pickImage, id }: IProps) => {
         <TouchableOpacity
           style={{
             position: 'absolute',
-            top: 5,
-            left: 5,
+            top: 7,
+            left: 7,
             backgroundColor: 'rgba(0,0,0,0.2)',
             borderRadius: 100,
-            padding: 5,
+            padding: 10,
           }}
           onPress={() => router.back()}
         >
@@ -55,7 +56,7 @@ const ProfileHeader = ({ user, pickImage, id }: IProps) => {
             onPress={() => pickImage()}
             style={{
               position: 'absolute',
-              bottom: 0,
+              bottom: 5,
               right: 5,
               padding: 10,
               backgroundColor: 'rgba(0,0,0,0.2)',
@@ -66,16 +67,18 @@ const ProfileHeader = ({ user, pickImage, id }: IProps) => {
           </TouchableOpacity>
         )}
       </View>
-      <View
-        className=" top-56 absolute w-full shadow "
+      <LinearGradient
+        className=" top-56 absolute w-full  "
+        colors={['#ceeef6', 'transparent']}
+        // colors={['#4c669f', '#3b5998', '#192f6a']}
         style={{
           borderTopRightRadius: 40,
           borderTopLeftRadius: 40,
-          height: 280,
+          height: 300,
         }}
       />
       <View className=" absolute w-full top-44 justify-center flex flex-col gap-5 items-center">
-        <View className="h-36 w-36 rounded-full items-center justify-center border-4 overflow-hidden border-gray-300">
+        <View className="h-36 w-36 rounded-full bg-gray-200 items-center justify-center border-[6px] overflow-hidden border-white">
           {user?.avatar && user.avatar !== 'undefined' ? (
             <Image
               style={{ width: '100%', height: '100%' }}
@@ -107,7 +110,7 @@ const ProfileHeader = ({ user, pickImage, id }: IProps) => {
         <View className="flex flex-row gap-5">
           {id === auth?.currentUser?.uid && (
             <Link href="/user/(tabs)/settings/edit-profile" asChild>
-              <TouchableOpacity className="bg-green-500 px-5 py-2 rounded-xl flex flex-row items-center gap-5">
+              <TouchableOpacity className="bg-blue-400 shadow-[0_4px_10px_rgba(0,0,0,0.8)] shadow-black px-10 py-3 rounded-full flex flex-row items-center gap-5">
                 <Ionicons name="create" size={24} color="white" />
                 <Text className="text-lg font-semibold text-white">
                   Edit Profile
@@ -126,9 +129,11 @@ const ProfileHeader = ({ user, pickImage, id }: IProps) => {
               }}
               asChild
             >
-              <TouchableOpacity className="bg-green-200 px-5 py-2 rounded-xl flex flex-row items-center gap-5">
-                <Feather name="message-square" size={24} color="black" />
-                <Text className="text-lg font-semibold">Message</Text>
+              <TouchableOpacity className="bg-blue-400 shadow-[0_4px_10px_rgba(0,0,0,0.8)] shadow-black px-10 py-3 rounded-full flex flex-row items-center gap-5">
+                {/* <Feather name="message-square" size={24} color="black" /> */}
+                <Text className="text-lg text-white font-semibold">
+                  Message
+                </Text>
               </TouchableOpacity>
             </Link>
           )}

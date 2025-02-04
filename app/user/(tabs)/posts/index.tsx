@@ -5,7 +5,12 @@ import Post from '@/components/user/Post'
 import PostHeader from '@/components/user/PostHeader'
 import { db } from '@/config'
 import React, { useCallback, useEffect, useState } from 'react'
-import { FlatList, RefreshControl } from 'react-native'
+import {
+  FlatList,
+  ImageBackground,
+  RefreshControl,
+  StyleSheet,
+} from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 
 const index = () => {
@@ -34,6 +39,10 @@ const index = () => {
     <SafeAreaView
       style={{ flex: 1, backgroundColor: '#fff', position: 'relative' }}
     >
+      <ImageBackground
+        source={require('../../../../assets/images/bgsvg.png')} // Add your background image here
+        style={styles.overlay}
+      />
       <NewsFeedHeader />
 
       {isLoading ? (
@@ -59,4 +68,14 @@ const index = () => {
   )
 }
 
+const styles = StyleSheet.create({
+  overlay: {
+    position: 'absolute',
+    top: 250,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    opacity: 0.3,
+  },
+})
 export default index

@@ -25,7 +25,7 @@ const ImageItem = ({
           source={{ uri: imageUrl }} // Use imageUrl here
           style={{
             marginHorizontal: 10,
-            width: 300, // Set width for each image
+            width: 320, // Set width for each image
             height: 300, // Set height for each image
             borderRadius: 10, // Optional: Adds rounded corners
           }}

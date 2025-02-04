@@ -8,7 +8,14 @@ import { useChat } from '@/hooks/useChat'
 import { useGetUserGroups } from '@/hooks/useGroupChat'
 
 import React, { useCallback, useState } from 'react'
-import { FlatList, RefreshControl, StyleSheet, Text, View } from 'react-native'
+import {
+  FlatList,
+  ImageBackground,
+  RefreshControl,
+  StyleSheet,
+  Text,
+  View,
+} from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 
 const index = () => {
@@ -39,6 +46,15 @@ const index = () => {
 
   return (
     <SafeAreaView style={styles.container}>
+      <ImageBackground
+        source={require('../../../../assets/images/bgsvg.png')}
+        style={[
+          StyleSheet.absoluteFill,
+          {
+            opacity: 0.3,
+          },
+        ]}
+      />
       <View>
         <SearchUser />
         <UserLists />

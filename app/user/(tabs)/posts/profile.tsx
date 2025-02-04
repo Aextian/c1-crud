@@ -8,7 +8,14 @@ import useHideTabBarOnFocus from '@/hooks/useHideTabBarOnFocus'
 import userCoverUploads from '@/hooks/userCoverUploads'
 import { Stack, useLocalSearchParams } from 'expo-router'
 import React, { useCallback, useState } from 'react'
-import { FlatList, RefreshControl, Text, View } from 'react-native'
+import {
+  FlatList,
+  ImageBackground,
+  RefreshControl,
+  StyleSheet,
+  Text,
+  View,
+} from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 
 const profile = () => {
@@ -24,6 +31,10 @@ const profile = () => {
   return (
     <>
       <SafeAreaView style={{ flex: 1, backgroundColor: '#fff' }}>
+        <ImageBackground
+          source={require('../../../../assets/images/bgsvg.png')} // Add your background image here
+          style={styles.overlay}
+        />
         <Stack.Screen options={{ headerShown: false }} />
         {isLoading ? (
           <ProfileSkLoader />
@@ -63,4 +74,14 @@ const profile = () => {
   )
 }
 
+const styles = StyleSheet.create({
+  overlay: {
+    position: 'absolute',
+    top: 250,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    opacity: 0.3,
+  },
+})
 export default profile

@@ -4,24 +4,25 @@ import { db } from '@/config'
 import { useFetchPostsFavorites } from '@/hooks/shared/useFetchPostsFavorites'
 import { Stack } from 'expo-router'
 import React, { useEffect } from 'react'
-import { FlatList, View } from 'react-native'
-
-interface IHistory {
-  id: string
-  title: string
-}
+import { FlatList, ImageBackground, StyleSheet, View } from 'react-native'
 
 const favorites = () => {
   const { posts, fetchPostsAndComments, isLoading } = useFetchPostsFavorites()
-
-  console.log('posts', posts)
-
   useEffect(() => {
     fetchPostsAndComments()
   }, [db]) // Include db as a dependency if it can change
 
   return (
-    <View style={{ flex: 1 }}>
+    <View style={{ flex: 1, backgroundColor: '#fff' }}>
+      <ImageBackground
+        source={require('../../../../assets/images/bgsvg.png')}
+        style={[
+          StyleSheet.absoluteFill,
+          {
+            opacity: 0.3,
+          },
+        ]}
+      />
       <Stack.Screen
         options={{
           headerTitle: 'Favorites',
