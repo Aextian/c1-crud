@@ -49,7 +49,7 @@ const PostHeader = ({ filterPosts }: { filterPosts: any }) => {
         </View>
       </Link>
       {user?.role === 'teacher' && user && user !== undefined && (
-        <View className="flex flex-row items-center justify-center gap-2 ">
+        <View className="flex flex-row items-center justify-center gap-2 mb-5 ">
           <View
             style={{ width: 150 }}
             className="border flex flex-row  h-12 border-gray-200 outline-none ring-0 rounded-2xl  "

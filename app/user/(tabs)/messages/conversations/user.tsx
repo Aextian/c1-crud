@@ -1,9 +1,9 @@
-import CustomInputToolbar from '@/components/CustomeToolbar'
-import InChatFileTransfer from '@/components/inChatFileTransfer'
-import InChatViewFile from '@/components/inChatViewFile'
-import LoadingScreen from '@/components/loadingScreen'
-import MessageAudio from '@/components/MessageAudio'
-import MessageImage from '@/components/MessageImage'
+import LoadingScreen from '@/components/shared/loadingScreen'
+import CustomInputToolbar from '@/components/user/CustomeToolbar'
+import MessageAudio from '@/components/user/MessageAudio'
+import MessageImage from '@/components/user/MessageImage'
+import InChatFileTransfer from '@/components/user/inChatFileTransfer'
+import InChatViewFile from '@/components/user/inChatViewFile'
 import { auth, db } from '@/config'
 import useHideTabBarOnFocus from '@/hooks/useHideTabBarOnFocus'
 import useMessages from '@/hooks/useMessages'
@@ -11,10 +11,10 @@ import useRenderGiftedChat from '@/hooks/useRenderGiftedChat'
 import useRecordingStore from '@/store/useRecordingStore'
 import { Link, Stack, useLocalSearchParams } from 'expo-router'
 import {
+  DocumentData,
   addDoc,
   collection,
   doc,
-  DocumentData,
   getDoc,
   getDocs,
   query,

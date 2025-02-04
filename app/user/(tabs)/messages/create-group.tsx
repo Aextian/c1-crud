@@ -1,4 +1,4 @@
-import UserGroupList from '@/components/UserGroupList'
+import UserGroupList from '@/components/user/UserGroupList'
 import { auth } from '@/config'
 import { useCreateGroup } from '@/hooks/useGroupChat'
 import useHideTabBarOnFocus from '@/hooks/useHideTabBarOnFocus'

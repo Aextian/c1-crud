@@ -4,7 +4,7 @@ import Checkbox from 'expo-checkbox'
 import { DocumentData, collection, onSnapshot } from 'firebase/firestore'
 import React, { useEffect, useState } from 'react'
 import { Image, ScrollView, Text, TextInput, View } from 'react-native'
-import SkUserLoader from './SkLoader'
+import SkUserLoader from '../shared/SkLoader'
 
 interface IProps {
   setUserIds: (userIds: string[]) => void

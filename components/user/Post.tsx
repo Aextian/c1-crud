@@ -1,42 +1,38 @@
 import { auth, db } from '@/config'
-import addNotifications from '@/hooks/useNotifications'
+import useDislike from '@/hooks/useDislike'
+import useFavorite from '@/hooks/useFavorite'
+import useLike from '@/hooks/useLike'
 import { formatDate } from '@/utils/date-utils'
 import { AntDesign, Feather, Ionicons } from '@expo/vector-icons'
 import { Link } from 'expo-router'
-import {
-  arrayRemove,
-  arrayUnion,
-  doc,
-  getDoc,
-  setDoc,
-  updateDoc,
-} from 'firebase/firestore'
+import { doc, getDoc } from 'firebase/firestore'
 import React, { useEffect, useState } from 'react'
 import {
   FlatList,
   Image,
   Linking,
+  Pressable,
+  StyleSheet,
   Text,
   TouchableOpacity,
   View,
 } from 'react-native'
-import ImageItem from '../ImageItem'
-import PostOptions from '../PostOptions'
+import ImageItem from './ImageItem'
+import PostOptions from './PostOptions'
 
-const Posts = ({ item, index }: { item: any; index: number }) => {
-  const [isLikes, setIsLikes] = useState(false)
-  const [isDislikes, setIsDislikes] = useState(false)
-  const [isFavorite, setIsFavorite] = useState(false)
+const Post = ({ item, index }: { item: any; index: number }) => {
   const [showOptions, setShowOptions] = useState(false)
   const [commentCounts, setCommentCounts] = useState(0)
   const currentUser = auth?.currentUser
+  const { isFavorite, toggleFavorite, setIsFavorite } = useFavorite()
+  const { isLikes, toggleLike, setIsLikes } = useLike(item)
+  const { isDislikes, toggleDislike, setIsDislikes } = useDislike(item)
 
   useEffect(() => {
     const fetchFavorites = async () => {
       if (currentUser) {
         const favoriteDocRef = doc(db, 'favorites', currentUser?.uid)
         const docSnapshot = await getDoc(favoriteDocRef)
-
         if (docSnapshot.exists()) {
           const favorites = docSnapshot.data().favorites || []
           setIsFavorite(favorites.includes(item.id)) // Check if the current item's ID is in the favorites
@@ -45,149 +41,22 @@ const Posts = ({ item, index }: { item: any; index: number }) => {
         }
       }
     }
-
     // Set likes and dislikes states
     setIsLikes(item?.likes?.includes(currentUser?.uid))
     setIsDislikes(item?.dislikes?.includes(currentUser?.uid))
-
     // Fetch the favorites asynchronously
     fetchFavorites()
-
     // Set comment counts
     setCommentCounts(item?.comments?.length || 0)
   }, [item?.likes, item?.dislikes, item?.id, item?.comments, currentUser?.uid])
 
-  const toggleLike = async (index: number) => {
-    const userId = currentUser?.uid // Get the current user's ID
-    setIsLikes(!isLikes)
-    if (!userId) {
-      console.error('No user is logged in')
-      return
-    }
-
-    if (!item) {
-      console.error('Post not found at index:', index)
-      return
-    }
-
-    // Get the reference to the post document
-    const postRef = doc(db, 'posts', String(item.id))
-
-    // Check if the current user has already liked the post
-    const isLiked = item.likes.includes(userId)
-
-    try {
-      if (isLiked) {
-        // If the user has already liked the post, remove the userId from the likes array
-        await updateDoc(postRef, {
-          likes: arrayRemove(userId), // Remove the userId from the likes array
-          likesCount: item.likesCount - 1, // Optionally, decrement the likes count
-        })
-        console.log('Like removed successfully')
-        setIsLikes(false)
-      } else {
-        // If the user hasn't liked the post, add the userId to the likes array
-        await updateDoc(postRef, {
-          likes: arrayUnion(userId), // Add the userId to the likes array
-          likesCount: item.likesCount + 1, // Optionally, increment the likes count
-        })
-
-        addNotifications({
-          fromUserId: currentUser?.uid || '',
-          postId: item.id,
-          type: 'like',
-          liketype: 'like',
-        })
-        setIsLikes(true)
-      }
-    } catch (error) {
-      console.error('Error updating like status: ', error)
-    }
-  }
-  const toggleDislike = async (index: number) => {
-    const userId = currentUser?.uid // Get the current user's ID
-    setIsDislikes(!isDislikes)
-    if (!userId) {
-      console.error('No user is logged in')
-      return
-    }
-
-    if (!item) {
-      console.error('Post not found at index:', index)
-      return
-    }
-
-    // Get the reference to the post document
-    const postRef = doc(db, 'posts', String(item.id))
-
-    // Check if the current user has already liked the post
-    const isDisliked = item.dislikes.includes(userId)
-
-    try {
-      if (isDisliked) {
-        // If the user has already liked the post, remove the userId from the likes array
-        await updateDoc(postRef, {
-          dislikes: arrayRemove(userId), // Remove the userId from the likes array
-          dislikesCount: item.dislikesCount - 1, // Optionally, decrement the likes count
-        })
-        setIsDislikes(false)
-      } else {
-        // If the user hasn't liked the post, add the userId to the likes array
-        await updateDoc(postRef, {
-          dislikes: arrayUnion(userId), // Add the userId to the likes array
-          dislikesCount: item.dislikesCount + 1, // Optionally, increment the likes count
-        })
-        addNotifications({
-          fromUserId: currentUser?.uid || '',
-          postId: item.id,
-          type: 'like',
-          liketype: 'disliked',
-        })
-        setIsDislikes(true)
-      }
-    } catch (error) {
-      console.error('Error updating like status: ', error)
-    }
-  }
-  const toggleFavorite = async (postId: number) => {
-    setIsFavorite(!isFavorite)
-    if (!currentUser) {
-      console.error('No user is logged in')
-      return
-    }
-    // Reference the user's favorites document
-    const favoriteDocRef = doc(db, 'favorites', currentUser?.uid)
-
-    try {
-      // Check if the document exists
-      const docSnapshot = await getDoc(favoriteDocRef)
-
-      if (docSnapshot.exists()) {
-        // Document exists, update it
-        if (isFavorite) {
-          // Remove the postId from the favorites array
-          await updateDoc(favoriteDocRef, {
-            favorites: arrayRemove(postId),
-          })
-        } else {
-          // Add the postId to the favorites array
-          await updateDoc(favoriteDocRef, {
-            favorites: arrayUnion(postId),
-          })
-        }
-      } else {
-        // Document does not exist, create it
-        await setDoc(favoriteDocRef, {
-          favorites: [postId], // Initialize the favorites array with the postId
-        })
-      }
-    } catch (error) {
-      console.error('Error updating favorite status: ', error)
-    }
-  }
-
   return (
-    <View key={index} className="border-b border-b-slate-200  shadow">
+    <View key={index} className="border-b border-b-slate-200 flex shadow">
+      <Pressable
+        style={StyleSheet.absoluteFill}
+        onPress={() => setShowOptions(false)}
+      />
+
       {showOptions && <PostOptions data={item} />}
 
       <View className="flex flex-row justify-between py-2 mt-5 px-5 ">
@@ -229,7 +98,7 @@ const Posts = ({ item, index }: { item: any; index: number }) => {
         )}
       </View>
 
-      <View className="pb-10">
+      <View className="my-5">
         <View className="px-10">
           <Text className="text-black leading-loose">{item.post} </Text>
           {item.file.url !== '' && (
@@ -299,4 +168,4 @@ const Posts = ({ item, index }: { item: any; index: number }) => {
   )
 }
 
-export default Posts
+export default Post

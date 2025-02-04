@@ -23,15 +23,20 @@ const ProfileHeader = ({ user, pickImage, id }: IProps) => {
           height: 200,
           width: '100%',
           // marginTop: 10,
-          shadowOffset: { width: 0, height: 2 },
+          // shadowOffset: { width: 0, height: 2 },
         }}
         className="bg-white shadow"
       >
-        {user?.coverImage && (
+        {user?.coverImage && user?.coverImage !== 'undefined' ? (
           <Image
             style={{ width: '100%', height: '100%' }}
             source={{ uri: user?.coverImage }}
+            resizeMode="contain"
           />
+        ) : (
+          <View className=" mt-20 items-center justify-center">
+            <Text className="text-2xl font-semibold">No Cover Image</Text>
+          </View>
         )}
         <TouchableOpacity
           style={{
@@ -63,19 +68,25 @@ const ProfileHeader = ({ user, pickImage, id }: IProps) => {
           </TouchableOpacity>
         )}
       </View>
-      <View style={{ position: 'relative', marginTop: -80 }}>
-        <View className="flex flex-col gap-5 items-center">
-          {user?.avatar ? (
-            <Image
-              className="h-36 w-36 rounded-full  border-4 border-white"
-              source={{ uri: user?.avatar }}
-            />
-          ) : (
-            <Image
-              className="h-36 w-36 rounded-full  border-4 border-white"
-              source={require('../assets/images/user-image.jpg')}
-            />
-          )}
+      <View
+        className="relative bg-black "
+        style={{
+          borderTopRightRadius: 30,
+          borderTopLeftRadius: 30,
+        }}
+      >
+        <View className=" relative flex flex-col gap-5 items-center">
+          <View className="h-36 w-36 rounded-full items-center justify-center border-4 overflow-hidden border-gray-300">
+            {user?.avatar && user.avatar !== 'undefined' ? (
+              <Image
+                style={{ width: '100%', height: '100%' }}
+                resizeMode="cover"
+                source={{ uri: user?.avatar }}
+              />
+            ) : (
+              <Feather name="user" size={60} color="gray" />
+            )}
+          </View>
 
           <Text className="text-2xl font-semibold first-letter:uppercase">
             {user?.name}

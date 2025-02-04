@@ -1,4 +1,4 @@
-import PostsForm from '@/components/teacher/PostsForm'
+import PostsForm from '@/components/user/PostsForm'
 import React from 'react'
 import { SafeAreaView } from 'react-native'
 import Animated, { FadeIn, SlideInDown } from 'react-native-reanimated'

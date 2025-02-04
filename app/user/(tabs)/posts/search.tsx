@@ -1,5 +1,5 @@
 import PostSkLoader from '@/components/shared/PostSkLoader'
-import Posts from '@/components/teacher/Posts'
+import Posts from '@/components/user/Post'
 import { auth, db } from '@/config'
 import { useFetchPosts } from '@/hooks/shared/useFetchPosts'
 import AsyncStorage from '@react-native-async-storage/async-storage'

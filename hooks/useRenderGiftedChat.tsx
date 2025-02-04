@@ -1,4 +1,4 @@
-import InChatFileTransfer from '@/components/inChatFileTransfer'
+import InChatFileTransfer from '@/components/user/inChatFileTransfer'
 import { auth } from '@/config'
 import React, { useState } from 'react'
 import { Text, TouchableOpacity, View } from 'react-native'

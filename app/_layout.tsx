@@ -1,4 +1,4 @@
-import LoadingScreen from '@/components/loadingScreen'
+import LoadingScreen from '@/components/shared/loadingScreen'
 import { auth } from '@/config'
 import useAuth from '@/hooks/useAuth'
 import { Stack, useRouter, useSegments } from 'expo-router'

@@ -1,4 +1,4 @@
-import UserGroupList from '@/components/UserGroupList'
+import UserGroupList from '@/components/user/UserGroupList'
 import { db } from '@/config'
 import useHideTabBarOnFocus from '@/hooks/useHideTabBarOnFocus'
 import { Ionicons } from '@expo/vector-icons'

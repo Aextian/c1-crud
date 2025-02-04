@@ -1,4 +1,4 @@
-import LoadingScreen from '@/components/loadingScreen'
+import LoadingScreen from '@/components/shared/loadingScreen'
 import { auth } from '@/config'
 import useGradeLevel from '@/hooks/useGradeLevel'
 import useImageUploads from '@/hooks/useImageUploads'

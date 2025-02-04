@@ -1,4 +1,4 @@
-import UserLists from '@/components/teacher/UserLists'
+import UserLists from '@/components/user/UserLists'
 import { Feather } from '@expo/vector-icons'
 import { Link } from 'expo-router'
 import React, { useState } from 'react'

@@ -1,5 +1,5 @@
-import EditFormPost from '@/components/EditFormPost'
-import LoadingScreen from '@/components/loadingScreen'
+import LoadingScreen from '@/components/shared/loadingScreen'
+import EditFormPost from '@/components/user/EditFormPost'
 import { db } from '@/config'
 import { useLocalSearchParams } from 'expo-router'
 import { DocumentData, doc, getDoc } from 'firebase/firestore'

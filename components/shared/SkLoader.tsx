@@ -7,13 +7,18 @@ const SkUserLoader = () => {
   return (
     <>
       {arrayLists.map((_, index) => (
+        // @ts-ignore
         <SkeletonLoading
           key={index}
           background={'#adadad'}
           highlight={'#ffffff'}
         >
           <View
-            style={{ flexDirection: 'row', justifyContent: 'space-between',marginTop:10 }}
+            style={{
+              flexDirection: 'row',
+              justifyContent: 'space-between',
+              marginTop: 10,
+            }}
           >
             <View
               style={{
