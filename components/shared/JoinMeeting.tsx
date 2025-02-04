@@ -1,6 +1,6 @@
 import React from 'react'
 import { Text, TextInput, TouchableOpacity, View } from 'react-native'
-import LoadingScreen from '../loadingScreen'
+import LoadingScreen from './loadingScreen'
 interface IProps {
   setRoom: React.Dispatch<React.SetStateAction<string>>
   joinCall: () => void

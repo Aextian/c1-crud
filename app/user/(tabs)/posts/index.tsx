@@ -1,8 +1,8 @@
 import { useFetchPosts } from '@/api/useFetchPosts'
-import PostHeader from '@/components/PostHeader'
 import PostSkLoader from '@/components/shared/PostSkLoader'
-import Posts from '@/components/teacher/Posts'
-import PostsHeader from '@/components/teacher/PostsHeader'
+import NewsFeedHeader from '@/components/user/NewsFeedHeader'
+import Post from '@/components/user/Post'
+import PostHeader from '@/components/user/PostHeader'
 import { db } from '@/config'
 import React, { useCallback, useEffect, useState } from 'react'
 import { FlatList, RefreshControl } from 'react-native'
@@ -31,8 +31,10 @@ const index = () => {
   )
 
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: '#fff' }}>
-      <PostsHeader />
+    <SafeAreaView
+      style={{ flex: 1, backgroundColor: '#fff', position: 'relative' }}
+    >
+      <NewsFeedHeader />
 
       {isLoading ? (
         <PostSkLoader />
@@ -49,7 +51,7 @@ const index = () => {
               progressBackgroundColor="#ffffff" //spinner color green
             />
           }
-          renderItem={({ item, index }) => <Posts item={item} index={index} />}
+          renderItem={({ item, index }) => <Post item={item} index={index} />}
           ListHeaderComponent={<PostHeader filterPosts={filterPosts} />}
         />
       )}

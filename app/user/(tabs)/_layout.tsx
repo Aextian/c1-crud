@@ -1,5 +1,5 @@
 import { auth, db } from '@/config'
-import { Feather, FontAwesome } from '@expo/vector-icons'
+import { FontAwesome, Ionicons } from '@expo/vector-icons'
 import { Tabs, router } from 'expo-router'
 import {
   DocumentData,
@@ -47,6 +47,8 @@ const _layout = () => {
         tabBarHideOnKeyboard: true,
         tabBarStyle: styles.tabBar,
         tabBarShowLabel: false,
+        tabBarActiveTintColor: 'green',
+        // tabBarInactiveTintColor: 'gray',
       }}
     >
       <Tabs.Screen
@@ -67,7 +69,7 @@ const _layout = () => {
           headerShown: false,
           tabBarHideOnKeyboard: true,
           tabBarIcon: ({ color }) => (
-            <Feather size={24} name="message-circle" color={color} />
+            <Ionicons size={24} name="chatbubbles" color={color} />
           ),
         }}
       />

@@ -2,7 +2,12 @@ import React from 'react'
 import { Linking, Modal, Text, TouchableOpacity, View } from 'react-native'
 import Pdf from 'react-native-pdf'
 
-function InChatViewFile({ url, onClose }) {
+interface IProps {
+  url: string
+  onClose: () => void
+}
+
+function InChatViewFile({ url, onClose }: IProps) {
   // const { currentMessage } = props
   const isShowPdf = url !== '' ? true : false
   const PdfResource = {

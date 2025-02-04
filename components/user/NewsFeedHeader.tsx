@@ -3,7 +3,7 @@ import { Link } from 'expo-router'
 import React from 'react'
 import { Image, Text, TouchableOpacity, View } from 'react-native'
 
-const PostsHeader = () => {
+const NewsFeedHeader = () => {
   return (
     <View className="flex flex-row justify-between px-5 mt-5 mb-10">
       <View className="flex flex-row items-center gap-2">
@@ -36,4 +36,4 @@ const PostsHeader = () => {
   )
 }
 
-export default PostsHeader
+export default NewsFeedHeader

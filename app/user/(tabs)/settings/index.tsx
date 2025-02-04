@@ -1,4 +1,4 @@
-import ModalLoadingScreen from '@/components/ModalLoadingScreen'
+import ModalLoadingScreen from '@/components/shared/ModalLoadingScreen'
 import { auth } from '@/config'
 import { Feather } from '@expo/vector-icons'
 import { Link, useRouter } from 'expo-router'

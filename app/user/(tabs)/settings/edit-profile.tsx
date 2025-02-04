@@ -1,4 +1,4 @@
-import ModalLoadingScreen from '@/components/ModalLoadingScreen'
+import ModalLoadingScreen from '@/components/shared/ModalLoadingScreen'
 import { auth, db } from '@/config'
 import useHideTabBarOnFocus from '@/hooks/useHideTabBarOnFocus'
 import useImageUploads from '@/hooks/useImageUploads'

@@ -1,4 +1,4 @@
-import ModalLoadingScreen from '@/components/ModalLoadingScreen'
+import ModalLoadingScreen from '@/components/shared/ModalLoadingScreen'
 import { auth } from '@/config'
 import { useRouter } from 'expo-router'
 import { signOut } from 'firebase/auth'

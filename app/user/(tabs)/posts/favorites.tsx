@@ -1,5 +1,5 @@
 import PostSkLoader from '@/components/shared/PostSkLoader'
-import Posts from '@/components/teacher/Posts'
+import Posts from '@/components/user/Post'
 import { db } from '@/config'
 import { useFetchPostsFavorites } from '@/hooks/shared/useFetchPostsFavorites'
 import { Stack } from 'expo-router'

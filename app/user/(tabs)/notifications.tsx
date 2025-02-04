@@ -1,5 +1,5 @@
-import Notification from '@/components/Notification'
-import SkUserLoader from '@/components/SkLoader'
+import SkUserLoader from '@/components/shared/SkLoader'
+import Notification from '@/components/user/Notification'
 import { auth, db } from '@/config'
 import {
   DocumentData,

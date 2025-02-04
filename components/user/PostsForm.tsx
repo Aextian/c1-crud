@@ -16,7 +16,7 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native'
-import FileView from '../FileView'
+import FileView from './FileView'
 
 const PostsForm = () => {
   const router = useRouter()
