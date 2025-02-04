@@ -6,7 +6,14 @@ import AsyncStorage from '@react-native-async-storage/async-storage'
 import { Stack } from 'expo-router'
 import { DocumentData } from 'firebase/firestore'
 import React, { useEffect, useState } from 'react'
-import { FlatList, Text, TouchableOpacity, View } from 'react-native'
+import {
+  FlatList,
+  ImageBackground,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from 'react-native'
 
 interface IHistory {
   id: string
@@ -105,7 +112,18 @@ const search = () => {
   }
 
   return (
-    <View style={{ flex: 1 }}>
+    <View style={{ flex: 1, backgroundColor: '#fff' }}>
+      {filteredUsers.length > 0 && (
+        <ImageBackground
+          source={require('../../../../assets/images/bgsvg.png')}
+          style={[
+            StyleSheet.absoluteFill,
+            {
+              opacity: 0.3,
+            },
+          ]}
+        />
+      )}
       <Stack.Screen
         options={{
           // headerTitle: 'Users',
@@ -133,7 +151,7 @@ const search = () => {
             .map((item, index) => (
               <View
                 key={item.id || index} // Prefer item.id for better key uniqueness
-                className="flex flex-row justify-between bg-gray-200 p-1 "
+                className="flex flex-row justify-between rounded-lg bg-gray-200 px-5 py-2 "
               >
                 <TouchableOpacity onPress={() => handleSearch(item.title)}>
                   <Text>{item.title}</Text>

@@ -59,7 +59,7 @@ const PostOptions = ({ data }: IPostOptionsProps) => {
           </TouchableOpacity>
         </Link>
         <TouchableOpacity onPress={confirmRemovePost}>
-          <Text>Delete Post</Text>
+          <Text className="text-red-500">Delete Post</Text>
         </TouchableOpacity>
       </View>
     </View>

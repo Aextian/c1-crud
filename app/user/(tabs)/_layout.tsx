@@ -47,8 +47,8 @@ const _layout = () => {
         tabBarHideOnKeyboard: true,
         tabBarStyle: styles.tabBar,
         tabBarShowLabel: false,
-        tabBarActiveTintColor: 'green',
-        // tabBarInactiveTintColor: 'gray',
+        tabBarActiveTintColor: '#7dc9d6',
+        tabBarInactiveTintColor: '#454552',
       }}
     >
       <Tabs.Screen
