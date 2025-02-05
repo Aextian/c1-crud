@@ -9,7 +9,14 @@ import {
   where,
 } from 'firebase/firestore'
 import React, { useEffect, useState } from 'react'
-import { FlatList, SafeAreaView, Text, View } from 'react-native'
+import {
+  FlatList,
+  ImageBackground,
+  SafeAreaView,
+  StyleSheet,
+  Text,
+  View,
+} from 'react-native'
 
 const notifications = () => {
   const currentUser = auth.currentUser
@@ -45,6 +52,15 @@ const notifications = () => {
     <SafeAreaView
       style={{ flex: 1, backgroundColor: '#fff', paddingTop: 35, padding: 10 }}
     >
+      <ImageBackground
+        source={require('../../../assets/images/bgsvg.png')}
+        style={[
+          StyleSheet.absoluteFill,
+          {
+            opacity: 0.3,
+          },
+        ]}
+      />
       <FlatList
         style={{ marginBottom: 50 }}
         data={notifications}
@@ -52,7 +68,7 @@ const notifications = () => {
         ListHeaderComponent={
           <>
             <View className="mb-10">
-              <Text className="text-2xl font-bold">Notifications</Text>
+              <Text className="text-3xl font-bold">Notifications</Text>
             </View>
             {!loading && notifications.length === 0 && (
               <Text className="text-center text-gray-500">

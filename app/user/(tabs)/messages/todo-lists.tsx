@@ -6,7 +6,9 @@ import React, { useEffect, useState } from 'react'
 import {
   Alert,
   FlatList,
+  ImageBackground,
   SafeAreaView,
+  StyleSheet,
   Text,
   TextInput,
   TouchableOpacity,
@@ -105,24 +107,40 @@ const TodoLists = () => {
   }
 
   return (
-    <SafeAreaView className="flex flex-col gap-5 px-5 mt-5">
+    <SafeAreaView
+      style={{ flex: 1, backgroundColor: '#fff' }}
+      className="flex flex-col gap-5 px-5 "
+    >
+      <ImageBackground
+        source={require('../../../../assets/images/bgsvg.png')}
+        style={[
+          StyleSheet.absoluteFill,
+          {
+            opacity: 0.3,
+          },
+        ]}
+      />
       <Stack.Screen
         options={{
           headerTitle: 'Todo Lists',
           presentation: 'modal',
         }}
       />
-      <View className="flex flex-col gap-2">
+      <View className="flex flex-col mt-10 gap-5">
         <TextInput
           placeholder="Enter a task"
+          className=" mt-5 rounded-xl text-xl border border-slate-200 bg-slate-50  p-4"
           value={task}
           onChangeText={setTask}
         />
         <TouchableOpacity
-          className="bg-green-400 p-2 rounded text-center"
+          // className="bg-green-400 p-2 rounded text-center"
+          className="bg-blue-400 shadow-[0_4px_10px_rgba(0,0,0,0.8)] shadow-black px-10 py-3 rounded-full flex justify-center items-center gap-5"
           onPress={addTask}
         >
-          <Text className="text-white text-center text-lg">Add Task</Text>
+          <Text className="text-white text-center font-semibold text-lg">
+            Add Task
+          </Text>
         </TouchableOpacity>
       </View>
 
@@ -148,7 +166,7 @@ const TodoLists = () => {
         keyExtractor={(item) => item.id}
         renderItem={({ item }) => (
           <View
-            className={`${item.done && 'line-through bg-red-100 opacity-50 '}flex mt-5 flex-row justify-between rounded-lg p-2`}
+            className={`${item.done && 'line-through bg-red-100 opacity-50 '} flex mt-5 flex-row justify-between rounded-lg p-2`}
           >
             <Text
               style={{
@@ -157,21 +175,21 @@ const TodoLists = () => {
             >
               {item.title}
             </Text>
-            <View className="flex flex-row">
+            <View className="flex flex-row px-2">
               <TouchableOpacity
-                className={`bg-${item.done ? 'gray' : 'green'}-400 p-2 rounded mr-2`}
+                className={`bg-${item.done ? 'green' : 'green'}-400 px-5 py-2  mr-2 rounded-full shadow-[0_4px_10px_rgba(0,0,0,0.8)] shadow-black`}
                 onPress={() => toggleDone(item.id)}
               >
                 <Text className="text-white">{item.done ? 'Undo' : 'MD'}</Text>
               </TouchableOpacity>
               <TouchableOpacity
-                className="bg-red-400 p-2 rounded"
+                className={`bg-red-400 px-5 py-2  mr-2 rounded-full shadow-[0_4px_10px_rgba(0,0,0,0.8)] shadow-black`}
                 onPress={() => deleteTask(item.id)}
               >
                 <Text className="text-white">Delete</Text>
               </TouchableOpacity>
               <TouchableOpacity
-                className="bg-blue-400 p-2 rounded ml-2"
+                className={`bg-blue-300 px-5 py-2  mr-2 rounded-full shadow-[0_4px_10px_rgba(0,0,0,0.8)] shadow-black`}
                 onPress={() => startEditing(item.id, item.title)}
               >
                 <Text className="text-white">Edit</Text>

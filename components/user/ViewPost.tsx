@@ -22,7 +22,7 @@ import {
 import ImageItem from './ImageItem'
 import PostOptions from './PostOptions'
 
-const Post = ({ item, index }: { item: any; index: number }) => {
+const ViewPost = ({ item, index }: { item: any; index: number }) => {
   const [showOptions, setShowOptions] = useState(false)
   const [commentCounts, setCommentCounts] = useState(0)
   const currentUser = auth?.currentUser
@@ -37,9 +37,9 @@ const Post = ({ item, index }: { item: any; index: number }) => {
         const docSnapshot = await getDoc(favoriteDocRef)
         if (docSnapshot.exists()) {
           const favorites = docSnapshot.data().favorites || []
-          setIsFavorite(favorites.includes(item.id)) // Check if the current item's ID is in the favorites
+          setIsFavorite(favorites.includes(item.id))
         } else {
-          setIsFavorite(false) // Default to false if no favorites exist
+          setIsFavorite(false)
         }
       }
     }
@@ -78,7 +78,8 @@ const Post = ({ item, index }: { item: any; index: number }) => {
       <View className="flex flex-row justify-between py-2 mt-5 px-5 ">
         <View className="flex flex-row items-center justify-start gap-2">
           <View className="rounded-full w-12 h-12 border-[4px] bg-gray-200 border-white  items-center justify-center">
-            {item?.authorData.avatar &&
+            {item?.authorData &&
+            item?.authorData.avatar &&
             item?.authorData.avatar !== 'undefined' ? (
               <Image
                 source={{ uri: item?.authorData.avatar }}
@@ -120,18 +121,7 @@ const Post = ({ item, index }: { item: any; index: number }) => {
 
       <View className="my-5 ">
         <View className="px-10">
-          <Link
-            href={{
-              pathname: '/user/(tabs)/posts/view-post',
-              params: { id: item.id },
-            }}
-            asChild
-          >
-            <Pressable>
-              <Text className="text-black leading-loose">{item.post} </Text>
-            </Pressable>
-          </Link>
-
+          <Text className="text-black leading-loose">{item.post} </Text>
           {item.file.url !== '' && (
             <TouchableOpacity
               className=" p-2 w-8/12 mt-5 mb-5 rounded-xl  border border-gray-300"
@@ -205,4 +195,4 @@ const Post = ({ item, index }: { item: any; index: number }) => {
   )
 }
 
-export default Post
+export default ViewPost

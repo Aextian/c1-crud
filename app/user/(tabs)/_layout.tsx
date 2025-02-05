@@ -1,5 +1,6 @@
 import { auth, db } from '@/config'
 import { FontAwesome, Ionicons } from '@expo/vector-icons'
+import { LinearGradient } from 'expo-linear-gradient'
 import { Tabs, router } from 'expo-router'
 import {
   DocumentData,
@@ -79,9 +80,14 @@ const _layout = () => {
           headerShown: false,
           tabBarStyle: { display: 'none' },
           tabBarIcon: ({ color }) => (
-            <View className="bg-gray-300 px-5 py-2 rounded-full">
-              <FontAwesome size={24} name="plus" color={color} />
-            </View>
+            // <View
+            <LinearGradient
+              colors={['#7dc9d6', 'transparent']}
+              style={{ width: 68, height: 68 }}
+              className="  border-2 overflow-hidden  border-white items-center justify-center rounded-full absolute bottom-3  "
+            >
+              <FontAwesome size={25} name="plus" color={'white'} />
+            </LinearGradient>
           ),
         }}
       />

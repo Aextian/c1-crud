@@ -36,11 +36,9 @@ export const useFetchPosts = () => {
 
           // Fetch the author's name
           const authorDocRef = doc(db, 'users', authorId) // Reference the specific document
-
           // Fetch the document
           const authorSnapshot = await getDoc(authorDocRef)
           let authorData = {} // Initialize an empty object to store author data
-
           if (authorSnapshot.exists()) {
             authorData = { id: authorSnapshot.id, ...authorSnapshot.data() } // Extract data if the document exists
           }
@@ -93,8 +91,6 @@ export const useFetchPosts = () => {
     section: string
     year: string
   }) => {
-    console.log(section, year)
-
     if (
       section == '' ||
       year === '' ||
