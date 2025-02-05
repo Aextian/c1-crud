@@ -12,7 +12,7 @@ const _layout = () => {
       <Stack.Screen name="profile" options={{ headerShown: false }} />
       <Stack.Screen name="edit-post" options={{ headerShown: false }} />
 
-      <Stack.Screen name="calendar" options={{ headerTitle: 'Calendar' }} />
+      <Stack.Screen name="calendar" options={{ headerTitle: '' }} />
       <Stack.Screen name="view-post" options={{ headerTitle: '' }} />
     </Stack>
   )

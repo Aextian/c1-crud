@@ -2,6 +2,7 @@ import PostSkLoader from '@/components/shared/PostSkLoader'
 import Posts from '@/components/user/Post'
 import { auth, db } from '@/config'
 import { useFetchPosts } from '@/hooks/shared/useFetchPosts'
+import useHideTabBarOnFocus from '@/hooks/useHideTabBarOnFocus'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import { Stack } from 'expo-router'
 import { DocumentData } from 'firebase/firestore'
@@ -21,6 +22,7 @@ interface IHistory {
 }
 
 const search = () => {
+  useHideTabBarOnFocus()
   const { posts, fetchPostsAndComments } = useFetchPosts()
   const [filteredUsers, setFilteredUsers] = useState<DocumentData[]>([])
   const [isLoading, setLoading] = useState(false)
@@ -126,7 +128,7 @@ const search = () => {
       )}
       <Stack.Screen
         options={{
-          // headerTitle: 'Users',
+          headerTitle: '',
           headerSearchBarOptions: {
             placeholder: 'Search',
             hideWhenScrolling: true,

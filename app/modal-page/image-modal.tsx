@@ -43,6 +43,7 @@ export default function Modal() {
                   borderRadius: 10,
                   resizeMode: 'cover',
                 }}
+                // resizeMode="cover"
               />
             </View>
           ))}

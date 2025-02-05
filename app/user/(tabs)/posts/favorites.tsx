@@ -2,11 +2,13 @@ import PostSkLoader from '@/components/shared/PostSkLoader'
 import Posts from '@/components/user/Post'
 import { db } from '@/config'
 import { useFetchPostsFavorites } from '@/hooks/shared/useFetchPostsFavorites'
+import useHideTabBarOnFocus from '@/hooks/useHideTabBarOnFocus'
 import { Stack } from 'expo-router'
 import React, { useEffect } from 'react'
 import { FlatList, ImageBackground, StyleSheet, View } from 'react-native'
 
 const favorites = () => {
+  useHideTabBarOnFocus()
   const { posts, fetchPostsAndComments, isLoading } = useFetchPostsFavorites()
   useEffect(() => {
     fetchPostsAndComments()
@@ -25,7 +27,7 @@ const favorites = () => {
       />
       <Stack.Screen
         options={{
-          headerTitle: 'Favorites',
+          headerTitle: '',
         }}
       />
 
@@ -44,6 +46,7 @@ const favorites = () => {
             //     progressBackgroundColor="#ffffff" // Optional, for the background color of the spinner
             //   />
             // }
+            showsVerticalScrollIndicator={false} // Hides the scrollbar for cleaner look
             renderItem={({ item, index }) => (
               <Posts item={item} index={index} />
             )}

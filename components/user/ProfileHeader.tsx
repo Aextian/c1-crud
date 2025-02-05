@@ -109,7 +109,7 @@ const ProfileHeader = ({ user, pickImage, id }: IProps) => {
         </View>
         <View className="flex flex-row gap-5">
           {id === auth?.currentUser?.uid && (
-            <Link href="/user/(tabs)/settings/edit-profile" asChild>
+            <Link href="/user/form/edit-profile" asChild>
               <TouchableOpacity className="bg-blue-400 shadow-[0_4px_10px_rgba(0,0,0,0.8)] shadow-black px-10 py-3 rounded-full flex flex-row items-center gap-5">
                 <Ionicons name="create" size={24} color="white" />
                 <Text className="text-lg font-semibold text-white">

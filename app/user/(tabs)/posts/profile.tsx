@@ -67,6 +67,7 @@ const profile = () => {
                 <ProfileHeader user={user} id={id} pickImage={pickImage} />
               </View>
             }
+            showsVerticalScrollIndicator={false} // Hides the scrollbar for cleaner look
           />
         )}
       </SafeAreaView>
