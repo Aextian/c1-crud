@@ -141,15 +141,16 @@ const App = () => {
           <Text>{new Date(selectedDate).toDateString()} </Text>
           <TextInput
             //   style={styles.input}
-            className="w-full p-2 border border-gray-300 rounded-lg"
-            placeholder="Add Event and Task"
+            className="w-full p-2 border border-slate-200 rounded-lg"
+            placeholder="Add Task"
             value={newEvent}
             onChangeText={setNewEvent}
           />
         </View>
 
         <TouchableOpacity
-          className={`${!newEvent ? 'bg-green-300' : 'bg-green-400'} w-full text-center p-3 rounded-lg `}
+          // className={`${!newEvent ? 'bg-green-300' : 'bg-green-400'} w-full text-center p-3 rounded-lg `}
+          className={`${!newEvent ? 'bg-blue-300' : 'bg-blue-400'} shadow-[0_4px_10px_rgba(0,0,0,0.8)] shadow-black px-10 py-3 w-full rounded-lg text-center justify-center items-center `}
           onPress={event.id ? handleUpdateSubmit : handleAddSubmit}
           disabled={isLoading || !newEvent}
         >
@@ -199,10 +200,10 @@ const App = () => {
           </View>
         )}
         theme={{
-          selectedDayBackgroundColor: '#50C878',
-          todayTextColor: '#FF6347',
-          agendaKnobColor: '#50C878',
-          dotColor: '#50C878',
+          selectedDayBackgroundColor: '#7dc9d6',
+          todayTextColor: '#7dc9d6',
+          agendaKnobColor: '#7dc9d6',
+          dotColor: '#7dc9d6',
         }}
       />
     </View>

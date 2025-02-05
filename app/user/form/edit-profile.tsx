@@ -1,6 +1,5 @@
 import ModalLoadingScreen from '@/components/shared/ModalLoadingScreen'
 import { auth, db } from '@/config'
-import useHideTabBarOnFocus from '@/hooks/useHideTabBarOnFocus'
 import useImageUploads from '@/hooks/useImageUploads'
 import { Feather } from '@expo/vector-icons'
 import { Stack, useRouter } from 'expo-router'
@@ -38,7 +37,7 @@ interface IUser extends TDataProps {
 
 const editProfile = () => {
   const currentUser = auth?.currentUser
-  useHideTabBarOnFocus()
+  // useHideTabBarOnFocus()
 
   const [password, setPassword] = useState('')
   const [confirmPasword, setConfirmPassword] = useState('')
@@ -199,7 +198,7 @@ const editProfile = () => {
         }}
       >
         <ImageBackground
-          source={require('../../../../assets/images/bgsvg.png')}
+          source={require('../../../assets/images/bgsvg.png')}
           style={[
             StyleSheet.absoluteFill,
             {

@@ -61,6 +61,7 @@ const index = () => {
             />
           }
           renderItem={({ item, index }) => <Post item={item} index={index} />}
+          showsVerticalScrollIndicator={false} // Hides the scrollbar for cleaner look
           ListHeaderComponent={<PostHeader filterPosts={filterPosts} />}
         />
       )}
