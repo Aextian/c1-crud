@@ -2,13 +2,13 @@ import LoadingScreen from '@/components/shared/loadingScreen'
 import CustomInputToolbar from '@/components/user/CustomeToolbar'
 import MessageAudio from '@/components/user/MessageAudio'
 import MessageImage from '@/components/user/MessageImage'
-import InChatFileTransfer from '@/components/user/inChatFileTransfer'
 import InChatViewFile from '@/components/user/inChatViewFile'
 import { auth, db } from '@/config'
 import useHideTabBarOnFocus from '@/hooks/useHideTabBarOnFocus'
 import useMessages from '@/hooks/useMessages'
 import useRenderGiftedChat from '@/hooks/useRenderGiftedChat'
 import useRecordingStore from '@/store/useRecordingStore'
+import { Feather } from '@expo/vector-icons'
 import { Link, Stack, useLocalSearchParams } from 'expo-router'
 import {
   DocumentData,
@@ -124,6 +124,7 @@ export default function userConversation() {
     filePath,
     setFilePath,
     setImagePath,
+    fileName,
   } = useMessages(conversationId) // Pass the id to the custom hook
 
   const { recordingUri, setRecordingUri } = useRecordingStore()
@@ -148,7 +149,11 @@ export default function userConversation() {
     if (filePath) {
       return (
         <View className="mb-5 rounded-lg mx-10 bg-white">
-          <InChatFileTransfer filePath={filePath} />
+          {/* <InChatFileTransfer fileName={fileName} /> */}
+          <View className="flex flex-row items-center gap-2 ">
+            <Feather name="file" size={24} color={'3a8dbe4'} />
+            <Text className="text-xs font-semibold truncate">{fileName}</Text>
+          </View>
           <TouchableOpacity
             className="absolute -top-2 -right-3 bg-red-200 px-2 py-1 rounded-full"
             onPress={() => setFilePath('')}
@@ -174,7 +179,7 @@ export default function userConversation() {
       )
     }
     return null
-  }, [filePath, imagePath, recordingUri])
+  }, [filePath, imagePath, recordingUri, fileName])
 
   const { renderBubble, fileUrl, setFileUrl } = useRenderGiftedChat()
 

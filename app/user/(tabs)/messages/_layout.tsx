@@ -23,7 +23,7 @@ const _layout = () => {
                 >
                   <View className="flex flex-row gap-2 items-center">
                     <Text>Todo</Text>
-                    <Feather name="book-open" size={24} color="green" />
+                    <Feather name="book-open" size={24} color="#FFA500" />
                   </View>
                 </TouchableOpacity>
               </Link>
@@ -38,7 +38,7 @@ const _layout = () => {
                 >
                   <View className="flex flex-row gap-2 items-center">
                     <Text>Meeting</Text>
-                    <Feather name="users" size={24} color="green" />
+                    <Feather name="users" size={24} color="#454552" />
                   </View>
                 </TouchableOpacity>
               </Link>

@@ -101,7 +101,8 @@ const comments = () => {
           {comments?.map((comment, key) => (
             <View key={key} className="flex flex-row gap-5 mt-10">
               <View className="rounded-full w-8 h-8 border p-3 items-center justify-center">
-                {comment?.authorAvatar ? (
+                {comment?.authorAvatar &&
+                comment.authorAvatar !== 'undefined' ? (
                   <Image
                     source={{ uri: comment?.authorAvatar }}
                     style={{ width: 30, height: 30, borderRadius: 100 }}

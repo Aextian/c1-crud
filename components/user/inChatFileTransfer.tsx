@@ -1,27 +1,21 @@
+import { Feather } from '@expo/vector-icons'
 import React from 'react'
-import { Image, StyleSheet, Text, View } from 'react-native'
+import { StyleSheet, Text, View } from 'react-native'
 
-const InChatFileTransfer = ({ filePath }: any) => {
-  var fileType = ''
-  var name = ''
-  if (filePath !== undefined) {
-    name = filePath.split('/').pop()
-    fileType = filePath.split('.').pop()
-  }
+type IChatFile = {
+  fileName: string
+}
+const InChatFileTransfer = ({ fileName }: IChatFile) => {
   return (
-    <View>
-      <View style={styles.frame}>
-        <Image
-          source={
-            fileType === 'pdf'
-              ? require('../../assets/images/chat_file.png')
-              : require('../../assets/images/unknown_file.png')
-          }
-          style={{ height: 40, width: 40 }}
-        />
-        <View>
-          <Text style={styles.text}>file</Text>
-        </View>
+    <View style={styles.frame}>
+      <Feather name="file" size={24} color={'3a8dbe4'} />
+      <View className="overflow-hidden items-center justify-center">
+        <Text
+          className="truncate text-xs text-center justify-center items-center"
+          numberOfLines={1}
+        >
+          {fileName}
+        </Text>
       </View>
     </View>
   )

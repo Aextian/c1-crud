@@ -180,7 +180,7 @@ const EditFormPost = ({ data }: { data: DocumentData }) => {
         {/* footer */}
         <View className="flex flex-row items-center mb- justify-center mb-10">
           <TouchableOpacity
-            className="bg-green-400 justify-center p-5 w-10/12 items-center  text-sm rounded-xl"
+            className="bg-blue-400 shadow-[0_4px_10px_rgba(0,0,0,0.8)] shadow-black px-10 py-3 rounded-full flex flex-row items-center gap-5"
             onPress={handleSubmit}
             disabled={isLoading}
           >

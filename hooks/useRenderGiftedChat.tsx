@@ -25,7 +25,9 @@ const useRenderGiftedChat = () => {
           }}
           onPress={() => setFileUrl(currentMessage.file.url)}
         >
-          <InChatFileTransfer filePath={currentMessage.file.url} />
+          <View className="p-4">
+            <InChatFileTransfer fileName={currentMessage.file.name} />
+          </View>
           <View style={{ flexDirection: 'column', padding: 5 }}>
             <Text
               style={{

@@ -1,4 +1,4 @@
-import { useLocalSearchParams } from 'expo-router'
+import { Stack, useLocalSearchParams } from 'expo-router'
 import React from 'react'
 import { Image, View } from 'react-native'
 import PagerView from 'react-native-pager-view'
@@ -15,6 +15,14 @@ export default function Modal() {
         flex: 1,
       }}
     >
+      <Stack.Screen
+        options={{
+          presentation: 'fullScreenModal',
+          animation: 'fade',
+          // headerShown: false,
+          headerTitle: '',
+        }}
+      />
       <PagerView
         style={{ flex: 1, backgroundColor: 'black' }}
         initialPage={Number(index)}

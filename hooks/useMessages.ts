@@ -52,6 +52,7 @@ const useMessages = (id: string) => {
     setImagePath,
     setFilePath,
     resetState,
+    fileName,
   } = useFileUpload()
 
   const { recordingUri, recording, setRecordingUri } = useRecordingStore()
@@ -86,6 +87,7 @@ const useMessages = (id: string) => {
           file: {
             url: filePath,
             type: fileType,
+            name: fileName,
           },
         }
         await addDoc(messagesCollection, newMessage)
@@ -141,6 +143,7 @@ const useMessages = (id: string) => {
 
   return {
     shareFile,
+    fileName,
     onSend,
     imagePath,
     filePath,
