@@ -180,15 +180,15 @@ const PostsForm = () => {
             <View className="flex flex-row  gap-10 ">
               {/* select file */}
               <TouchableOpacity onPress={pickFile}>
-                <Feather name="file" size={24} color={'green'} />
+                <Feather name="file" size={30} color={'#454552'} />
               </TouchableOpacity>
               {/* select image */}
               <TouchableOpacity onPress={pickImages}>
-                <Feather name="image" size={24} color={'green'} />
+                <Feather name="image" size={30} color={'#454552'} />
               </TouchableOpacity>
             </View>
             <TouchableOpacity
-              className="bg-green-400 px-5 py-3 w-1/2 items-center  text-sm rounded-3xl"
+              className="bg-blue-400 shadow-[0_4px_10px_rgba(0,0,0,0.8)] shadow-black px-10 py-3 rounded-full flex flex-row items-center gap-5"
               onPress={handleSubmit}
               disabled={isLoading}
             >

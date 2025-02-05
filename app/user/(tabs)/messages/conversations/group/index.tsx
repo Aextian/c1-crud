@@ -1,7 +1,6 @@
 import CustomInputToolbar from '@/components/user/CustomeToolbar'
 import MessageAudio from '@/components/user/MessageAudio'
 import MessageImage from '@/components/user/MessageImage'
-import InChatFileTransfer from '@/components/user/inChatFileTransfer'
 import InChatViewFile from '@/components/user/inChatViewFile'
 import { auth, db } from '@/config'
 import { useGroupMessage } from '@/hooks/useGroupChat'
@@ -37,6 +36,7 @@ export default function groupConversation() {
     filePath,
     setFilePath,
     setImagePath,
+    fileName,
   } = useGroupMessage(id) // Pass the id to the custom hook
 
   // update read status
@@ -73,7 +73,10 @@ export default function groupConversation() {
     if (filePath) {
       return (
         <View className="mb-5 rounded-lg mx-10 bg-white">
-          <InChatFileTransfer filePath={filePath} />
+          <View className="flex flex-row items-center gap-2 ">
+            <Feather name="file" size={24} color={'3a8dbe4'} />
+            <Text className="text-xs font-semibold truncate">{fileName}</Text>
+          </View>
           <TouchableOpacity
             className="absolute -top-2 -right-3 bg-red-200 px-2 py-1 rounded-full"
             onPress={() => setFilePath('')}
@@ -128,7 +131,7 @@ export default function groupConversation() {
             >
               <TouchableOpacity activeOpacity={0.8}>
                 <View className="p-2 bg-white shadow rounded-full">
-                  <Feather name="info" size={24} color="black" />
+                  <Feather name="info" size={24} color="#454552" />
                 </View>
               </TouchableOpacity>
             </Link>

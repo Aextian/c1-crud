@@ -1,5 +1,5 @@
 import { auth, db } from '@/config'
-import { useRouter } from 'expo-router'
+import { Redirect, useRouter } from 'expo-router'
 import { signInWithEmailAndPassword, signOut } from 'firebase/auth'
 import { doc, getDoc } from 'firebase/firestore'
 import React, { useEffect, useState } from 'react'
@@ -19,7 +19,7 @@ const login = () => {
   const [password, setPassword] = useState('')
   const router = useRouter()
   const [imageSize, setImageSize] = useState({ height: 300, width: '100%' })
-
+  const currentUser = auth.currentUser
   const [loading, setLoading] = useState(false)
 
   useEffect(() => {
@@ -70,6 +70,14 @@ const login = () => {
       console.error('Login error:', error.message)
       alert(error.message)
     }
+  }
+
+  if (currentUser?.email === 'admin@example.com') {
+    return <Redirect href="/admin/home" />
+  }
+
+  if (currentUser) {
+    return <Redirect href="/user/posts" />
   }
 
   return (

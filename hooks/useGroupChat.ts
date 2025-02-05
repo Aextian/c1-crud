@@ -57,6 +57,7 @@ export const useGroupMessage = (groupId: string) => {
     setImagePath,
     setFilePath,
     resetState,
+    fileName,
   } = useFileUpload()
 
   const { recordingUri, recording, setRecordingUri } = useRecordingStore()
@@ -92,11 +93,11 @@ export const useGroupMessage = (groupId: string) => {
           text: messageToSend.text,
           createdAt: new Date(),
           user: messageToSend.user,
-
           image: '',
           file: {
             url: filePath,
             type: fileType,
+            name: fileName,
           },
         }
         await addDoc(messagesCollection, newMessage)
@@ -159,6 +160,7 @@ export const useGroupMessage = (groupId: string) => {
     messages,
     onSend,
     isAttachFile,
+    fileName,
     shareFile,
     isAttachImage,
     imagePath,
