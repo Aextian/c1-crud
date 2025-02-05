@@ -4,7 +4,15 @@ import { Feather } from '@expo/vector-icons'
 import { Link, useRouter } from 'expo-router'
 import { signOut } from 'firebase/auth'
 import React, { useState } from 'react'
-import { Image, SafeAreaView, Text, TouchableOpacity, View } from 'react-native'
+import {
+  Image,
+  ImageBackground,
+  SafeAreaView,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from 'react-native'
 
 const index = () => {
   const [isLoading, setIsLoading] = useState(false)
@@ -26,6 +34,15 @@ const index = () => {
     <>
       <ModalLoadingScreen isModalVisible={isLoading} />
       <SafeAreaView style={{ flex: 1, backgroundColor: '#fff' }}>
+        <ImageBackground
+          source={require('../../../../assets/images/bgsvg.png')}
+          style={[
+            StyleSheet.absoluteFill,
+            {
+              opacity: 0.3,
+            },
+          ]}
+        />
         <Link
           href={{
             pathname: '/user/(tabs)/settings/profile',

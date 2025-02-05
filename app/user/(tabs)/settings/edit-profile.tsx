@@ -15,7 +15,9 @@ import { doc, updateDoc } from 'firebase/firestore'
 import React, { useState } from 'react'
 import {
   Image,
+  ImageBackground,
   Pressable,
+  StyleSheet,
   Text,
   TextInput,
   TouchableOpacity,
@@ -196,6 +198,15 @@ const editProfile = () => {
           backgroundColor: 'white',
         }}
       >
+        <ImageBackground
+          source={require('../../../../assets/images/bgsvg.png')}
+          style={[
+            StyleSheet.absoluteFill,
+            {
+              opacity: 0.3,
+            },
+          ]}
+        />
         {/* edit form */}
         <View className="border  border-gray-200 rounded-xl p-5 w-full">
           <View className="flex flex-row justify-between items-center">

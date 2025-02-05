@@ -5,18 +5,26 @@ import { Image, TouchableOpacity } from 'react-native'
 const ImageItem = ({
   imageUrl,
   index,
+  imageUrls,
 }: {
   imageUrl: string
   index: number
+  imageUrls: string[]
 }) => {
   if (!imageUrl) return null // Handle case where there's no image URL
+
+  // console.log('Image URL:', JSON.stringify(imageUrls))
 
   return (
     <Link
       key={index}
       href={{
-        pathname: '/user/(tabs)/posts/image-modal',
-        params: { image: encodeURIComponent(imageUrl) }, // Encode the image URL
+        pathname: '/modal-page/image-modal',
+        params: {
+          image: encodeURIComponent(imageUrl),
+          index: index,
+          imageUrls: encodeURIComponent(JSON.stringify(imageUrls)), // Encode the full string
+        }, // Encode the image URL
       }}
       asChild
     >

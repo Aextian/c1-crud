@@ -14,12 +14,13 @@ const _layout = () => {
       <Stack.Screen
         name="image-modal"
         options={{
-          presentation: 'transparentModal',
+          presentation: 'containedModal',
           animation: 'fade',
           headerShown: false,
         }}
       />
       <Stack.Screen name="calendar" options={{ headerTitle: 'Calendar' }} />
+      <Stack.Screen name="view-post" options={{ headerTitle: '' }} />
     </Stack>
   )
 }

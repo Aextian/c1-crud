@@ -1,7 +1,13 @@
 import { Link, Stack, useLocalSearchParams } from 'expo-router'
 import { DocumentData } from 'firebase/firestore'
 import React from 'react'
-import { Text, TouchableOpacity, View } from 'react-native'
+import {
+  ImageBackground,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from 'react-native'
 
 const ViewNote = () => {
   const { user } = useLocalSearchParams<DocumentData>()
@@ -16,7 +22,19 @@ const ViewNote = () => {
         }}
       />
 
-      <View style={{ flex: 1 }} className="flex flex-col gap-2 p-10">
+      <View
+        style={{ flex: 1, backgroundColor: '#fff' }}
+        className="flex flex-col gap-2 p-10"
+      >
+        <ImageBackground
+          source={require('../../../../assets/images/bgsvg.png')}
+          style={[
+            StyleSheet.absoluteFill,
+            {
+              opacity: 0.3,
+            },
+          ]}
+        />
         {/* Content Section */}
         <View className="flex-1 justify-start   w-full items-center">
           <View className="w-full p-5 h-36 shadow shadow-black bg-white rounded-xl">
@@ -33,7 +51,7 @@ const ViewNote = () => {
             }}
             asChild
           >
-            <TouchableOpacity className="bg-green-400 font-bold p-2 mt-10 items-center rounded-xl w-full">
+            <TouchableOpacity className="bg-green-400 font-bold p-3 mt-10 items-center rounded-xl w-full">
               <Text className="text-white text-2xl">Chat</Text>
             </TouchableOpacity>
           </Link>
