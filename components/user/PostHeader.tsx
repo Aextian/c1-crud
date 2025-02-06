@@ -21,7 +21,7 @@ const PostHeader = ({ filterPosts }: { filterPosts: any }) => {
 
   return (
     <View>
-      <Link href={'/user/(tabs)/add-post'}>
+      <Link href={'/user/(tabs)/create-post'}>
         <View className="flex flex-row gap-5 border-b border-b-slate-100 p-4">
           <View className="rounded-full border">
             {currentUser?.photoURL && currentUser?.photoURL !== 'undefined' ? (

@@ -19,6 +19,7 @@ const ShowNote = () => {
         options={{
           headerTitle: `${parsedUser.name} `,
           presentation: 'modal',
+          animation: 'fade',
         }}
       />
 
@@ -51,7 +52,11 @@ const ShowNote = () => {
             }}
             asChild
           >
-            <TouchableOpacity className="bg-green-400 font-bold p-3 mt-10 items-center rounded-xl w-full">
+            <TouchableOpacity
+              className="mt-10 w-full bg-blue-400 shadow-[0_4px_10px_rgba(0,0,0,0.8)] shadow-black px-10 py-3 rounded-full flex justify-center items-center gap-5"
+
+              // className="bg-green-400 font-bold p-3 mt-10 items-center rounded-xl w-full"
+            >
               <Text className="text-white text-2xl">Chat</Text>
             </TouchableOpacity>
           </Link>

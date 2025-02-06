@@ -90,7 +90,7 @@ const Post = ({ item, index }: { item: any; index: number }) => {
           </View>
           <Link
             href={{
-              pathname: '/user/(posts)/profile',
+              pathname: '/user/(profile)',
               params: { id: item.authorId },
             }}
             asChild

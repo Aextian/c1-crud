@@ -19,7 +19,7 @@ const ImageItem = ({
     <Link
       key={index}
       href={{
-        pathname: '/modal-page/image-modal',
+        pathname: 'user/modal/image-modal',
         params: {
           image: encodeURIComponent(imageUrl),
           index: index,
