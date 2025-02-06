@@ -44,7 +44,10 @@ const MessageGroupCard = ({ group }: { group: DocumentData }) => {
       asChild
     >
       <TouchableOpacity style={styles.messageCardContainer}>
-        <View style={styles.messsageCardIcon}>
+        <View
+          style={styles.messsageCardIcon}
+          className="border-slate-200 border"
+        >
           {group.image && group?.image !== 'undefined' ? (
             <Image
               source={{ uri: group?.image }}
@@ -88,8 +91,6 @@ const styles = StyleSheet.create({
   messsageCardIcon: {
     width: 45,
     height: 45,
-    borderColor: 'gray',
-    borderWidth: 1,
     borderRadius: 100,
     marginRight: 10,
     alignItems: 'center',

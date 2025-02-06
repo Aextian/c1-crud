@@ -77,7 +77,10 @@ const MessageCard = ({ conversation }: { conversation: DocumentData }) => {
       asChild
     >
       <TouchableOpacity style={styles.messageCardContainer}>
-        <View style={styles.messsageCardIcon}>
+        <View
+          style={styles.messsageCardIcon}
+          className="border-slate-200 border rounded-full"
+        >
           {user?.avatar && user?.avatar !== 'undefined' ? (
             <Image
               source={{ uri: user?.avatar }}
@@ -119,9 +122,6 @@ const styles = StyleSheet.create({
   messsageCardIcon: {
     width: 45,
     height: 45,
-    borderColor: 'gray',
-    borderWidth: 1,
-    borderRadius: 100,
     marginRight: 10,
     alignItems: 'center',
     justifyContent: 'center',

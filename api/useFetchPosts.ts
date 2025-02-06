@@ -43,23 +43,13 @@ export const useFetchPosts = () => {
             authorData = { id: authorSnapshot.id, ...authorSnapshot.data() } // Extract data if the document exists
           }
 
-          // Fetch comments for this post
-          const commentsQuery = query(
-            collection(db, `posts/${postId}/comments`),
-            orderBy('createdAt', 'asc'), // Optional: Order comments by creation time
-          )
-
-          const commentsSnapshot = await getDocs(commentsQuery)
-          const commentsData = commentsSnapshot.docs.map((commentDoc) => ({
-            id: commentDoc.id,
-            ...commentDoc.data(),
-          }))
+          const commentsWithReplies = await fetchCommentsWithReplies(postId)
 
           return {
             id: postId,
             ...docSnapshot.data(),
             authorData: authorData,
-            comments: commentsData, // Attach the comments to the post
+            comments: commentsWithReplies, // Attach the comments to the post
           }
         }),
       )
@@ -117,6 +107,44 @@ export const useFetchPosts = () => {
     setLoading(false)
 
     setPosts(filteredPosts)
+  }
+
+  const fetchCommentsWithReplies = async (postId: string) => {
+    try {
+      // Fetch comments
+      const commentsQuery = query(
+        collection(db, `posts/${postId}/comments`),
+        orderBy('createdAt', 'asc'), // Optional sorting
+      )
+
+      const commentsSnapshot = await getDocs(commentsQuery)
+      const commentsData = await Promise.all(
+        commentsSnapshot.docs.map(async (commentDoc) => {
+          // Fetch replies for each comment
+          const repliesQuery = query(
+            collection(db, `posts/${postId}/comments/${commentDoc.id}/replies`),
+            orderBy('createdAt', 'asc'), // Optional sorting
+          )
+
+          const repliesSnapshot = await getDocs(repliesQuery)
+          const repliesData = repliesSnapshot.docs.map((replyDoc) => ({
+            id: replyDoc.id,
+            ...replyDoc.data(),
+          }))
+
+          return {
+            id: commentDoc.id,
+            ...commentDoc.data(),
+            replies: repliesData, // Attach replies to the comment
+          }
+        }),
+      )
+
+      return commentsData // Returns array of comments with their replies
+    } catch (error) {
+      console.error('Error fetching comments and replies:', error)
+      return []
+    }
   }
 
   return { posts, fetchPostsAndComments, isLoading, filterPosts }
