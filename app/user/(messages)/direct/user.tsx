@@ -190,7 +190,7 @@ export default function userConversation() {
           headerTitle: () => (
             <Link
               href={{
-                pathname: '/user/(posts)/profile',
+                pathname: '/user/(profile)',
                 params: { id: user?._id },
               }}
             >

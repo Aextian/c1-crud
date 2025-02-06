@@ -122,7 +122,7 @@ const TodoPage = () => {
       />
       <Stack.Screen
         options={{
-          headerTitle: 'Todo Lists',
+          headerTitle: 'Todo',
           presentation: 'modal',
         }}
       />
@@ -134,7 +134,6 @@ const TodoPage = () => {
           onChangeText={setTask}
         />
         <TouchableOpacity
-          // className="bg-green-400 p-2 rounded text-center"
           className="bg-blue-400 shadow-[0_4px_10px_rgba(0,0,0,0.8)] shadow-black px-10 py-3 rounded-full flex justify-center items-center gap-5"
           onPress={addTask}
         >

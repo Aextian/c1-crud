@@ -1,7 +1,7 @@
 import { auth, db } from '@/config'
 import { FontAwesome, Ionicons } from '@expo/vector-icons'
 import { LinearGradient } from 'expo-linear-gradient'
-import { Tabs, router } from 'expo-router'
+import { Tabs } from 'expo-router'
 import {
   DocumentData,
   collection,
@@ -10,7 +10,7 @@ import {
   where,
 } from 'firebase/firestore'
 import React, { useEffect, useState } from 'react'
-import { StyleSheet, TouchableOpacity, View } from 'react-native'
+import { StyleSheet, View } from 'react-native'
 
 const _layout = () => {
   const currentUser = auth.currentUser
@@ -112,12 +112,6 @@ const _layout = () => {
           headerShown: false, // Hide the header for this screen
           tabBarIcon: ({ color }) => (
             <FontAwesome size={24} name="gear" color={color} />
-          ),
-          tabBarButton: (props) => (
-            <TouchableOpacity
-              {...props}
-              onPress={() => router.push('/user/settings')}
-            />
           ),
         }}
       />

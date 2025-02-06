@@ -17,7 +17,7 @@ export default function Modal() {
     >
       <Stack.Screen
         options={{
-          presentation: 'fullScreenModal',
+          presentation: 'modal',
           animation: 'fade',
           // headerShown: false,
           headerTitle: '',

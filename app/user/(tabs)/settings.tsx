@@ -35,7 +35,7 @@ const index = () => {
       <ModalLoadingScreen isModalVisible={isLoading} />
       <SafeAreaView style={{ flex: 1, backgroundColor: '#fff' }}>
         <ImageBackground
-          source={require('../../../../assets/images/bgsvg.png')}
+          source={require('../../../assets/images/bgsvg.png')}
           style={[
             StyleSheet.absoluteFill,
             {
@@ -45,7 +45,7 @@ const index = () => {
         />
         <Link
           href={{
-            pathname: '/user/(posts)/profile',
+            pathname: '/user/(profile)',
             params: { id: currentUser?.uid },
           }}
           asChild
@@ -77,7 +77,7 @@ const index = () => {
         <View className="bg-white shadow p-5 rounded-lg flex justify-start  gap-5  ">
           <Text>General</Text>
           <View className="px-4">
-            <Link href="/user/form/edit-profile" asChild>
+            <Link href="/user/(profile)/edit" asChild>
               <TouchableOpacity>
                 <Text className="text-sm">Edit Profile</Text>
                 <Text className="text-xs text-gray-200">

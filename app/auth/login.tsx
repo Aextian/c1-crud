@@ -58,9 +58,9 @@ const login = () => {
             return
           }
           if (data.role === 'admin') {
-            router.push('/admin/home')
+            router.replace('/admin/home')
           } else {
-            router.push('/user/posts')
+            router.replace('/user/posts')
           }
         }
       }
