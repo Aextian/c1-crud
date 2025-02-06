@@ -45,7 +45,7 @@ const index = () => {
         />
         <Link
           href={{
-            pathname: '/user/(tabs)/settings/profile',
+            pathname: '/user/(posts)/profile',
             params: { id: currentUser?.uid },
           }}
           asChild

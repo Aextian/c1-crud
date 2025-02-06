@@ -49,7 +49,7 @@ const PostOptions = ({ data }: IPostOptionsProps) => {
       <View className="flex gap-5">
         <Link
           href={{
-            pathname: '/user/(tabs)/posts/edit-post',
+            pathname: '/user/(posts)/edit',
             params: { id: data.id }, // Serialize the data to pass it
           }}
           asChild

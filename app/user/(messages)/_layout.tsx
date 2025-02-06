@@ -1,4 +1,4 @@
-import { Feather } from '@expo/vector-icons'
+import { Feather, Ionicons } from '@expo/vector-icons'
 import { Link, Stack, useRouter } from 'expo-router'
 import React from 'react'
 import { Text, TouchableOpacity, View } from 'react-native'
@@ -13,7 +13,7 @@ const _layout = () => {
           headerTitle: '',
           headerRight: () => (
             <>
-              <Link href={'/user/(todo)'} asChild>
+              {/* <Link href={'/user/(tabs)/messages/todo-lists'} asChild>
                 <TouchableOpacity
                   style={{
                     flexDirection: 'row',
@@ -26,9 +26,9 @@ const _layout = () => {
                     <Feather name="book-open" size={24} color="#FFA500" />
                   </View>
                 </TouchableOpacity>
-              </Link>
+              </Link> */}
 
-              <Link href={'/user/(messages)/meeting'} asChild>
+              <Link href={'/meeting'} asChild>
                 <TouchableOpacity
                   style={{
                     flexDirection: 'row',
@@ -46,6 +46,25 @@ const _layout = () => {
           ),
         }}
       />
+      <Stack.Screen
+        name="create-group"
+        options={({ navigation }) => ({
+          headerTitle: 'New Group',
+          headerLeft: () => (
+            <TouchableOpacity
+              onPress={() => navigation.goBack()}
+              style={{
+                flexDirection: 'row',
+                alignItems: 'center',
+                padding: 10,
+              }}
+            >
+              <Ionicons name="arrow-back" size={24} color="black" />
+            </TouchableOpacity>
+          ),
+        })}
+      />
+      <Stack.Screen name="search" options={{ headerTitle: '' }} />
     </Stack>
   )
 }

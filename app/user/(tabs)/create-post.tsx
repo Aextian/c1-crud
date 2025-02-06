@@ -3,7 +3,7 @@ import React from 'react'
 import Animated, { FadeIn, SlideInDown } from 'react-native-reanimated'
 import { SafeAreaView } from 'react-native-safe-area-context'
 
-const addPost = () => {
+const CreatePostPage = () => {
   return (
     <Animated.View entering={FadeIn} style={{ flex: 1 }}>
       <Animated.View entering={SlideInDown} style={{ flex: 1 }}>
@@ -15,4 +15,4 @@ const addPost = () => {
   )
 }
 
-export default addPost
+export default CreatePostPage

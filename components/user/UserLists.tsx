@@ -16,7 +16,7 @@ const UserList = ({ search = '' }: UserListProps) => {
   const [user, setUser] = useState<DocumentData | undefined>()
   const { users } = useUser()
 
-  const navigateToFormNote = '/user/(tabs)/messages/add-note'
+  const navigateToFormNote = '/user/(messages)/notes/create'
 
   useEffect(() => {
     setUser(users?.find((user) => user._id === currentUser?.uid))
@@ -139,7 +139,7 @@ const UserList = ({ search = '' }: UserListProps) => {
               {user.note && (
                 <Link
                   href={{
-                    pathname: `/user/(tabs)/messages/view-note`,
+                    pathname: `/user/(messages)/notes/show`,
                     params: {
                       user: JSON.stringify(user), // Convert user object to JSON string
                     },
@@ -184,7 +184,7 @@ const UserList = ({ search = '' }: UserListProps) => {
               <Link
                 key={user._id}
                 href={{
-                  pathname: `/user/(tabs)/messages/conversations/user`,
+                  pathname: `/user/(messages)/direct/user`,
                   params: {
                     id: user._id,
                   },

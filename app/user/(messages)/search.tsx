@@ -16,7 +16,7 @@ const SearchUser = () => {
   return (
     <View className="flex-1 justify-start items-start bg-white">
       <ImageBackground
-        source={require('../../../../assets/images/bgsvg.png')}
+        source={require('../../../assets/images/bgsvg.png')}
         style={[
           StyleSheet.absoluteFill,
           {
@@ -33,7 +33,7 @@ const SearchUser = () => {
           onChangeText={setSearch}
         />
       </View>
-      <Link href="/user/(tabs)/messages/create-group" asChild>
+      <Link href="/user/(messages)/group/create" asChild>
         <TouchableOpacity className="flex-row items-center gap-10 px-10 py-3 w-full">
           <Feather name="users" size={24} color="black" />
           <Text>Group chat</Text>

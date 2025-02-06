@@ -1,4 +1,3 @@
-import CreateRoom from '@/components/shared/CreateRoom'
 import JoinMeeting from '@/components/shared/JoinMeeting'
 import MeetingType from '@/components/shared/MeetingType'
 import OptionsMeeting from '@/components/shared/OptionsMeeting'

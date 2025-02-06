@@ -36,7 +36,7 @@ const MessageGroupCard = ({ group }: { group: DocumentData }) => {
     }
   }, [group.id]) // Add conversation.id as a dependency
 
-  const CONVERSATION_GROUP_PATH = '/user/(tabs)/messages/conversations/group'
+  const CONVERSATION_GROUP_PATH = '/user/(messages)/group'
 
   return (
     <Link

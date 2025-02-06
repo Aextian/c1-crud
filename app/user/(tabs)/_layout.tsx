@@ -53,7 +53,7 @@ const _layout = () => {
       }}
     >
       <Tabs.Screen
-        name="posts"
+        name="posts/index"
         options={{
           tabBarStyle: styles.tabBar,
           headerShown: false,
@@ -75,7 +75,7 @@ const _layout = () => {
         }}
       />
       <Tabs.Screen
-        name="add-post"
+        name="create-post"
         options={{
           headerShown: false,
           tabBarStyle: { display: 'none' },

@@ -24,7 +24,8 @@ import {
   View,
 } from 'react-native'
 import Animated, { FadeIn, SlideInDown } from 'react-native-reanimated'
-const comments = () => {
+
+const CommentPage = () => {
   const { id } = useLocalSearchParams<{ id: string }>()
 
   const currentUser = auth.currentUser
@@ -167,4 +168,4 @@ const styles = StyleSheet.create({
   },
 })
 
-export default comments
+export default CommentPage
