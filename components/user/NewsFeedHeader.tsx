@@ -16,17 +16,17 @@ const NewsFeedHeader = () => {
       </View>
 
       <View className="flex flex-row gap-5">
-        <Link href={'/user/(tabs)/posts/search'} asChild>
+        <Link href={'/user/(posts)/search'} asChild>
           <TouchableOpacity>
             <Feather name="search" size={24} color="black" />
           </TouchableOpacity>
         </Link>
-        <Link href={'/user/(tabs)/posts/favorites'} asChild>
+        <Link href={'/user/(posts)/favorites'} asChild>
           <TouchableOpacity>
             <Feather name="heart" size={24} color="black" />
           </TouchableOpacity>
         </Link>
-        <Link href={'/user/(tabs)/posts/calendar'} asChild>
+        <Link href={'/user/(posts)/calendar'} asChild>
           <TouchableOpacity>
             <Feather name="calendar" size={24} color="black" />
           </TouchableOpacity>

@@ -125,7 +125,7 @@ const GroupInfo = () => {
         <View className="absolute bg-white shadow top-0 right-14 rounded-b-xl rounded-tl-xl p-5 z-10">
           <Link
             href={{
-              pathname: '/user/messages/conversations/group/add-member',
+              pathname: '/user/(messages)/group/add-member',
               params: {
                 id: id,
               },

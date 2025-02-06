@@ -1,11 +1,9 @@
 import NoteForm from '@/components/shared/NoteForm'
-import useHideTabBarOnFocus from '@/hooks/useHideTabBarOnFocus'
 import React from 'react'
 import { ImageBackground, StyleSheet } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 
-const addNote = () => {
-  useHideTabBarOnFocus()
+const CreateNote = () => {
   return (
     <SafeAreaView
       style={{ flex: 1, backgroundColor: '#fff' }}
@@ -25,4 +23,4 @@ const addNote = () => {
   )
 }
 
-export default addNote
+export default CreateNote

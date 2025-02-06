@@ -117,7 +117,7 @@ const search = () => {
     <View style={{ flex: 1, backgroundColor: '#fff' }}>
       {filteredUsers.length > 0 && (
         <ImageBackground
-          source={require('../../../../assets/images/bgsvg.png')}
+          source={require('../../../assets/images/bgsvg.png')}
           style={[
             StyleSheet.absoluteFill,
             {

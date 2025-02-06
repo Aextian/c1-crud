@@ -66,7 +66,7 @@ const MessageCard = ({ conversation }: { conversation: DocumentData }) => {
     }
   }, [conversation.id])
 
-  const CONVERSATION_USER_PATH = '/user/(tabs)/messages/conversations/user'
+  const CONVERSATION_USER_PATH = '/user/(messages)/direct/user'
 
   return (
     <Link

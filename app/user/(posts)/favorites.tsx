@@ -17,7 +17,7 @@ const favorites = () => {
   return (
     <View style={{ flex: 1, backgroundColor: '#fff' }}>
       <ImageBackground
-        source={require('../../../../assets/images/bgsvg.png')}
+        source={require('../../../assets/images/bgsvg.png')}
         style={[
           StyleSheet.absoluteFill,
           {

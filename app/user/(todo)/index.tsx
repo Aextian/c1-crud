@@ -21,7 +21,7 @@ interface ITask {
   done: boolean
 }
 
-const TodoLists = () => {
+const TodoPage = () => {
   useHideTabBarOnFocus()
 
   const [task, setTask] = useState('')
@@ -112,7 +112,7 @@ const TodoLists = () => {
       className="flex flex-col gap-5 px-5 "
     >
       <ImageBackground
-        source={require('../../../../assets/images/bgsvg.png')}
+        source={require('../../../assets/images/bgsvg.png')}
         style={[
           StyleSheet.absoluteFill,
           {
@@ -202,4 +202,4 @@ const TodoLists = () => {
   )
 }
 
-export default TodoLists
+export default TodoPage

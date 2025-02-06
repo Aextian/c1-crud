@@ -7,7 +7,7 @@ import React, { useEffect, useState } from 'react'
 import { SafeAreaView } from 'react-native'
 import Animated, { FadeIn, SlideInDown } from 'react-native-reanimated'
 
-const editPost = () => {
+const Edit = () => {
   const { id } = useLocalSearchParams<{ id: string }>()
   const [post, setPost] = useState<DocumentData>()
   const [isLoading, setLoading] = useState(false)
@@ -46,4 +46,4 @@ const editPost = () => {
   )
 }
 
-export default editPost
+export default Edit

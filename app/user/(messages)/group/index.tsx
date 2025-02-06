@@ -123,8 +123,7 @@ export default function groupConversation() {
           headerRight: () => (
             <Link
               href={{
-                pathname:
-                  '/user/(tabs)/messages/conversations/group/group-info',
+                pathname: '/user/(messages)/group/group-info',
                 params: { id: id },
               }}
               asChild

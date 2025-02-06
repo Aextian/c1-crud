@@ -9,7 +9,7 @@ import {
   View,
 } from 'react-native'
 
-const ViewNote = () => {
+const ShowNote = () => {
   const { user } = useLocalSearchParams<DocumentData>()
   const parsedUser = typeof user === 'string' ? JSON.parse(user) : user
 
@@ -44,7 +44,7 @@ const ViewNote = () => {
           {/* Button Section */}
           <Link
             href={{
-              pathname: `/user/(tabs)/messages/conversations/user`,
+              pathname: `/user/(messages)/direct/user`,
               params: {
                 id: parsedUser?._id,
               },
@@ -61,4 +61,4 @@ const ViewNote = () => {
   )
 }
 
-export default ViewNote
+export default ShowNote
