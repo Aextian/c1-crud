@@ -69,7 +69,7 @@ const index = () => {
             )}
             ListEmptyComponent={
               loading || refreshing ? (
-                <View className="mt-5">
+                <View className="mt-5 mx-3">
                   <SkUserLoader />
                 </View>
               ) : (
@@ -106,7 +106,6 @@ const index = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    // padding: 16,
     backgroundColor: '#fff',
   },
   header: {

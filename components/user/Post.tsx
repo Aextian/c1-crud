@@ -6,7 +6,7 @@ import { formatDate } from '@/utils/date-utils'
 import { AntDesign, Feather, Ionicons } from '@expo/vector-icons'
 import { LinearGradient } from 'expo-linear-gradient'
 import { Link } from 'expo-router'
-import { doc, getDoc } from 'firebase/firestore'
+import { DocumentData, doc, getDoc } from 'firebase/firestore'
 import React, { useEffect, useState } from 'react'
 
 import {
@@ -48,8 +48,17 @@ const Post = ({ item, index }: { item: any; index: number }) => {
     setIsDislikes(item?.dislikes?.includes(currentUser?.uid))
     // Fetch the favorites asynchronously
     fetchFavorites()
+
+    const totalCommentsReplies = item?.comments
+      ? item.comments.length +
+        item.comments.flatMap(
+          (comment: { replies: DocumentData[] }) => comment.replies || [],
+        ).length
+      : 0
+
+    //sum comments
     // Set comment counts
-    setCommentCounts(item?.comments?.length || 0)
+    setCommentCounts(totalCommentsReplies)
   }, [item?.likes, item?.dislikes, item?.id, item?.comments, currentUser?.uid])
 
   const imageUrls = item.imageUrls

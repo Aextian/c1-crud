@@ -197,14 +197,10 @@ const UserList = ({ search = '' }: UserListProps) => {
                   activeOpacity={0.8}
                 >
                   <View
+                    className="border-slate-200 border rounded-full items-center justify-center overflow-hidden"
                     style={{
                       height: 64,
                       width: 64,
-                      justifyContent: 'center',
-                      alignItems: 'center',
-                      borderWidth: 1,
-                      borderRadius: 50,
-                      // padding: 16,
                     }}
                   >
                     {user?.avatar && user?.avatar !== 'undefined' ? (
