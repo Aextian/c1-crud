@@ -55,14 +55,14 @@ const ManageYearLevel = () => {
         id: doc.id,
         ...doc.data(),
       }))
-      setYears(postsData)
+      setYears(postsData.sort((a, b) => a.name.localeCompare(b.name)))
     })
 
     return () => unsubscribe() // Cleanup the subscription on unmount
   }, [])
 
   return (
-    <View style={{ flex: 1, padding: 10 }}>
+    <View style={{ flex: 1, padding: 10, backgroundColor: 'white' }}>
       <View className="flex flex-row gap-5 items-center justify-center my-10 ">
         <TextInput
           className="bg-slate-200 rounded-xl p-2  w-8/12"

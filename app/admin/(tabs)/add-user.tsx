@@ -11,7 +11,6 @@ import React, { useState } from 'react'
 import {
   Image,
   Pressable,
-  SafeAreaView,
   StyleSheet,
   Text,
   TextInput,
@@ -19,6 +18,7 @@ import {
   View,
 } from 'react-native'
 import Animated, { FadeIn, SlideInDown } from 'react-native-reanimated'
+import { SafeAreaView } from 'react-native-safe-area-context'
 
 export type TDataProps = {
   role: string
@@ -106,9 +106,8 @@ const addUser = () => {
   return (
     <Animated.View entering={FadeIn} style={{ flex: 1, marginTop: 10 }}>
       <Animated.View entering={SlideInDown} style={{ flex: 1 }}>
-        {/* Dismiss modal when pressing outside */}
         {/* <SafeAreaProvider> */}
-        <SafeAreaView style={{ flex: 1 }}>
+        <SafeAreaView style={{ flex: 1, backgroundColor: 'white' }}>
           <View className="w-full bg-white border-b border-b-slate-100 flex justify-start ">
             <Link href={'/admin/home'} asChild>
               <Pressable className="p-4">
@@ -144,7 +143,7 @@ const addUser = () => {
                   setEmail(email)
                 }}
                 placeholder="Email"
-                className=" rounded-2xl text-lg border border-slate-200 bg-slate-200 w-10/12 p-4"
+                className=" mt-3 rounded-xl text-xl border border-slate-200 bg-slate-50 w-10/12 p-4"
               />
               <Text className="text-red-500 text-sm">{errors.email} </Text>
             </View>
@@ -156,7 +155,7 @@ const addUser = () => {
                 }}
                 placeholder="Password"
                 secureTextEntry
-                className=" rounded-2xl text-lg border border-slate-200 bg-slate-200 w-10/12 p-4"
+                className=" mt-3 rounded-xl text-xl border border-slate-200 bg-slate-50 w-10/12 p-4"
               />
               <Text className="text-red-500 text-sm">{errors.password} </Text>
             </View>
@@ -167,13 +166,16 @@ const addUser = () => {
                   setName(name)
                 }}
                 placeholder="Name"
-                className=" tex rounded-2xl text-lg border border-slate-200 bg-slate-200 w-10/12 p-4"
+                className=" mt-3 rounded-xl text-xl border border-slate-200 bg-slate-50 w-10/12 p-4"
               />
               <Text className="text-red-500 text-sm">{errors.name} </Text>
             </View>
 
             <View className="items-center flex justify-center w-full">
-              <View className="border border-slate-200 rounded-2xl bg-slate-200 w-10/12 ">
+              <View
+                // className="border border-slate-200 rounded-2xl bg-slate-200 w-10/12 "
+                className=" mt-3 rounded-xl  border border-slate-200 bg-slate-50 w-10/12 "
+              >
                 <Picker
                   selectedValue={data.role}
                   style={{
@@ -192,7 +194,7 @@ const addUser = () => {
             {data.role === 'student' && (
               <>
                 <View className="items-center flex justify-center w-full">
-                  <View className="border border-slate-200 rounded-2xl bg-slate-200 w-10/12 ">
+                  <View className=" mt-3 rounded-xl  border border-slate-200 bg-slate-50 w-10/12 ">
                     <Picker
                       selectedValue={data.year}
                       onValueChange={(year) => setData({ ...data, year })}
@@ -216,7 +218,7 @@ const addUser = () => {
                 </View>
 
                 <View className="items-center flex justify-center w-full">
-                  <View className="border border-slate-200 rounded-2xl bg-slate-200 w-10/12 ">
+                  <View className=" mt-3 rounded-xl  border border-slate-200 bg-slate-50 w-10/12 ">
                     <Picker
                       selectedValue={data.section}
                       onValueChange={(section) => setData({ ...data, section })}
@@ -243,11 +245,11 @@ const addUser = () => {
             )}
 
             <TouchableOpacity
-              className="p-3 mt-5  border-green-500 border-2 items-center rounded-3xl  w-10/12"
+              className="bg-green-400 shadow-[0_4px_10px_rgba(0,0,0,0.8)] shadow-black px-5 py-3 my-5 rounded-full w-10/12 mx-10 justify-center flex flex-row items-center"
               onPress={handleSignUp}
               disabled={loading}
             >
-              <Text className="text-3xl font-bold text-green-500">
+              <Text className="text-3xl font-bold text-white">
                 {loading ? <LoadingScreen /> : 'Register'}
               </Text>
             </TouchableOpacity>

@@ -3,10 +3,11 @@ import { Feather } from '@expo/vector-icons'
 import { Link } from 'expo-router'
 import React from 'react'
 import { Text, TouchableOpacity, View } from 'react-native'
+import { SafeAreaView } from 'react-native-safe-area-context'
 
 const index = () => {
   return (
-    <View className="flex-1 p-10">
+    <SafeAreaView className="flex-1 px-10 bg-white">
       <HomeHeader />
       <View className=" w-full gap-5 flex flex-wrap flex-row justify-between  mt-10">
         <Link href={'/admin/home/manage-posts'} asChild>
@@ -43,7 +44,7 @@ const index = () => {
           </TouchableOpacity>
         </Link>
       </View>
-    </View>
+    </SafeAreaView>
   )
 }
 

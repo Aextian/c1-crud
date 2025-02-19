@@ -79,7 +79,15 @@ const manageUsers = () => {
   }
 
   return (
-    <View style={{ flex: 1, padding: 10, paddingTop: 35, gap: 10 }}>
+    <View
+      style={{
+        flex: 1,
+        padding: 10,
+        paddingTop: 35,
+        gap: 10,
+        backgroundColor: 'white',
+      }}
+    >
       <Stack.Screen
         options={{
           headerTitle: 'Users',
