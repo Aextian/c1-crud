@@ -1,25 +1,9 @@
+import Post from '@/components/admin/Post'
 import { db } from '@/config'
-import { Feather } from '@expo/vector-icons'
-import {
-  DocumentData,
-  collection,
-  deleteDoc,
-  doc,
-  onSnapshot,
-  query,
-  updateDoc,
-  where,
-} from 'firebase/firestore'
+import { collection, onSnapshot, query, where } from 'firebase/firestore'
 import React, { useEffect, useState } from 'react'
-import {
-  Image,
-  SafeAreaView,
-  ScrollView,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
-} from 'react-native'
+import { FlatList, ImageBackground, StyleSheet } from 'react-native'
+import { SafeAreaView } from 'react-native-safe-area-context'
 
 const managePosts = () => {
   const [posts, setPosts] = useState<any>([])
@@ -39,68 +23,20 @@ const managePosts = () => {
     return () => unsubscribe() // Cleanup the subscription on unmount
   }, [])
 
-  // Function to update status
-  const handleApprove = async (id: string) => {
-    try {
-      const docRef = doc(db, 'posts', id) // Reference to the document
-      await updateDoc(docRef, { status: true }) // Update the status field
-      console.log('Status updated successfully')
-    } catch (error) {
-      console.error('Error updating status: ', error)
-    }
-  }
-
-  // Function to delete a document
-  const handleReject = async (id: string) => {
-    try {
-      const docRef = doc(db, 'posts', id) // Reference to the document
-      await deleteDoc(docRef) // Delete the document
-      console.log('Document deleted successfully')
-    } catch (error) {
-      console.error('Error deleting document: ', error)
-    }
-  }
-
   return (
-    <SafeAreaView style={{ flex: 1 }}>
-      <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
-        {posts.map((post: DocumentData, index: number) => (
-          <View key={index} className="border-b border-b-slate-200 p-4 w-full">
-            <View className="flex flex-row items-center justify-start gap-2">
-              <View className="rounded-full w-8 h-8 border p-3 items-center justify-center">
-                <Feather name="user" size={14} />
-              </View>
-              <View>
-                <Text className="font-semibold">{post.authorName}</Text>
-              </View>
-            </View>
-            <View className="px-9 pb-10 w-full">
-              <Text className="text-black leading-loose">{post.post} </Text>
-              {post.imageUrl && (
-                <Image
-                  source={{ uri: post.imageUrl }}
-                  className="h-72 w-full rounded-md"
-                />
-              )}
-              {/* Reaction (Like) Section */}
-              <View className="flex flex-row items-center justify-around gap-5 mt-10">
-                <TouchableOpacity
-                  className="bg-green-400 p-3 rounded-lg"
-                  onPress={() => handleApprove(post.id)}
-                >
-                  <Text className="text-lg text-white">Approve</Text>
-                </TouchableOpacity>
-                <TouchableOpacity
-                  className="bg-red-400 p-3 rounded-lg"
-                  onPress={() => handleReject(post.id)}
-                >
-                  <Text className="text-lg text-white">Reject</Text>
-                </TouchableOpacity>
-              </View>
-            </View>
-          </View>
-        ))}
-      </ScrollView>
+    <SafeAreaView style={{ flex: 1, backgroundColor: 'white' }}>
+      <ImageBackground
+        source={require('../../../../assets/images/bgsvg.png')} // Add your background image here
+        style={StyleSheet.absoluteFill}
+      />
+
+      <FlatList
+        style={{ marginBottom: 40 }}
+        data={posts}
+        keyExtractor={(item) => item.id}
+        renderItem={({ item, index }) => <Post item={item} index={index} />}
+        showsVerticalScrollIndicator={false} // Hides the scrollbar for cleaner look
+      />
     </SafeAreaView>
   )
 }

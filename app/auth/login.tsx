@@ -13,6 +13,7 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native'
+import Toast from 'react-native-toast-message'
 
 const login = () => {
   const [email, setEmail] = useState('')
@@ -57,6 +58,12 @@ const login = () => {
             await signOut(auth)
             return
           }
+          Toast.show({
+            type: 'success', // 'success', 'error', 'info'
+            text1: 'Success',
+            text2: 'Login successful',
+          })
+
           if (data.role === 'admin') {
             router.replace('/admin/home')
           } else {
@@ -68,7 +75,12 @@ const login = () => {
     } catch (error: any) {
       setLoading(false)
       console.error('Login error:', error.message)
-      alert(error.message)
+      // alert(error.message)
+      Toast.show({
+        type: 'error', // 'success', 'error', 'info'
+        text1: 'Error',
+        text2: ' Invalid email or password',
+      })
     }
   }
 
@@ -82,6 +94,7 @@ const login = () => {
 
   return (
     <View style={styles.container}>
+      <Toast />
       <ImageBackground
         source={require('../../assets/images/background.jpg')} // Add your background image here
         style={styles.overlay}
@@ -117,9 +130,10 @@ const login = () => {
       <TouchableOpacity
         disabled={loading}
         onPress={handleLogin}
-        className="p-3 mt-5  border-green-500 border-2 items-center rounded-xl  w-10/12"
+        // className="p-3 mt-5  border-green-500 border-2 items-center rounded-xl  w-10/12"
+        className="bg-blue-400 shadow-[0_4px_10px_rgba(0,0,0,0.8)] shadow-black px-5 py-3 my-5 rounded-full w-10/12 mx-10 justify-center flex flex-row items-center"
       >
-        <Text className="text-3xl font-bold text-green-500">
+        <Text className="text-3xl font-bold text-white">
           {loading ? 'Loging...' : 'Login'}
         </Text>
       </TouchableOpacity>

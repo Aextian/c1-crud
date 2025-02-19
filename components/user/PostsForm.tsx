@@ -62,10 +62,11 @@ const PostsForm = () => {
       clearImages()
       resetState()
       setLoading(false)
+
       router.push('/user/posts')
     } catch (error) {
       console.error('Error adding post: ', error)
-      alert('Post added error')
+
       setLoading(false)
     }
   }

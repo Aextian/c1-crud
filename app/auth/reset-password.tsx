@@ -45,9 +45,9 @@ const resetPassword = () => {
       <TouchableOpacity
         disabled={loading}
         onPress={handleResetPassword}
-        className="p-3 mt-5  border-green-500 border-2 items-center rounded-3xl  w-10/12"
+        className="bg-blue-400 shadow-[0_4px_10px_rgba(0,0,0,0.8)] shadow-black px-5 py-3 my-5 rounded-full w-10/12 mx-10 justify-center flex flex-row items-center"
       >
-        <Text className="text-xl font-bold text-green-500">
+        <Text className="text-xl font-bold text-white">
           {loading ? 'Sending...' : 'Send Reset Password'}
         </Text>
       </TouchableOpacity>
