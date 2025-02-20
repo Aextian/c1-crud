@@ -4,7 +4,6 @@ import MessageImage from '@/components/user/MessageImage'
 import InChatViewFile from '@/components/user/inChatViewFile'
 import { auth, db } from '@/config'
 import { useGroupMessage } from '@/hooks/useGroupChat'
-import useHideTabBarOnFocus from '@/hooks/useHideTabBarOnFocus'
 import useRenderGiftedChat from '@/hooks/useRenderGiftedChat'
 import useRecordingStore from '@/store/useRecordingStore'
 import { Feather } from '@expo/vector-icons'
@@ -21,7 +20,6 @@ import { Image, Text, TouchableOpacity, View } from 'react-native'
 import { GiftedChat } from 'react-native-gifted-chat'
 
 export default function groupConversation() {
-  useHideTabBarOnFocus()
   const { id } = useLocalSearchParams<{ id: string }>()
   const currentUser = auth.currentUser
   const router = useRouter()

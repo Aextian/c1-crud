@@ -1,5 +1,4 @@
 import { auth, db } from '@/config'
-import useHideTabBarOnFocus from '@/hooks/useHideTabBarOnFocus'
 import {
   DocumentData,
   addDoc,
@@ -22,7 +21,6 @@ import {
 import { Agenda } from 'react-native-calendars'
 
 const App = () => {
-  useHideTabBarOnFocus()
   const [items, setItems] = useState<DocumentData>({})
   const [isLoading, setLoading] = useState(false)
 

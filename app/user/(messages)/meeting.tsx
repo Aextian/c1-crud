@@ -2,7 +2,6 @@ import JoinMeeting from '@/components/shared/JoinMeeting'
 import MeetingType from '@/components/shared/MeetingType'
 import OptionsMeeting from '@/components/shared/OptionsMeeting'
 import { auth } from '@/config'
-import useHideTabBarOnFocus from '@/hooks/useHideTabBarOnFocus'
 import Daily, {
   DailyCall,
   DailyEvent,
@@ -18,8 +17,6 @@ LogBox.ignoreLogs(['new NativeEventEmitter'])
 LogBox.ignoreAllLogs()
 
 const meeting = () => {
-  useHideTabBarOnFocus()
-
   const callObject = useRef<DailyCall | null>(null)
   const [participants, setParticipants] = useState<any>({})
   const [joined, setJoined] = useState(false)

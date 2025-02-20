@@ -14,6 +14,7 @@ const _layout = () => {
         name="edit"
         options={{ headerShown: false, presentation: 'modal' }}
       />
+      <Stack.Screen name="view-post" options={{ headerTitle: '' }} />
     </Stack>
   )
 }

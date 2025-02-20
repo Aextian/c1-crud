@@ -4,7 +4,6 @@ import Posts from '@/components/user/Post'
 import ProfileHeader from '@/components/user/ProfileHeader'
 import { auth } from '@/config'
 import useUserAndPosts from '@/hooks/shared/useUserAndPosts'
-import useHideTabBarOnFocus from '@/hooks/useHideTabBarOnFocus'
 import userCoverUploads from '@/hooks/userCoverUploads'
 import { Stack, useLocalSearchParams } from 'expo-router'
 import React, { useCallback, useState } from 'react'
@@ -19,8 +18,6 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context'
 
 const profile = () => {
-  useHideTabBarOnFocus()
-
   const currentUser = auth?.currentUser
   const { id } = useLocalSearchParams<{ id: string }>()
   const { pickImage, image } = userCoverUploads(currentUser?.uid || '')
