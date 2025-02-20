@@ -2,13 +2,11 @@ import PostSkLoader from '@/components/shared/PostSkLoader'
 import Posts from '@/components/user/Post'
 import { db } from '@/config'
 import { useFetchPostsFavorites } from '@/hooks/shared/useFetchPostsFavorites'
-import useHideTabBarOnFocus from '@/hooks/useHideTabBarOnFocus'
 import { Stack } from 'expo-router'
 import React, { useEffect } from 'react'
 import { FlatList, ImageBackground, StyleSheet, View } from 'react-native'
 
 const favorites = () => {
-  useHideTabBarOnFocus()
   const { posts, fetchPostsAndComments, isLoading } = useFetchPostsFavorites()
   useEffect(() => {
     fetchPostsAndComments()

@@ -4,7 +4,6 @@ import MessageAudio from '@/components/user/MessageAudio'
 import MessageImage from '@/components/user/MessageImage'
 import InChatViewFile from '@/components/user/inChatViewFile'
 import { auth, db } from '@/config'
-import useHideTabBarOnFocus from '@/hooks/useHideTabBarOnFocus'
 import useMessages from '@/hooks/useMessages'
 import useRenderGiftedChat from '@/hooks/useRenderGiftedChat'
 import useRecordingStore from '@/store/useRecordingStore'
@@ -26,7 +25,6 @@ import { Image, Text, TouchableOpacity, View } from 'react-native'
 import { GiftedChat } from 'react-native-gifted-chat'
 
 export default function userConversation() {
-  useHideTabBarOnFocus()
   const { id } = useLocalSearchParams<{ id: string }>() //selected user id
   const [conversationId, setConversationId] = useState<string>('')
 

@@ -2,7 +2,7 @@ import LoadingScreen from '@/components/shared/loadingScreen'
 import { auth } from '@/config'
 import useAuth from '@/hooks/useAuth'
 import { Stack, useRouter, useSegments } from 'expo-router'
-import React, { useEffect } from 'react'
+import React from 'react'
 import '../global.css'
 
 const _layout = () => {
@@ -12,18 +12,18 @@ const _layout = () => {
 
   const currentUser = auth.currentUser
 
-  useEffect(() => {
-    if (loading) return
-    const inAuthGroup = segments[0] == 'auth'
+  // useEffect(() => {
+  //   if (loading) return
+  //   const inAuthGroup = segments[0] == 'auth'
 
-    if (currentUser && user) {
-      user?.role === 'admin'
-        ? router.replace('/admin/home')
-        : router.replace('/user/posts')
-    } else if (!currentUser && !inAuthGroup) {
-      router.replace('/auth/login')
-    }
-  }, [currentUser, loading, user])
+  //   if (currentUser && user) {
+  //     user?.role === 'admin'
+  //       ? router.replace('/admin/home')
+  //       : router.replace('/user/posts')
+  //   } else if (!currentUser && !inAuthGroup) {
+  //     router.replace('/auth/login')
+  //   }
+  // }, [currentUser, loading, user])
 
   if (loading) {
     return <LoadingScreen />

@@ -1,5 +1,4 @@
 import { auth } from '@/config'
-import useHideTabBarOnFocus from '@/hooks/useHideTabBarOnFocus'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import { Stack } from 'expo-router'
 import React, { useEffect, useState } from 'react'
@@ -22,8 +21,6 @@ interface ITask {
 }
 
 const TodoPage = () => {
-  useHideTabBarOnFocus()
-
   const [task, setTask] = useState('')
   const [tasks, setTasks] = useState<ITask[]>([])
   const [editingTaskId, setEditingTaskId] = useState<string | null>(null)

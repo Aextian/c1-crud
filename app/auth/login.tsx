@@ -53,11 +53,16 @@ const login = () => {
         if (docSnap.exists()) {
           const data = docSnap.data()
           if (data.frozen) {
-            alert('Your account is frozen')
+            Toast.show({
+              type: 'error', // 'success', 'error', 'info'
+              text1: 'Error',
+              text2: 'Your account has been frozen',
+            })
             setLoading(false)
             await signOut(auth)
             return
           }
+
           Toast.show({
             type: 'success', // 'success', 'error', 'info'
             text1: 'Success',

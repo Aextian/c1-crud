@@ -37,7 +37,6 @@ interface IUser extends TDataProps {
 
 const EditProfilePage = () => {
   const currentUser = auth?.currentUser
-  // useHideTabBarOnFocus()
 
   const [password, setPassword] = useState('')
   const [confirmPasword, setConfirmPassword] = useState('')

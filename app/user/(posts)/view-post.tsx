@@ -1,7 +1,6 @@
 import LoadingScreen from '@/components/shared/loadingScreen'
 import ViewPost from '@/components/user/ViewPost'
 import { db } from '@/config'
-import useHideTabBarOnFocus from '@/hooks/useHideTabBarOnFocus'
 import { useLocalSearchParams } from 'expo-router'
 import {
   DocumentData,
@@ -17,8 +16,6 @@ import { ImageBackground, StyleSheet } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 
 const viewPost = () => {
-  useHideTabBarOnFocus()
-
   const { id } = useLocalSearchParams<{ id: string }>()
   const [post, setPost] = useState<DocumentData>()
   const [isLoading, setLoading] = useState(false)

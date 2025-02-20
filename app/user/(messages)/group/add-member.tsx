@@ -1,6 +1,5 @@
 import UserGroupList from '@/components/user/UserGroupList'
 import { db } from '@/config'
-import useHideTabBarOnFocus from '@/hooks/useHideTabBarOnFocus'
 import { Ionicons } from '@expo/vector-icons'
 import { router, Stack, useLocalSearchParams } from 'expo-router'
 import { doc, getDoc, updateDoc } from 'firebase/firestore'
@@ -8,7 +7,6 @@ import React, { useEffect, useState } from 'react'
 import { TouchableOpacity, View } from 'react-native'
 
 const AddMember = () => {
-  useHideTabBarOnFocus()
   const { id } = useLocalSearchParams<any>()
   const [userIds, setUserIds] = useState<string[]>([])
   const [isLoading, setIsLoading] = useState(false)
