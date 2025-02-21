@@ -1,8 +1,9 @@
 import { db } from '@/config'
 import { Link } from 'expo-router'
-import { DocumentData, deleteDoc, doc } from 'firebase/firestore'
+import { deleteDoc, doc, DocumentData } from 'firebase/firestore'
 import React from 'react'
 import { Alert, Text, TouchableOpacity, View } from 'react-native'
+import Toast from 'react-native-toast-message'
 
 interface IPostOptionsProps {
   data: DocumentData
@@ -12,10 +13,19 @@ const PostOptions = ({ data }: IPostOptionsProps) => {
   const handleRemovePost = async () => {
     try {
       await deleteDoc(doc(db, 'posts', data.id)) // Delete the post from Firestore
-      Alert.alert('Success', 'Post has been removed successfully.')
+      // Alert.alert('Success', 'Post has been removed successfully.')
+      Toast.show({
+        type: 'success', // 'success', 'error', 'info'
+        text1: 'Success',
+        text2: 'Post has been removed successfully',
+      })
     } catch (error) {
       console.error('Error removing post:', error)
-      Alert.alert('Error', 'Failed to remove the post. Please try again later.')
+      Toast.show({
+        type: 'error', // 'success', 'error', 'info'
+        text1: 'Error',
+        text2: 'Failed to remove the post. Please try again later.',
+      })
     }
   }
 

@@ -16,6 +16,7 @@ import {
   View,
 } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
+import Toast from 'react-native-toast-message'
 
 const profile = () => {
   const currentUser = auth?.currentUser
@@ -28,6 +29,9 @@ const profile = () => {
   return (
     <>
       <SafeAreaView style={{ flex: 1, backgroundColor: '#fff' }}>
+        <View style={{ zIndex: 99999 }}>
+          <Toast />
+        </View>
         <ImageBackground
           source={require('../../../assets/images/bgsvg.png')} // Add your background image here
           style={styles.overlay}
