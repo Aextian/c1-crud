@@ -19,6 +19,7 @@ import {
   View,
 } from 'react-native'
 import { Agenda } from 'react-native-calendars'
+import Toast from 'react-native-toast-message'
 
 const App = () => {
   const [items, setItems] = useState<DocumentData>({})
@@ -45,6 +46,11 @@ const App = () => {
 
       // Clear the input field after saving the event
       setNewEvent('')
+      Toast.show({
+        type: 'success', // 'success', 'error', 'info'
+        text1: 'Success',
+        text2: 'Task has been added successfully',
+      })
     } catch (error) {
       console.error('Error adding event: ', error)
     } finally {
@@ -71,6 +77,11 @@ const App = () => {
       setLoading(false)
       setEvent({})
       setNewEvent('')
+      Toast.show({
+        type: 'success', // 'success', 'error', 'info'
+        text1: 'Success',
+        text2: 'Task has been updated successfully',
+      })
     } catch (error) {
       console.error('Error updating event: ', error)
       setLoading(false)
@@ -93,6 +104,11 @@ const App = () => {
               id,
             )
             await deleteDoc(eventsRef)
+            Toast.show({
+              type: 'success', // 'success', 'error', 'info'
+              text1: 'Success',
+              text2: 'Task has been deleted successfully',
+            })
           } catch (error) {
             console.error('Error deleting event:', error)
           }
@@ -134,6 +150,9 @@ const App = () => {
 
   return (
     <View style={styles.container}>
+      <View style={{ zIndex: 99999 }}>
+        <Toast />
+      </View>
       <View className="flex flex-col gap-2 justify-center items-center px-10 m-5 ">
         <View className="flex flex-col gap-2 w-full">
           <Text>{new Date(selectedDate).toDateString()} </Text>

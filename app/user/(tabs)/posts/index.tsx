@@ -10,8 +10,10 @@ import {
   ImageBackground,
   RefreshControl,
   StyleSheet,
+  View,
 } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
+import Toast from 'react-native-toast-message'
 
 const index = () => {
   const { posts, fetchPostsAndComments, isLoading, filterPosts } =
@@ -39,6 +41,9 @@ const index = () => {
     <SafeAreaView
       style={{ flex: 1, backgroundColor: '#fff', position: 'relative' }}
     >
+      <View style={{ zIndex: 99999 }}>
+        <Toast />
+      </View>
       <ImageBackground
         source={require('../../../../assets/images/bgsvg.png')} // Add your background image here
         style={styles.overlay}
