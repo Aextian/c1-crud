@@ -30,7 +30,7 @@ const index = () => {
         onPress={() => router.replace('/auth/login')}
         className="bg-blue-400 shadow-[0_4px_10px_rgba(0,0,0,0.8)]  shadow-black px-5 py-3 my-5 rounded-full w-10/12 mx-10 justify-center flex flex-row items-center"
       >
-        <Text className="text-3xl font-bold text-white">Contenue</Text>
+        <Text className="text-3xl font-bold text-white">Continue</Text>
       </TouchableOpacity>
     </View>
   )
