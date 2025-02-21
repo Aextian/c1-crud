@@ -27,10 +27,10 @@ const index = () => {
       </View>
 
       <TouchableOpacity
-        onPress={() => router.push('/auth/login')}
-        className="p-5  border-green-500 border-2 items-center rounded-3xl  w-10/12"
+        onPress={() => router.replace('/auth/login')}
+        className="bg-blue-400 shadow-[0_4px_10px_rgba(0,0,0,0.8)]  shadow-black px-5 py-3 my-5 rounded-full w-10/12 mx-10 justify-center flex flex-row items-center"
       >
-        <Text className="text-3xl font-bold text-green-500">Login</Text>
+        <Text className="text-3xl font-bold text-white">Contenue</Text>
       </TouchableOpacity>
     </View>
   )

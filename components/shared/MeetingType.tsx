@@ -12,7 +12,7 @@ const MeetingType = ({ setType }: IProps) => {
         activeOpacity={0.8}
       >
         <Text className="text-center text-white text-xl font-semibold">
-          Create a Meeting
+          Generate a Meeting
         </Text>
       </TouchableOpacity>
       <TouchableOpacity
