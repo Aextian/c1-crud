@@ -1,3 +1,4 @@
+import * as Clipboard from 'expo-clipboard'
 import React from 'react'
 import { Text, TouchableOpacity, View } from 'react-native'
 interface IProps {
@@ -6,6 +7,10 @@ interface IProps {
   createRoom: () => void
 }
 const CreateRoom = ({ setRoom, createRoom, room }: IProps) => {
+  const copyToClipboard = async () => {
+    await Clipboard.setStringAsync(room)
+  }
+
   return (
     <View className="w-8/12 mx-auto flex gap-10">
       {/* <TextInput
@@ -15,6 +20,9 @@ const CreateRoom = ({ setRoom, createRoom, room }: IProps) => {
       /> */}
       <View className="flex items-center mb-10">
         <Text>Room ID: {room}</Text>
+        <TouchableOpacity onPress={copyToClipboard}>
+          <Text>Copy</Text>
+        </TouchableOpacity>
       </View>
       <TouchableOpacity
         className="bg-green-400 rounded-lg p-4"

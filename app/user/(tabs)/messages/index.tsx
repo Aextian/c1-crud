@@ -12,6 +12,7 @@ import {
   FlatList,
   ImageBackground,
   RefreshControl,
+  ScrollView,
   StyleSheet,
   Text,
   View,
@@ -55,11 +56,13 @@ const index = () => {
           },
         ]}
       />
-      <View>
+      <View className=" flex-1">
         <SearchUser />
-        <UserLists />
-        <View
-          className={`flex flex-col ${isNewConversation && 'flex-col-reverse'}`}
+        <View className="mb-5">
+          <UserLists />
+        </View>
+        <ScrollView
+          className={`flex fflex-col ${isNewConversation && 'flex-col-reverse'} mb-16`}
         >
           <FlatList
             data={sortedConversations}
@@ -97,7 +100,7 @@ const index = () => {
             renderItem={({ item }) => <MessageGroupCard group={item} />} // Render each group
             contentContainerStyle={{ paddingVertical: 20, gap: 30 }} // Styling for the container
           />
-        </View>
+        </ScrollView>
       </View>
     </SafeAreaView>
   )

@@ -12,6 +12,9 @@ const favorites = () => {
     fetchPostsAndComments()
   }, [db]) // Include db as a dependency if it can change
 
+  const sortedPosts = [...posts].sort(
+    (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
+  )
   return (
     <View style={{ flex: 1, backgroundColor: '#fff' }}>
       <ImageBackground
@@ -34,7 +37,7 @@ const favorites = () => {
           <PostSkLoader />
         ) : (
           <FlatList
-            data={posts}
+            data={sortedPosts}
             keyExtractor={(item) => item.id}
             // refreshControl={
             //   <RefreshControl
