@@ -11,6 +11,7 @@ import {
 } from 'firebase/firestore'
 import React, { useEffect, useState } from 'react'
 import {
+  FlatList,
   KeyboardAvoidingView,
   Platform,
   TextInput,
@@ -35,6 +36,7 @@ const CommentPage = () => {
 
     const data = {
       author: currentUser?.displayName || 'Anonymous',
+      authorId: currentUser?.uid,
       authorAvatar: currentUser?.photoURL,
       comment: comment,
       createdAt: new Date(),
@@ -68,15 +70,26 @@ const CommentPage = () => {
     // Listen for real-time updates
     const unsubscribe = onSnapshot(commentsCollectionRef, (commentSnapshot) => {
       // Extract the comment data from each document
-      const comments = commentSnapshot.docs.map((doc) => ({
-        id: doc.id, // To keep track of individual comment IDs
-        ...doc.data(), // Spread the document data into the object
-      }))
+      const comments = commentSnapshot.docs
+        .map((doc) => ({
+          id: doc.id, // To keep track of individual comment IDs
+          ...doc.data(), // Spread the document data into the object
+        }))
+        .sort((a, b) => a.createdAt - b.createdAt)
 
-      setComments(comments) // Assuming `setComments` updates your component's state
+      setComments(comments)
     })
     return unsubscribe
   }, [id])
+
+  // const sortedComments = comments
+  //   ? [...comments].sort(
+  //       (a, b) =>
+  //         new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
+  //     )
+  //   : []
+  // console.log(sortedComments)
+  // console.log('comments', comments)
 
   return (
     <Animated.View entering={FadeIn} style={{ flex: 1 }}>
@@ -85,9 +98,14 @@ const CommentPage = () => {
           className="px-10 rounded-lg"
           style={{ flex: 1, marginTop: 20, backgroundColor: 'white' }}
         >
-          {comments?.map((comment, key) => (
-            <CommentCard key={key} postId={id} comment={comment} />
-          ))}
+          <FlatList
+            data={comments}
+            renderItem={({ item }) => (
+              <CommentCard postId={id} comment={item} />
+            )}
+            showsVerticalScrollIndicator={false}
+            keyExtractor={(item) => item.id}
+          />
         </View>
         <KeyboardAvoidingView
           style={{ flex: 1 }}

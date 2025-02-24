@@ -1,7 +1,7 @@
 import { auth, db } from '@/config'
 import addNotifications from '@/hooks/useNotifications'
 import { FontAwesome } from '@expo/vector-icons'
-import { addDoc, collection } from 'firebase/firestore'
+import { addDoc, collection, doc, getDoc } from 'firebase/firestore'
 import React, { useState } from 'react'
 import { TextInput, TouchableOpacity, View } from 'react-native'
 
@@ -32,15 +32,22 @@ const CommentReply = ({ postId, commentId }: TCommentReply) => {
         collection(db, 'posts', postId, 'comments', commentId, 'replies'),
         data,
       )
-      // Add comment notification
-      addNotifications({
-        fromUserId: currentUser?.uid || '',
-        postId: postId,
-        type: 'comment', // Specify the type of notification
-        liketype: undefined, // Optional, not needed for comments
-      })
 
-      console.log('Comments success')
+      const commentRef = doc(db, 'posts', postId, 'comments', commentId)
+
+      const commentSnap = await getDoc(commentRef)
+
+      if (commentSnap.exists()) {
+        // Add comment notification
+        addNotifications({
+          fromUserId: currentUser?.uid || '',
+          toUserId: commentSnap.data()?.authorId,
+          postId: postId,
+          type: 'reply', // Specify the type of notification
+          liketype: undefined, // Optional, not needed for comments
+        })
+      }
+
       addComments('')
     } catch (error) {
       console.error('Error adding comment: ', error)

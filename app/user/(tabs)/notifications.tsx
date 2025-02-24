@@ -48,6 +48,10 @@ const notifications = () => {
     }
   }, [currentUser?.uid]) // Dependency array to run the effect when currentUser changes
 
+  const sortedComments = [...notifications].sort(
+    (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
+  )
+
   return (
     <SafeAreaView
       style={{ flex: 1, backgroundColor: '#fff', paddingTop: 35, padding: 10 }}
@@ -63,7 +67,7 @@ const notifications = () => {
       />
       <FlatList
         style={{ marginBottom: 50 }}
-        data={notifications}
+        data={sortedComments}
         keyExtractor={(item) => item.id}
         ListHeaderComponent={
           <>
