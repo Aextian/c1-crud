@@ -7,6 +7,7 @@ import { Image, Text, TouchableOpacity, View } from 'react-native'
 
 const Notification = (data: DocumentData) => {
   const [user, setUser] = useState<DocumentData>()
+  const [isDisabled, setDisabled] = useState(false)
 
   useEffect(() => {
     const fetchNotifications = async () => {
@@ -23,12 +24,17 @@ const Notification = (data: DocumentData) => {
   const router = useRouter()
 
   const navigateToCommentSection = async (data: DocumentData) => {
+    setDisabled(true)
+
     const { id: notificationId, postId } = data
     const notificationRef = doc(db, 'notifications', notificationId)
-    if (data.type !== 'comment') {
+
+    if (data.type !== 'comment' && data.type !== 'reply') {
       await updateDoc(notificationRef, {
         isRead: true, // Mark the notification as read
       })
+      setDisabled(false)
+
       return
     }
 
@@ -39,10 +45,11 @@ const Notification = (data: DocumentData) => {
       })
       // Navigate to the comment section after the update
       router.push(`/user/(posts)/comment/${postId}`)
+      setDisabled(false)
     } catch (error) {
+      setDisabled(false)
       console.error('Error updating notification:', error)
     }
-    router.push(`/user/(posts)/comment/${postId}`)
   }
 
   return (
@@ -59,6 +66,7 @@ const Notification = (data: DocumentData) => {
       </View>
       <TouchableOpacity
         onPress={() => navigateToCommentSection(data)}
+        disabled={isDisabled}
         className="justify-center"
       >
         <Text className="font-bold text-xs first-letter:uppercase">

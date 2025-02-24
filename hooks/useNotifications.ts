@@ -6,12 +6,14 @@ type TNotification = {
   postId: string
   type: string
   liketype?: string
+  toUserId?: string
 }
 async function addNotifications({
   fromUserId,
   postId,
   type,
   liketype,
+  toUserId,
 }: TNotification) {
   // get posts
   const postRef = doc(db, 'posts', postId)
@@ -24,9 +26,18 @@ async function addNotifications({
     // Save notification to Firestore
     await addDoc(collection(db, 'notifications'), {
       fromUserId: fromUserId, // who sent the notification
-      toUserId: authorid, // who is being notified
+      toUserId: toUserId ?? authorid, // who will receive the notification
       type: type,
-      message: `${type === 'like' ? (liketype === 'like' ? 'liked' : 'disliked') : 'commented'}  your post!`,
+      message: `${
+        type === 'like'
+          ? liketype === 'like'
+            ? 'liked your post!'
+            : 'disliked your post!'
+          : type == 'comment'
+            ? 'commented your post!'
+            : 'replied to your comment'
+      }`,
+
       createdAt: new Date(),
       isRead: false,
       postId: postId,
