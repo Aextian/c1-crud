@@ -1,4 +1,5 @@
 import { auth, db } from '@/config'
+import useModeration from '@/hooks/shared/useModerations'
 import useUploadMultiples from '@/hooks/shared/useUploadMultiples'
 import useFileUpload from '@/hooks/useFileUpload'
 import useGradeLevel from '@/hooks/useGradeLevel'
@@ -21,21 +22,25 @@ import FileView from './FileView'
 const PostsForm = () => {
   const router = useRouter()
   const { role } = useRole()
-  const { years, sections } = useGradeLevel<string>()
+  const { years, sections, courses } = useGradeLevel<string>()
   const [post, addPost] = useState('')
   const [year, setYear] = useState('')
   const [section, setSection] = useState('')
+  const [course, setCourse] = useState('')
   const currentUser = auth.currentUser
   const [isLoading, setLoading] = useState(false)
 
   const { images, pickImages, uploadImages, clearImages } = useUploadMultiples() //hooks to handle image
   const { filePath, fileType, fileName, resetState, pickFile } = useFileUpload()
 
+  const { checkContentModeration } = useModeration()
+
   const handleSubmit = async () => {
     setLoading(true)
     try {
+      const result = await checkContentModeration(post)
       const imageUrls = await uploadImages()
-
+      const hasImage = imageUrls.length > 0
       await addDoc(collection(db, 'posts'), {
         createdAt: new Date().toISOString(),
         authorId: currentUser?.uid, // Store the UID of the author
@@ -47,7 +52,7 @@ const PostsForm = () => {
         dislikes: [],
         dislikesCount: 0,
         commentCount: 0,
-        status: false,
+        status: hasImage ? false : result.results[0].flagged ? false : true,
         file: {
           type: fileType,
           url: filePath,
@@ -56,6 +61,7 @@ const PostsForm = () => {
         imageUrls: imageUrls,
         year: year,
         section: section,
+        course: course,
       })
 
       addPost('')
@@ -87,14 +93,14 @@ const PostsForm = () => {
       </View>
       <View className="flex-1 bg-white">
         <View className="flex px-10 flex-row  items-center  p-4 gap-5">
-          <View className="rounded-full border">
-            {currentUser?.photoURL ? (
+          <View className="rounded-full border w-12 h-12 items-center justify-center">
+            {currentUser?.photoURL && currentUser?.photoURL !== 'undefined' ? (
               <Image
                 source={{ uri: currentUser?.photoURL }}
-                style={{ width: 45, height: 45, borderRadius: 100 }}
+                style={{ borderRadius: 100 }}
               />
             ) : (
-              <Feather name="user" size={24} color="black" />
+              <Feather name="user" size={20} color="black" />
             )}
           </View>
           <View className="flex flex-col items-start">
@@ -118,7 +124,35 @@ const PostsForm = () => {
           {role === 'teacher' && (
             <View className="flex flex-row items-center justify-center gap-2 ">
               <View
-                style={{ width: 150 }}
+                style={{ width: 115 }}
+                className="border flex flex-row  h-12 border-gray-200 outline-none ring-0 rounded-2xl  "
+              >
+                <Picker
+                  selectedValue={course}
+                  onValueChange={(course) => setCourse(course)}
+                  style={{
+                    width: '100%',
+                    height: '100%',
+                    fontSize: 10, // Adjust the font size for the picker
+                  }}
+                >
+                  <Picker.Item
+                    label="Course"
+                    value=""
+                    style={{ fontSize: 10 }} // Adjust font size of this item
+                  />
+                  {courses.map((course: any) => (
+                    <Picker.Item
+                      style={{ fontSize: 10 }} // Adjust font size of this item
+                      key={course.id}
+                      label={course.name}
+                      value={course.name}
+                    />
+                  ))}
+                </Picker>
+              </View>
+              <View
+                style={{ width: 115 }}
                 className="border flex flex-row  h-12 border-gray-200 outline-none ring-0 rounded-2xl  "
               >
                 <Picker
@@ -131,7 +165,7 @@ const PostsForm = () => {
                   }}
                 >
                   <Picker.Item
-                    label="Select Section"
+                    label="Section"
                     value=""
                     style={{ fontSize: 10 }} // Adjust font size of this item
                   />
@@ -146,7 +180,7 @@ const PostsForm = () => {
                 </Picker>
               </View>
               <View
-                style={{ width: 150 }}
+                style={{ width: 115 }}
                 className="border flex flex-row  h-12 border-gray-200 outline-none ring-0 rounded-2xl  "
               >
                 <Picker
@@ -159,7 +193,7 @@ const PostsForm = () => {
                   }}
                 >
                   <Picker.Item
-                    label="Select Level"
+                    label="Level"
                     value=""
                     style={{ fontSize: 10 }} // Adjust font size of this item
                   />

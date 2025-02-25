@@ -34,6 +34,7 @@ const useSignUp = () => {
         role: data.role,
         year: data.year,
         section: data.section,
+        course: data.course,
         providerData: user.providerData[0],
       }
       // Update user profile with display name

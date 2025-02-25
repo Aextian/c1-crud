@@ -9,7 +9,7 @@ const index = () => {
   return (
     <SafeAreaView className="flex-1 px-10 bg-white">
       <HomeHeader />
-      <View className=" w-full gap-5 flex flex-wrap flex-row justify-between  mt-10">
+      <View className=" w-full gap-5 flex flex-wrap flex-row justify-around  mt-10">
         <Link href={'/admin/home/manage-posts'} asChild>
           <TouchableOpacity className="flex items-center w-1/4 aspect-square">
             <View className="flex flex-col items-center bg-green-400 p-5 rounded-2xl ">
@@ -24,6 +24,14 @@ const index = () => {
               <Feather name="users" color={'white'} size={28} />
             </View>
             <Text className="text-xs text-slate-400">Manage Users</Text>
+          </TouchableOpacity>
+        </Link>
+        <Link href={'/admin/home/manage-course'} asChild>
+          <TouchableOpacity className="flex items-center w-1/4 aspect-square">
+            <View className="flex flex-col items-center bg-green-400 p-5 rounded-2xl ">
+              <Feather name="book-open" color={'white'} size={28} />
+            </View>
+            <Text className="text-xs text-slate-400">Manage Course</Text>
           </TouchableOpacity>
         </Link>
         <Link href={'/admin/home/manage-section'} asChild>

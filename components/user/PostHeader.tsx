@@ -9,14 +9,15 @@ import { Image, Text, View } from 'react-native'
 
 const PostHeader = ({ filterPosts }: { filterPosts: any }) => {
   const currentUser = auth.currentUser
-  const { years, sections } = useGradeLevel<string>()
+  const { years, sections, courses } = useGradeLevel<string>()
   const { user } = useAuth()
 
   const [year, setYear] = useState('')
   const [section, setSection] = useState('')
+  const [course, setCourse] = useState('')
 
   useEffect(() => {
-    filterPosts({ year, section })
+    filterPosts({ year, section, course })
   }, [year, section])
 
   return (
@@ -51,7 +52,35 @@ const PostHeader = ({ filterPosts }: { filterPosts: any }) => {
       {user?.role === 'teacher' && user && user !== undefined && (
         <View className="flex flex-row items-center justify-center gap-2 mb-5 ">
           <View
-            style={{ width: 150 }}
+            style={{ width: 114 }}
+            className="border flex flex-row  h-12 border-gray-200 outline-none ring-0 rounded-2xl  "
+          >
+            <Picker
+              selectedValue={course}
+              onValueChange={(course) => setCourse(course)}
+              style={{
+                width: '100%',
+                height: '100%',
+                fontSize: 10, // Adjust the font size for the picker
+              }}
+            >
+              <Picker.Item
+                label="Course"
+                value=""
+                style={{ fontSize: 10 }} // Adjust font size of this item
+              />
+              {courses.map((course: any) => (
+                <Picker.Item
+                  style={{ fontSize: 10 }} // Adjust font size of this item
+                  key={course.id}
+                  label={course.name}
+                  value={course.name}
+                />
+              ))}
+            </Picker>
+          </View>
+          <View
+            style={{ width: 114 }}
             className="border flex flex-row  h-12 border-gray-200 outline-none ring-0 rounded-2xl  "
           >
             <Picker
@@ -79,7 +108,7 @@ const PostHeader = ({ filterPosts }: { filterPosts: any }) => {
             </Picker>
           </View>
           <View
-            style={{ width: 150 }}
+            style={{ width: 114 }}
             className="border flex flex-row  h-12 border-gray-200 outline-none ring-0 rounded-2xl  "
           >
             <Picker

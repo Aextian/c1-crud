@@ -77,9 +77,11 @@ export const useFetchPosts = () => {
   const filterPosts = async ({
     section,
     year,
+    course,
   }: {
     section: string
     year: string
+    course: string
   }) => {
     if (
       section == '' ||
@@ -96,7 +98,9 @@ export const useFetchPosts = () => {
     // Extract user data and filter by section and year
     const filteredUsers = usersDocs.docs
       .map((doc) => ({ id: doc.id, ...doc.data() })) // Extract ID and data
-      .filter((u) => u.section === section && u.year === year)
+      .filter(
+        (u) => u.section === section && u.year === year && u.course === course,
+      )
 
     // Get user IDs
     const userIds = filteredUsers.map((user) => user.id)

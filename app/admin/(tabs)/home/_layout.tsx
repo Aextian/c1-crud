@@ -15,6 +15,10 @@ const _layout = () => {
         options={{ headerTitle: 'Manage Section' }}
       />
       <Stack.Screen
+        name="manage-course"
+        options={{ headerTitle: 'Manage Course' }}
+      />
+      <Stack.Screen
         name="manage-year-level"
         options={{ headerTitle: 'Manage Level' }}
       />

@@ -11,6 +11,7 @@ import React, { useState } from 'react'
 import {
   Image,
   Pressable,
+  ScrollView,
   StyleSheet,
   Text,
   TextInput,
@@ -19,18 +20,20 @@ import {
 } from 'react-native'
 import Animated, { FadeIn, SlideInDown } from 'react-native-reanimated'
 import { SafeAreaView } from 'react-native-safe-area-context'
+import Toast from 'react-native-toast-message'
 
 export type TDataProps = {
   role: string
   year: string
   section: string
+  course: string
 }
 
 const addUser = () => {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [name, setName] = useState('')
-  const { years, sections } = useGradeLevel<string>()
+  const { years, sections, courses } = useGradeLevel<string>()
   const [isFormValid, setIsFormValid] = useState(false)
   const [errors, setErrors] = useState({} as any)
   const { image, pickImage, uploadImage, clearImage } = useImageUploads() //hooks to handle image
@@ -63,6 +66,9 @@ const addUser = () => {
     if (!data.section && data.role === 'student') {
       errors.section = 'Section is required'
     }
+    if (!data.course && data.role === 'student') {
+      errors.course = 'Course is required'
+    }
 
     setErrors(errors)
     setIsFormValid(Object.keys(errors).length === 0)
@@ -72,6 +78,7 @@ const addUser = () => {
     role: '',
     year: '',
     section: '',
+    course: '',
   })
 
   const { signUp, loading, error } = useSignUp() // Using the custom hook
@@ -86,7 +93,11 @@ const addUser = () => {
       const user = await signUp(email, password, name, data, String(imageUrl))
       if (user) {
         await signInWithEmailAndPassword(auth, 'admin@example.com', '123456')
-        alert('Registered successfully!')
+        Toast.show({
+          type: 'success', // 'success', 'error', 'info'
+          text1: 'Success',
+          text2: 'User has been registered successfully',
+        })
         // Optionally, reset form fields
         setEmail('')
         clearImage()
@@ -95,7 +106,9 @@ const addUser = () => {
           role: '',
           year: '',
           section: '',
+          course: '',
         })
+        setName('')
       }
     } catch (error) {
       console.log(error)
@@ -108,6 +121,9 @@ const addUser = () => {
       <Animated.View entering={SlideInDown} style={{ flex: 1 }}>
         {/* <SafeAreaProvider> */}
         <SafeAreaView style={{ flex: 1, backgroundColor: 'white' }}>
+          <View style={{ zIndex: 99999 }}>
+            <Toast />
+          </View>
           <View className="w-full bg-white border-b border-b-slate-100 flex justify-start ">
             <Link href={'/admin/home'} asChild>
               <Pressable className="p-4">
@@ -115,7 +131,13 @@ const addUser = () => {
               </Pressable>
             </Link>
           </View>
-          <View style={styles.container}>
+          <ScrollView
+            style={styles.container}
+            contentContainerStyle={{
+              justifyContent: 'center',
+              alignItems: 'center',
+            }}
+          >
             <View className="h-24 w-24 rounded-full bg-white overflow-hidden shadow-lg">
               {image ? (
                 <Image
@@ -196,25 +218,24 @@ const addUser = () => {
                 <View className="items-center flex justify-center w-full">
                   <View className=" mt-3 rounded-xl  border border-slate-200 bg-slate-50 w-10/12 ">
                     <Picker
-                      selectedValue={data.year}
-                      onValueChange={(year) => setData({ ...data, year })}
+                      selectedValue={data.course}
+                      onValueChange={(course) => setData({ ...data, course })}
                       style={{
                         // height: 50,
                         width: 350,
                       }}
                     >
-                      <Picker.Item label="Please Select Level" value="" />
-
-                      {years.map((year: any) => (
+                      <Picker.Item label="Please Select Course" value="" />
+                      {courses.map((course: any) => (
                         <Picker.Item
-                          key={year}
-                          label={year.name}
-                          value={year.name}
+                          key={course.id}
+                          label={course.name}
+                          value={course.name}
                         />
                       ))}
                     </Picker>
                   </View>
-                  <Text className="text-red-500 text-sm">{errors.year} </Text>
+                  <Text className="text-red-500 text-sm">{errors.course} </Text>
                 </View>
 
                 <View className="items-center flex justify-center w-full">
@@ -241,6 +262,30 @@ const addUser = () => {
                     {errors.section}{' '}
                   </Text>
                 </View>
+
+                <View className="items-center flex justify-center w-full">
+                  <View className=" mt-3 rounded-xl  border border-slate-200 bg-slate-50 w-10/12 ">
+                    <Picker
+                      selectedValue={data.year}
+                      onValueChange={(year) => setData({ ...data, year })}
+                      style={{
+                        // height: 50,
+                        width: 350,
+                      }}
+                    >
+                      <Picker.Item label="Please Select Level" value="" />
+
+                      {years.map((year: any) => (
+                        <Picker.Item
+                          key={year}
+                          label={year.name}
+                          value={year.name}
+                        />
+                      ))}
+                    </Picker>
+                  </View>
+                  <Text className="text-red-500 text-sm">{errors.year} </Text>
+                </View>
               </>
             )}
 
@@ -253,7 +298,7 @@ const addUser = () => {
                 {loading ? <LoadingScreen /> : 'Register'}
               </Text>
             </TouchableOpacity>
-          </View>
+          </ScrollView>
         </SafeAreaView>
         {/* </SafeAreaProvider> */}
       </Animated.View>
@@ -264,8 +309,8 @@ const addUser = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
+    // justifyContent: 'center',
+    // alignItems: 'center',
     gap: 10,
   },
   RegisterInput: {
