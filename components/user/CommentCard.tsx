@@ -1,5 +1,6 @@
 import { db } from '@/config'
 import { Feather } from '@expo/vector-icons'
+import { Link } from 'expo-router'
 import { collection, DocumentData, onSnapshot } from 'firebase/firestore'
 import React, { useEffect, useState } from 'react'
 import { Image, Text, TouchableOpacity, View } from 'react-native'
@@ -15,6 +16,7 @@ const CommentCard = ({ postId, comment }: TComment) => {
   const [showReply, setShowReply] = useState(false)
   const [commentReplies, setCommentReplies] = useState<DocumentData[]>([])
   const [viewComment, setViewComment] = useState(false)
+  const [showFullComment, setShowFullComment] = useState(false)
   const [viewReply, setViewReply] = useState(false)
 
   useEffect(() => {
@@ -46,22 +48,42 @@ const CommentCard = ({ postId, comment }: TComment) => {
   return (
     <View>
       <View className="flex flex-row gap-5 mt-10">
-        <View className="rounded-full w-8 h-8 border p-3 items-center justify-center">
-          {comment?.authorAvatar && comment.authorAvatar !== 'undefined' ? (
-            <Image
-              source={{ uri: comment?.authorAvatar }}
-              style={{ width: 30, height: 30, borderRadius: 100 }}
-            />
-          ) : (
-            <Feather name="user" size={24} color="black" />
-          )}
-        </View>
+        <Link
+          href={{
+            pathname: '/user/(profile)',
+            params: { id: comment.authorId },
+          }}
+        >
+          <View className="rounded-full w-8 h-8 border p-3 items-center justify-center">
+            {comment?.authorAvatar && comment.authorAvatar !== 'undefined' ? (
+              <Image
+                source={{ uri: comment?.authorAvatar }}
+                style={{ width: 30, height: 30, borderRadius: 100 }}
+              />
+            ) : (
+              <Feather name="user" size={24} color="black" />
+            )}
+          </View>
+        </Link>
 
         <View className="justify-center">
           <Text className="font-bold text-xs">{comment.author}</Text>
-          <Text className="text-gray-500 pr-12" numberOfLines={1}>
+          <Text
+            className="text-gray-500 pr-12"
+            numberOfLines={showFullComment ? undefined : 1}
+          >
             {comment.comment}
           </Text>
+          {comment.comment.length > 50 && ( // Show toggle only if comment is long
+            <TouchableOpacity
+              className="text-right"
+              onPress={() => setShowFullComment(!showFullComment)}
+            >
+              <Text className="text-gray-500 font-semibold">
+                {showFullComment ? 'Show Less' : 'Show More'}
+              </Text>
+            </TouchableOpacity>
+          )}
         </View>
       </View>
       <TouchableOpacity className="ml-16 my-2">

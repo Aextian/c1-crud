@@ -75,7 +75,7 @@ const index = () => {
         </Link>
 
         <View className="bg-white shadow p-5 rounded-lg flex justify-start  gap-5  ">
-          <Text>General</Text>
+          {/* <Text>General</Text> */}
           <View className="px-4">
             <Link href="/user/(profile)/edit" asChild>
               <TouchableOpacity>

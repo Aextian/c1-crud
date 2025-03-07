@@ -91,7 +91,7 @@ const ViewPost = ({ item, index }: { item: any; index: number }) => {
           </View>
           <Link
             href={{
-              pathname: '/user/(tabs)/posts/profile',
+              pathname: '/user/(profile)',
               params: { id: item.authorId },
             }}
             asChild
@@ -182,7 +182,7 @@ const ViewPost = ({ item, index }: { item: any; index: number }) => {
           </TouchableOpacity>
 
           <View className="flex flex-row items-center gap-2">
-            <Link href={`/user/posts/comments/${item.id}`} asChild>
+            <Link href={`/user/(posts)/comment/${item.id}`} asChild>
               <TouchableOpacity>
                 <Feather name="message-circle" color={'#454552'} size={30} />
               </TouchableOpacity>

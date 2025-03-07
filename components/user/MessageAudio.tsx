@@ -1,5 +1,6 @@
 import useRecordingStore from '@/store/useRecordingStore'
 import { StyleSheet, Text, TouchableOpacity } from 'react-native'
+import AudioMessage from '../shared/AudioMessage'
 
 const MessageAudio = (props: any) => {
   const { playSound, stopSound, isPlaying, currentAudio } = useRecordingStore()
@@ -19,10 +20,22 @@ const MessageAudio = (props: any) => {
     return (
       <TouchableOpacity style={styles.audioContainer} onPress={handlePress}>
         <Text style={styles.audioText}>
-          <Text style={styles.audioText}>
-            {isPlaying && currentAudio === currentMessage.audio
-              ? '❚❚ Voice Message'
-              : '▶ Voice Message'}
+          <Text
+            style={styles.audioText}
+            className="items-center justify-center"
+          >
+            <AudioMessage isPlaying={isPlaying} />
+            {/* {isPlaying ? (
+              <>
+                <Feather name="volume-2" size={20} color="black" /> Voice
+                Message
+              </>
+            ) : (
+              <>
+                <Feather name="volume-x" size={20} color="black" /> Voice
+                Message
+              </>
+            )} */}
           </Text>
         </Text>
       </TouchableOpacity>
@@ -34,11 +47,16 @@ const MessageAudio = (props: any) => {
 const styles = StyleSheet.create({
   audioContainer: {
     backgroundColor: '#e0e0e0',
-    padding: 10,
+    paddingHorizontal: 10,
+    paddingVertical: 5,
+    margin: 10,
     borderRadius: 5,
   },
   audioText: {
     color: '#000',
+    textAlign: 'center',
+    fontSize: 16,
+    fontWeight: 'semibold',
   },
 })
 

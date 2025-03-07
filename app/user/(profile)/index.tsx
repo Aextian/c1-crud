@@ -25,6 +25,9 @@ const profile = () => {
   const [refreshing, setRefreshing] = useState(false)
   const onRefresh = useCallback(() => {}, [])
   const { posts, user, isLoading } = useUserAndPosts(id)
+  const sortedPosts = [...posts].sort(
+    (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
+  )
 
   return (
     <>
@@ -41,7 +44,7 @@ const profile = () => {
           <ProfileSkLoader />
         ) : (
           <FlatList
-            data={posts}
+            data={sortedPosts}
             keyExtractor={(item) => item.id}
             refreshControl={
               <RefreshControl

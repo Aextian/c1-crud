@@ -38,12 +38,12 @@ export default function Modal() {
                   uri: image,
                 }}
                 style={{
-                  height: 300,
-                  width: 400,
+                  height: '90%',
+                  width: '90%',
                   borderRadius: 10,
-                  resizeMode: 'cover',
+                  resizeMode: 'contain',
                 }}
-                // resizeMode="cover"
+                resizeMode="contain"
               />
             </View>
           ))}

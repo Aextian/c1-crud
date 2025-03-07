@@ -37,7 +37,7 @@ const ImageItem = ({
             height: 300, // Set height for each image
             borderRadius: 10, // Optional: Adds rounded corners
           }}
-          resizeMode="cover" // Ensure the image scales correctly
+          resizeMode="contain" // Ensure the image scales correctly
         />
       </TouchableOpacity>
     </Link>

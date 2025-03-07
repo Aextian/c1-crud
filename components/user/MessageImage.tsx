@@ -57,7 +57,7 @@ const MessageImage = (props: any) => {
             <Image
               source={{ uri: selectedImage }}
               style={styles.image}
-              contentFit="cover"
+              contentFit="contain"
               transition={1000}
             />
           </View>
@@ -77,8 +77,9 @@ const styles = StyleSheet.create({
   },
 
   image: {
+    // width: '90%',
     width: '90%',
-    height: 250,
+    height: '80%',
     borderRadius: 20,
   },
   absoluteFill: {

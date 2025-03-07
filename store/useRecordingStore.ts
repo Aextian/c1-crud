@@ -111,10 +111,19 @@ const useRecordingStore = create<RecordingState>((set, get) => ({
       set({ sound: sound, currentAudio: uri, isPlaying: true })
       console.log('Playing sound...')
       await sound.playAsync()
+
+      // Listen for playback completion
+      sound.setOnPlaybackStatusUpdate((status) => {
+        if (status.didJustFinish && !status.isLooping) {
+          console.log('Playback finished.')
+          set({ isPlaying: false })
+        }
+      })
     } catch (err) {
       console.error('Failed to play sound:', err)
     }
   },
+
   stopSound: async () => {
     const { sound } = get()
 
