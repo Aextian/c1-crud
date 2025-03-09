@@ -97,7 +97,7 @@ const PostsForm = () => {
             {currentUser?.photoURL && currentUser?.photoURL !== 'undefined' ? (
               <Image
                 source={{ uri: currentUser?.photoURL }}
-                style={{ borderRadius: 100 }}
+                style={{ borderRadius: 100, width: '100%', height: '100%' }}
               />
             ) : (
               <Feather name="user" size={20} color="black" />

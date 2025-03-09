@@ -215,7 +215,10 @@ const EditProfilePage = () => {
               </Text>
             </View>
 
-            <View className="rounded-full w-24 h-24   p-3 items-center justify-center">
+            <View
+              style={{ borderRadius: 100 }}
+              className=" w-24 h-24 border  items-center justify-center"
+            >
               {!image &&
               currentUser?.photoURL &&
               currentUser?.photoURL !== 'undefined' ? (
@@ -231,7 +234,7 @@ const EditProfilePage = () => {
               ) : (
                 <Feather name="user" size={24} color="black" />
               )}
-              <View className="absolute bottom-5 right-2">
+              <View className="absolute bottom-5 right-1 bg-black/50 rounded-full">
                 <Pressable onPress={pickImage}>
                   <Feather name="camera" size={24} color="white" />
                 </Pressable>

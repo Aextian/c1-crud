@@ -19,6 +19,7 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native'
+import Toast from 'react-native-toast-message'
 
 const GroupInfo = () => {
   const { id } = useLocalSearchParams<any>()
@@ -60,20 +61,6 @@ const GroupInfo = () => {
     return () => unsubscribeGroup() // Cleanup listener on unmount
   }, [id])
 
-  const updateGroupImage = async () => {
-    try {
-      await pickImage()
-      const imageUrl = await uploadImage()
-      const groupRef = doc(db, 'groupChats', id)
-      await updateDoc(groupRef, { image: imageUrl })
-      alert('Group image updated successfully')
-      //reload the pagec
-      window.location.reload()
-    } catch (error) {
-      console.error('Error updating group image:', error)
-    }
-  }
-
   const handleLeaveGroup = async (currentUserId: string, groupId: string) => {
     Alert.alert('Leave Group', 'Are you sure you want to leave this group?', [
       {
@@ -102,8 +89,28 @@ const GroupInfo = () => {
     ])
   }
 
+  const handleSaveGroupImage = async () => {
+    try {
+      const imageUrl = await uploadImage()
+      const groupRef = doc(db, 'groupChats', id)
+      await updateDoc(groupRef, { image: imageUrl })
+      Toast.show({
+        type: 'success',
+        text1: 'Success',
+        text2: 'Group image updated successfully',
+      })
+      setOptions(false)
+    } catch (error) {
+      console.error('Error updating group image:', error)
+    }
+  }
+
   return (
     <View style={{ flex: 1, backgroundColor: 'white', position: 'relative' }}>
+      <View style={{ zIndex: 1 }}>
+        <Toast />
+      </View>
+
       <Stack.Screen
         options={{
           headerTitle: '',
@@ -142,6 +149,12 @@ const GroupInfo = () => {
           >
             <Text className="text-red-500 font-semibold">Leave group</Text>
           </TouchableOpacity>
+          <TouchableOpacity
+            onPress={() => handleSaveGroupImage()}
+            className="mt-5"
+          >
+            <Text className=" font-semibold">Save</Text>
+          </TouchableOpacity>
         </View>
       )}
 
@@ -150,16 +163,22 @@ const GroupInfo = () => {
           style={{ borderRadius: 100 }}
           className=" relative border bg-gray-200 border-gray-300 w-36 h-36   items-center justify-center"
         >
-          {group?.image && group?.image !== 'undefined' ? (
+          {image ? (
             <Image
-              source={{ uri: group?.image }}
+              source={{ uri: image }}
+              style={{ width: '100%', height: '100%', borderRadius: 100 }}
+            />
+          ) : group?.image && group.image !== 'undefined' ? (
+            <Image
+              source={{ uri: group.image }}
               style={{ width: '100%', height: '100%', borderRadius: 100 }}
             />
           ) : (
             <Feather name="users" size={50} color="black" />
           )}
+
           <View className="absolute bg-black/30 rounded-full p-2  -bottom-2 right-0">
-            <TouchableOpacity onPress={updateGroupImage}>
+            <TouchableOpacity onPress={pickImage}>
               <Feather name="camera" size={30} color="white" />
             </TouchableOpacity>
           </View>

@@ -4,16 +4,7 @@ module.exports = {
   content: ['./app/**/*.{js,jsx,ts,tsx}', './components/**/*.{js,jsx,ts,tsx}'],
   presets: [require('nativewind/preset')],
   theme: {
-    extend: {
-      fontFamily: {
-        example: ['ExampleFontFamily'],
-        system: platformSelect({
-          ios: 'Georgia',
-          android: 'sans-serif',
-          default: 'ui-sans-serif',
-        }),
-      },
-    },
+    extend: {},
   },
   plugins: [],
 }

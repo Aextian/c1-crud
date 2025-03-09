@@ -31,19 +31,18 @@ const index = () => {
     setRefreshing(false) // Hide the spinner
   }, [])
 
-  const sortedConversations = [...conversations].sort(
+  const sortedConversations = conversations
+    .filter((c) => c.updatedAt) // Ensure it filters correctly
+    .map((c) => ({
+      ...c,
+      type: 'conversation',
+    }))
+
+  const sortedUserGroups = userGroups.map((g) => ({ ...g, type: 'group' }))
+
+  const mergedArray = [...sortedConversations, ...sortedUserGroups].sort(
     (a, b) => new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime(),
   )
-
-  const sortedUserGroups = [...userGroups].sort(
-    (a, b) => new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime(),
-  )
-
-  // get the last updated conversation
-  const lastConversation = sortedConversations[0]
-  const lastGroup = sortedUserGroups[0]
-
-  const isNewConversation = lastGroup?.updatedAt > lastConversation?.updatedAt
 
   return (
     <SafeAreaView style={styles.container}>
@@ -61,15 +60,17 @@ const index = () => {
         <View className="mb-5">
           <UserLists />
         </View>
-        <ScrollView
-          className={`flex fflex-col ${isNewConversation && 'flex-col-reverse'} mb-16`}
-        >
+        <ScrollView className={`flex fflex-col mb-16`}>
           <FlatList
-            data={sortedConversations}
+            data={mergedArray}
             keyExtractor={(item) => item.id}
-            renderItem={({ item }) => (
-              <MessageCard key={item.id} conversation={item} />
-            )}
+            renderItem={({ item }) =>
+              item.type === 'conversation' ? (
+                <MessageCard key={item.id} conversation={item} />
+              ) : (
+                <MessageGroupCard key={item.id} group={item} />
+              )
+            }
             ListEmptyComponent={
               loading || refreshing ? (
                 <View className="mt-5 mx-3">
@@ -92,13 +93,6 @@ const index = () => {
                 progressBackgroundColor="#ffffff" // Optional, for the background color of the spinner
               />
             }
-          />
-          {/* group chat */}
-          <FlatList
-            data={sortedUserGroups}
-            keyExtractor={(item) => item.id} // Extract unique key for each group
-            renderItem={({ item }) => <MessageGroupCard group={item} />} // Render each group
-            contentContainerStyle={{ paddingVertical: 20, gap: 30 }} // Styling for the container
           />
         </ScrollView>
       </View>

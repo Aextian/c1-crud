@@ -48,9 +48,15 @@ const notifications = () => {
     }
   }, [currentUser?.uid]) // Dependency array to run the effect when currentUser changes
 
-  const sortedComments = [...notifications].sort(
-    (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
-  )
+  const sortedNotifications = [...notifications].sort((a, b) => {
+    // Prioritize unread notifications
+    if (a.isRead !== b.isRead) {
+      return a.isRead ? 1 : -1 // Unread first
+    }
+
+    // Sort by createdAt (latest first)
+    return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+  })
 
   return (
     <SafeAreaView
@@ -67,7 +73,7 @@ const notifications = () => {
       />
       <FlatList
         style={{ marginBottom: 50 }}
-        data={sortedComments}
+        data={sortedNotifications}
         keyExtractor={(item) => item.id}
         ListHeaderComponent={
           <>

@@ -52,7 +52,7 @@ const index = () => {
         >
           <TouchableOpacity activeOpacity={0.8}>
             <View className="bg-white shadow p-5 mt-10 items-center rounded-2xl flex justify-start flex-row gap-5 ">
-              <View className="rounded-full w-16 h-16  p-3 items-center justify-center">
+              <View className="rounded-full border w-12 h-12   items-center justify-center">
                 {currentUser?.photoURL &&
                 currentUser?.photoURL !== 'undefined' ? (
                   <Image
@@ -60,7 +60,7 @@ const index = () => {
                     style={{ width: '100%', height: '100%', borderRadius: 100 }}
                   />
                 ) : (
-                  <Feather name="user" size={24} color="black" />
+                  <Feather name="user" size={16} color="black" />
                 )}
               </View>
 
