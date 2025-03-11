@@ -2,6 +2,7 @@ import LoadingScreen from '@/components/shared/loadingScreen'
 import { auth, db } from '@/config'
 import useAuth from '@/hooks/useAuth'
 import { Stack } from 'expo-router'
+import { usePreventScreenCapture } from 'expo-screen-capture'
 import { onAuthStateChanged } from 'firebase/auth'
 import { doc, serverTimestamp, setDoc, updateDoc } from 'firebase/firestore'
 import React, { useEffect } from 'react'
@@ -10,6 +11,8 @@ import '../global.css'
 
 const _layout = () => {
   // Function to track user presence
+  usePreventScreenCapture()
+
   useEffect(() => {
     const unsubscribeAuth = onAuthStateChanged(auth, async (user) => {
       if (user) {

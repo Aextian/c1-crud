@@ -229,7 +229,9 @@ const UserList = ({ search = '' }: UserListProps) => {
                   >
                     {firstWord}
                   </Text>
-                  <View className="absolute bottom-10 right-6 w-3 h-3 bg-green-400 rounded-full" />
+                  {user?.state === 'online' && (
+                    <View className="absolute bottom-5 right-6 w-4 h-4 bg-green-400 rounded-full" />
+                  )}
                 </TouchableOpacity>
               </Link>
             </View>
