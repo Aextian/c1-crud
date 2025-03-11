@@ -106,6 +106,10 @@ const Post = ({ item, index }: { item: any; index: number }) => {
           >
             <TouchableOpacity>
               <Text className="font-semibold">{item.authorName}</Text>
+              <Text className="text-[8px] text-gray-500 first-letter:uppercase">
+                {item.authorData.role.charAt(0).toUpperCase() +
+                  item.authorData.role.slice(1)}
+              </Text>
               <Text className="text-[8px] text-gray-500">
                 {formatDate(item.createdAt)}
               </Text>

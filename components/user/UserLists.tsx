@@ -26,7 +26,12 @@ const UserList = ({ search = '' }: UserListProps) => {
       user.name.toLowerCase().includes(search?.toLowerCase()),
     )
     if (search === '' && users) {
-      setFilteredUsers(users.filter((user) => user._id !== currentUser?.uid))
+      // setFilteredUsers(users.filter((user) => user._id !== currentUser?.uid))
+      setFilteredUsers(
+        users
+          .filter((user) => user._id !== currentUser?.uid) // Exclude current user
+          .sort((a, b) => (a.state === 'online' ? -1 : 1)), // Sort online users first
+      )
     } else {
       setFilteredUsers(filtered || [])
     }
@@ -224,6 +229,7 @@ const UserList = ({ search = '' }: UserListProps) => {
                   >
                     {firstWord}
                   </Text>
+                  <View className="absolute bottom-10 right-6 w-3 h-3 bg-green-400 rounded-full" />
                 </TouchableOpacity>
               </Link>
             </View>

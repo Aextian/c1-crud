@@ -1,29 +1,57 @@
 import LoadingScreen from '@/components/shared/loadingScreen'
-import { auth } from '@/config'
+import { auth, db } from '@/config'
 import useAuth from '@/hooks/useAuth'
-import { Stack, useRouter, useSegments } from 'expo-router'
-import React from 'react'
+import { Stack } from 'expo-router'
+import { onAuthStateChanged } from 'firebase/auth'
+import { doc, serverTimestamp, setDoc, updateDoc } from 'firebase/firestore'
+import React, { useEffect } from 'react'
+import { AppState } from 'react-native'
 import '../global.css'
 
 const _layout = () => {
-  const router = useRouter()
-  const segments = useSegments()
+  // Function to track user presence
+  useEffect(() => {
+    const unsubscribeAuth = onAuthStateChanged(auth, async (user) => {
+      if (user) {
+        const userRef = doc(db, 'users', user.uid)
+
+        // Set user online when they log in
+        await setDoc(
+          userRef,
+          { last_seen: serverTimestamp(), state: 'online' },
+          { merge: true },
+        )
+
+        // Track app state changes (foreground/background)
+        const handleAppStateChange = async (nextAppState: string) => {
+          if (nextAppState === 'background' || nextAppState === 'inactive') {
+            await updateDoc(userRef, {
+              state: 'offline',
+              last_seen: serverTimestamp(),
+            })
+          } else if (nextAppState === 'active') {
+            await updateDoc(userRef, {
+              state: 'online',
+              last_seen: serverTimestamp(),
+            })
+          }
+        }
+
+        const appStateListener = AppState.addEventListener(
+          'change',
+          handleAppStateChange,
+        )
+
+        return () => {
+          appStateListener.remove() // Cleanup listener
+        }
+      }
+    })
+
+    return () => unsubscribeAuth() // Cleanup auth listener
+  }, [])
+
   const { loading, user } = useAuth()
-
-  const currentUser = auth.currentUser
-
-  // useEffect(() => {
-  //   if (loading) return
-  //   const inAuthGroup = segments[0] == 'auth'
-
-  //   if (currentUser && user) {
-  //     user?.role === 'admin'
-  //       ? router.replace('/admin/home')
-  //       : router.replace('/user/posts')
-  //   } else if (!currentUser && !inAuthGroup) {
-  //     router.replace('/auth/login')
-  //   }
-  // }, [currentUser, loading, user])
 
   if (loading) {
     return <LoadingScreen />

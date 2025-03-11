@@ -7,7 +7,7 @@ import { Feather } from '@expo/vector-icons'
 import { Picker } from '@react-native-picker/picker'
 import { Link } from 'expo-router'
 import { signInWithEmailAndPassword } from 'firebase/auth'
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import {
   Image,
   Pressable,
@@ -83,35 +83,43 @@ const addUser = () => {
 
   const { signUp, loading, error } = useSignUp() // Using the custom hook
 
+  useEffect(() => {
+    if (error) {
+      Toast.show({
+        type: 'error',
+        text1: 'Error',
+        text2: error,
+      })
+    }
+  }, [error])
   const handleSignUp = async () => {
     if (!isFormValid) {
       handleFormValidation()
       return
     }
+
     try {
       const imageUrl = await uploadImage()
       const user = await signUp(email, password, name, data, String(imageUrl))
-      if (user) {
-        await signInWithEmailAndPassword(auth, 'admin@example.com', '123456')
-        Toast.show({
-          type: 'success', // 'success', 'error', 'info'
-          text1: 'Success',
-          text2: 'User has been registered successfully',
-        })
-        // Optionally, reset form fields
-        setEmail('')
-        clearImage()
-        setPassword('')
-        setData({
-          role: '',
-          year: '',
-          section: '',
-          course: '',
-        })
-        setName('')
-      }
+
+      if (!user) return
+
+      await signInWithEmailAndPassword(auth, 'admin@example.com', '123456')
+
+      Toast.show({
+        type: 'success',
+        text1: 'Success',
+        text2: 'User has been registered successfully',
+      })
+
+      // Reset form fields
+      setEmail('')
+      setPassword('')
+      setName('')
+      clearImage()
+      setData({ role: '', year: '', section: '', course: '' })
     } catch (error) {
-      console.log(error)
+      console.error('Signup error:', error)
       alert(error)
     }
   }

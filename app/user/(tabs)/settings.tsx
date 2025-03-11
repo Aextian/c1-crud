@@ -24,7 +24,7 @@ const index = () => {
     try {
       await signOut(auth)
       setIsLoading(false)
-      router.push('/auth/login')
+      router.replace('/auth/login')
     } catch (error) {
       console.error('Error signing out:', error)
     }
