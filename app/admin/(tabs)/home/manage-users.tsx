@@ -2,8 +2,8 @@ import { db } from '@/config'
 import useAuthentication from '@/hooks/authentication/useAuthentication'
 import useUser from '@/hooks/useUser'
 import { Feather } from '@expo/vector-icons'
-import { Stack } from 'expo-router'
-import { doc, DocumentData, updateDoc } from 'firebase/firestore'
+import { Link, Stack } from 'expo-router'
+import { DocumentData, doc, updateDoc } from 'firebase/firestore'
 import React, { useEffect, useState } from 'react'
 import {
   Alert,
@@ -111,7 +111,7 @@ const manageUsers = () => {
           return (
             <View className="flex items-start gap-5 flex-row justify-between">
               <View className="flex items-center flex-row gap-5">
-                <View
+                <Link
                   style={{
                     height: 64,
                     width: 64,
@@ -121,21 +121,34 @@ const manageUsers = () => {
                     borderRadius: 50,
                     // padding: 16,
                   }}
+                  href={`/admin/user/${user._id}`}
                 >
-                  {user.avatar && user.avatar !== 'undefined' ? (
-                    <Image
-                      source={{ uri: user.avatar }}
-                      alt="avatar"
-                      style={{
-                        width: '100%',
-                        height: '100%',
-                        borderRadius: 50,
-                      }}
-                    />
-                  ) : (
-                    <Feather name="user" size={24} />
-                  )}
-                </View>
+                  <View
+                    style={{
+                      height: 64,
+                      width: 64,
+                      justifyContent: 'center',
+                      alignItems: 'center',
+                      borderWidth: 1,
+                      borderRadius: 50,
+                      // padding: 16,
+                    }}
+                  >
+                    {user.avatar && user.avatar !== 'undefined' ? (
+                      <Image
+                        source={{ uri: user.avatar }}
+                        alt="avatar"
+                        style={{
+                          width: '100%',
+                          height: '100%',
+                          borderRadius: 50,
+                        }}
+                      />
+                    ) : (
+                      <Feather name="user" size={24} />
+                    )}
+                  </View>
+                </Link>
 
                 <View className="flex flex-col gap-2 ">
                   <Text>{user.name}</Text>

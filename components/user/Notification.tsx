@@ -55,7 +55,7 @@ const Notification = (data: DocumentData) => {
   return (
     <View className="flex flex-row gap-5 mt-5  bg-white ">
       <View className="rounded-full h-12 w-12 border items-center justify-center ">
-        {user?.avatar ? (
+        {user?.avatar && user?.avatar !== 'undefined' ? (
           <Image
             source={{ uri: user?.avatar }}
             style={{ width: '100%', height: '100%', borderRadius: 100 }}
