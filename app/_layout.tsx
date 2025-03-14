@@ -6,7 +6,8 @@ import { usePreventScreenCapture } from 'expo-screen-capture'
 import { onAuthStateChanged } from 'firebase/auth'
 import { doc, serverTimestamp, setDoc, updateDoc } from 'firebase/firestore'
 import React, { useEffect } from 'react'
-import { AppState } from 'react-native'
+import { AppState, View } from 'react-native'
+import Toast from 'react-native-toast-message'
 import '../global.css'
 
 const _layout = () => {
@@ -61,16 +62,21 @@ const _layout = () => {
   }
 
   return (
-    <Stack>
-      <Stack.Screen name="auth/login" options={{ headerShown: false }} />
-      <Stack.Screen
-        name="auth/reset-password"
-        options={{ headerTitle: 'Reset Password' }}
-      />
-      <Stack.Screen name="user" options={{ headerShown: false }} />
-      <Stack.Screen name="admin" options={{ headerShown: false }} />
-      <Stack.Screen name="index" options={{ headerShown: false }} />
-    </Stack>
+    <>
+      <View style={{ zIndex: 99999999 }}>
+        <Toast />
+      </View>
+      <Stack>
+        <Stack.Screen name="auth/login" options={{ headerShown: false }} />
+        <Stack.Screen
+          name="auth/reset-password"
+          options={{ headerTitle: 'Reset Password' }}
+        />
+        <Stack.Screen name="user" options={{ headerShown: false }} />
+        <Stack.Screen name="admin" options={{ headerShown: false }} />
+        <Stack.Screen name="index" options={{ headerShown: false }} />
+      </Stack>
+    </>
   )
 }
 

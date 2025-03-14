@@ -1,4 +1,5 @@
 import { db } from '@/config'
+import { Link } from 'expo-router'
 import { deleteDoc, doc, DocumentData } from 'firebase/firestore'
 import React from 'react'
 import { Alert, Text, TouchableOpacity, View } from 'react-native'
@@ -56,7 +57,7 @@ const PostOptions = ({ data }: IPostOptionsProps) => {
       className="shadow"
     >
       <View className="flex gap-5">
-        {/* <Link
+        <Link
           href={{
             pathname: '/user/(posts)/edit',
             params: { id: data.id },
@@ -66,7 +67,7 @@ const PostOptions = ({ data }: IPostOptionsProps) => {
           <TouchableOpacity>
             <Text>Edit Post</Text>
           </TouchableOpacity>
-        </Link> */}
+        </Link>
         <TouchableOpacity onPress={confirmRemovePost}>
           <Text className="text-red-500">Delete Post</Text>
         </TouchableOpacity>

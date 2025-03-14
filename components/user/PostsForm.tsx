@@ -6,6 +6,7 @@ import useGradeLevel from '@/hooks/useGradeLevel'
 import useRole from '@/hooks/useRole'
 import { Feather } from '@expo/vector-icons'
 import { Picker } from '@react-native-picker/picker'
+import { ResizeMode, Video } from 'expo-av'
 import { useRouter } from 'expo-router'
 import { addDoc, collection } from 'firebase/firestore'
 import React, { useState } from 'react'
@@ -17,6 +18,7 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native'
+import Toast from 'react-native-toast-message'
 import FileView from './FileView'
 
 const PostsForm = () => {
@@ -30,7 +32,18 @@ const PostsForm = () => {
   const currentUser = auth.currentUser
   const [isLoading, setLoading] = useState(false)
 
-  const { images, pickImages, uploadImages, clearImages } = useUploadMultiples() //hooks to handle image
+  // const { images, pickImages, uploadImages, clearImages } = useUploadMultiples() //hooks to handle image
+
+  const {
+    files,
+    progress,
+    uploading,
+    uploadedUrls,
+    pickFiles,
+    uploadFiles,
+    clearFiles,
+  } = useUploadMultiples()
+
   const { filePath, fileType, fileName, resetState, pickFile } = useFileUpload()
 
   const { checkContentModeration } = useModeration()
@@ -39,8 +52,11 @@ const PostsForm = () => {
     setLoading(true)
     try {
       const result = await checkContentModeration(post)
-      const imageUrls = await uploadImages()
-      const hasImage = imageUrls.length > 0
+      const { images, videos } = await uploadFiles()
+
+      const hasFile =
+        (images && images.length > 0) || (videos && videos.length > 0)
+
       await addDoc(collection(db, 'posts'), {
         createdAt: new Date().toISOString(),
         authorId: currentUser?.uid, // Store the UID of the author
@@ -52,22 +68,37 @@ const PostsForm = () => {
         dislikes: [],
         dislikesCount: 0,
         commentCount: 0,
-        status: hasImage ? false : result.results[0].flagged ? false : true,
+        status: hasFile ? false : result.results[0].flagged ? false : true,
         file: {
           type: fileType,
           url: filePath,
           name: fileName,
         },
-        imageUrls: imageUrls,
+        imageUrls: images,
+        videoUrls: videos,
         year: year,
         section: section,
         course: course,
       })
 
       addPost('')
-      clearImages()
+      clearFiles()
       resetState()
       setLoading(false)
+
+      if (hasFile && result.results[0].flagged) {
+        Toast.show({
+          type: 'info', // 'success', 'error', 'info'
+          text1: 'Review',
+          text2: 'your post is under review',
+        })
+      } else {
+        Toast.show({
+          type: 'success', // 'success', 'error', 'info'
+          text1: 'Success',
+          text2: 'Post has been added successfully',
+        })
+      }
 
       router.push('/user/posts')
     } catch (error) {
@@ -80,7 +111,7 @@ const PostsForm = () => {
   const handleClose = () => {
     addPost('')
     resetState()
-    clearImages()
+    clearFiles()
     router.back()
   }
 
@@ -218,7 +249,7 @@ const PostsForm = () => {
                 <Feather name="file" size={30} color={'#454552'} />
               </TouchableOpacity>
               {/* select image */}
-              <TouchableOpacity onPress={pickImages}>
+              <TouchableOpacity onPress={pickFiles}>
                 <Feather name="image" size={30} color={'#454552'} />
               </TouchableOpacity>
             </View>
@@ -227,31 +258,106 @@ const PostsForm = () => {
               onPress={handleSubmit}
               disabled={isLoading || !post}
             >
-              <Text className="text-white">Post</Text>
+              <Text className="text-white ">
+                {isLoading ? 'Uploading...' : 'Post'}
+              </Text>
             </TouchableOpacity>
           </View>
         </View>
+
         <View className="flex-1 mt-10 bg-white items-center justify-center">
           {fileName && <FileView fileName={fileName} />}
-          {images.length > 0 && (
+          {files.length > 0 && (
             <View className="mt-5">
               <FlatList
-                data={images}
-                renderItem={({ item }) => (
-                  <View className="mr-5">
-                    <Image
-                      source={{ uri: item }}
-                      className="h-72 w-64 rounded-md shadow-lg"
-                    />
+                data={files} // Your data array
+                keyExtractor={(item, index) => index.toString()} // Ensure unique keys
+                renderItem={({ item, index }) => (
+                  <View
+                    key={index}
+                    style={{
+                      // flex: 1,
+                      justifyContent: 'center',
+                      width: '48%',
+                      marginBottom: 5,
+                      height: files.length > 3 ? 250 : 350,
+                    }}
+                  >
+                    {item.type === 'image' ? (
+                      <Image
+                        source={{ uri: item.uri }}
+                        style={{ width: '100%', height: '100%' }}
+                        resizeMode="cover"
+                      />
+                    ) : (
+                      <Video
+                        source={{ uri: item.uri }}
+                        style={{
+                          width: '100%',
+                          height: '100%',
+                          borderRadius: 10, // Optional: Adds rounded corners
+                        }} // Explicit width & height
+                        useNativeControls
+                        resizeMode={ResizeMode.COVER}
+                        shouldPlay={false} // Don't autoplay
+                        isLooping={false}
+                      />
+                    )}
                   </View>
                 )}
-                keyExtractor={(item) => item}
-                horizontal
+                numColumns={2} // Set number of columns
+                columnWrapperStyle={{ justifyContent: 'space-between' }} // Ensure even spacing
+                contentContainerStyle={{
+                  paddingHorizontal: 5,
+                  paddingVertical: 10,
+                }}
                 showsHorizontalScrollIndicator={false} // Hides the scrollbar for cleaner look
+                showsVerticalScrollIndicator={false}
+              />
+              {/* <FlatList
+                data={files} // Change from images to files
+                keyExtractor={(item, index) => index.toString()} // Ensure unique keys
+                numColumns={3} // Set number of columns
+                columnWrapperStyle={{ justifyContent: 'space-between' }} // Ensure even spacing
+                contentContainerStyle={{
+                  paddingHorizontal: 5,
+                  paddingVertical: 10,
+                }}
+                showsHorizontalScrollIndicator={false} // Hides the scrollbar for cleaner look
+                showsVerticalScrollIndicator={false}
+                renderItem={({ item }) => (
+                  <View
+                    style={{
+                      flex: 1,
+                      width: '48%',
+                      height: files.length > 3 ? 250 : 350,
+                    }}
+                  >
+                    {item.type === 'image' ? (
+                      <Image
+                        source={{ uri: item.uri }}
+                        style={{ width: '100%', height: '100%' }}
+                        resizeMode="cover"
+                      />
+                    ) : (
+                      <Video
+                        source={{ uri: item.uri }}
+                        style={{ width: '100%', height: '100%' }} // Explicit width & height
+                        useNativeControls
+                        // resizeMode="contain"
+                        shouldPlay={false} // Don't autoplay
+                        isLooping={false}
+                      />
+                    )}
+                  </View>
+                )}
+                keyExtractor={(item) => item.uri}
+                horizontal
+                showsHorizontalScrollIndicator={false}
                 contentContainerStyle={{
                   paddingHorizontal: 10, // Adds padding at the beginning and end of the list
                 }}
-              />
+              /> */}
             </View>
           )}
         </View>

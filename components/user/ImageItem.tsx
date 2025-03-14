@@ -32,12 +32,11 @@ const ImageItem = ({
         <Image
           source={{ uri: imageUrl }} // Use imageUrl here
           style={{
-            marginHorizontal: 10,
-            width: 320, // Set width for each image
-            height: 300, // Set height for each image
+            width: '100%', // Set width for each image
+            height: '100%', // Set height for each image
             borderRadius: 10, // Optional: Adds rounded corners
           }}
-          resizeMode="contain" // Ensure the image scales correctly
+          resizeMode="cover" // Ensure the image scales correctly
         />
       </TouchableOpacity>
     </Link>

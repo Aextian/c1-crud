@@ -9,6 +9,7 @@ import { Link } from 'expo-router'
 import { DocumentData, doc, getDoc } from 'firebase/firestore'
 import React, { useEffect, useState } from 'react'
 
+import { ResizeMode, Video } from 'expo-av'
 import {
   FlatList,
   Image,
@@ -62,6 +63,8 @@ const Post = ({ item, index }: { item: any; index: number }) => {
   }, [item?.likes, item?.dislikes, item?.id, item?.comments, currentUser?.uid])
 
   const imageUrls = item.imageUrls
+
+  const fileUrls = [...item.videoUrls, ...imageUrls]
 
   return (
     <LinearGradient
@@ -159,16 +162,41 @@ const Post = ({ item, index }: { item: any; index: number }) => {
         </View>
 
         <FlatList
-          data={item.imageUrls} // Your data array
-          keyExtractor={(item) => item}
+          data={fileUrls} // Your data array
+          keyExtractor={(item, index) => index.toString()} // Ensure unique keys
           renderItem={({ item, index }) => (
-            <ImageItem imageUrls={imageUrls} imageUrl={item} index={index} />
+            <View
+              key={index}
+              style={{
+                flex: 1,
+                width: '48%',
+                margin: 5,
+                height: fileUrls.length > 3 ? 250 : 350,
+              }}
+            >
+              {item.includes('images') ? (
+                <ImageItem imageUrls={fileUrls} imageUrl={item} index={index} />
+              ) : (
+                <Video
+                  source={{ uri: item }}
+                  style={{
+                    width: '100%',
+                    height: '100%',
+                    borderRadius: 10, // Optional: Adds rounded corners
+                  }} // Explicit width & height
+                  useNativeControls
+                  resizeMode={ResizeMode.STRETCH}
+                  shouldPlay={false} // Don't autoplay
+                  isLooping={false}
+                />
+              )}
+            </View>
           )}
-          horizontal
+          numColumns={fileUrls.length > 3 ? 3 : 2} // Set number of columns
+          columnWrapperStyle={{ justifyContent: 'space-between' }} // Ensure even spacing
+          contentContainerStyle={{ paddingHorizontal: 5, paddingVertical: 10 }}
           showsHorizontalScrollIndicator={false} // Hides the scrollbar for cleaner look
-          contentContainerStyle={{
-            paddingHorizontal: 5, // Adds padding at the beginning and end of the list
-          }}
+          showsVerticalScrollIndicator={false}
         />
 
         {/* Reaction (Like) Section */}

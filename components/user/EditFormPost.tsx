@@ -4,6 +4,7 @@ import useHideTabBarOnFocus from '@/hooks/useHideTabBarOnFocus'
 import useRole from '@/hooks/useRole'
 import { Feather } from '@expo/vector-icons'
 import { Picker } from '@react-native-picker/picker'
+import { ResizeMode, Video } from 'expo-av'
 import { Link, useRouter } from 'expo-router'
 import { DocumentData, doc, updateDoc } from 'firebase/firestore'
 import React, { memo, useState } from 'react'
@@ -52,6 +53,10 @@ const EditFormPost = ({ data }: { data: DocumentData }) => {
       setLoading(false) // Stop loading in case of error
     }
   }
+
+  const imageUrls = data.imageUrls
+
+  const fileUrls = [...data.videoUrls, ...imageUrls]
 
   return (
     <>
@@ -153,26 +158,53 @@ const EditFormPost = ({ data }: { data: DocumentData }) => {
             </View>
           )}
         </View>
-        <View className="flex-1 mt-10 bg-white items-center justify-center">
+
+        <View className=" mt-10 bg-white items-center justify-center">
           {data && data?.file.url && <FileView fileName={data?.file.name} />}
           {data && (
             <View className="mt-5">
               <FlatList
-                data={data.imageUrls}
-                renderItem={({ item }) => (
-                  <View className="mr-5">
-                    <Image
-                      source={{ uri: item }}
-                      className="h-72 w-64 rounded-md shadow-lg"
-                    />
+                data={fileUrls} // Your data array
+                keyExtractor={(item, index) => index.toString()} // Ensure unique keys
+                renderItem={({ item, index }) => (
+                  <View
+                    key={index}
+                    style={{
+                      width: '48%',
+                      margin: 5,
+                      height: fileUrls.length > 3 ? 250 : 350,
+                    }}
+                  >
+                    {item.includes('images') ? (
+                      <Image
+                        source={{ uri: item }}
+                        style={{ width: '100%', height: '100%' }}
+                        resizeMode="cover"
+                      />
+                    ) : (
+                      <Video
+                        source={{ uri: item }}
+                        style={{
+                          width: '100%',
+                          height: '100%',
+                          borderRadius: 10, // Optional: Adds rounded corners
+                        }} // Explicit width & height
+                        useNativeControls
+                        resizeMode={ResizeMode.STRETCH}
+                        shouldPlay={false} // Don't autoplay
+                        isLooping={false}
+                      />
+                    )}
                   </View>
                 )}
-                keyExtractor={(item) => item}
-                horizontal
-                showsHorizontalScrollIndicator={false} // Hides the scrollbar for cleaner look
+                numColumns={2} // Set number of columns
+                columnWrapperStyle={{ justifyContent: 'space-between' }} // Ensure even spacing
                 contentContainerStyle={{
-                  paddingHorizontal: 10, // Adds padding at the beginning and end of the list
+                  paddingHorizontal: 5,
+                  paddingVertical: 10,
                 }}
+                showsHorizontalScrollIndicator={false} // Hides the scrollbar for cleaner look
+                showsVerticalScrollIndicator={false}
               />
             </View>
           )}

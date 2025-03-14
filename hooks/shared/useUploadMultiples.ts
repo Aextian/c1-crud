@@ -1,54 +1,99 @@
 import { storage } from '@/config'
 import * as ImagePicker from 'expo-image-picker'
-import { getDownloadURL, ref, uploadBytes } from 'firebase/storage'
+import { getDownloadURL, ref, uploadBytesResumable } from 'firebase/storage'
 import { useState } from 'react'
 
 const useUploadMultiples = () => {
-  const [images, setImages] = useState<string[]>([]) // Store multiple image URIs
+  const [files, setFiles] = useState<
+    { uri: string; type: 'image' | 'video' }[]
+  >([])
+  const [progress, setProgress] = useState(0)
+  const [uploading, setUploading] = useState(false)
+  const [uploadedUrls, setUploadedUrls] = useState<{
+    images: string[]
+    videos: string[]
+  }>({
+    images: [],
+    videos: [],
+  })
 
-  // Function to upload all selected images
-  const uploadImages = async () => {
-    if (images.length === 0) return []
+  // 📌 Function to upload files
+  const uploadFiles = async () => {
+    if (files.length === 0) return { images: [], videos: [] }
 
-    const uploadPromises = images.map(async (image) => {
-      const response = await fetch(image)
-      const blob = await response.blob()
-      const filename = image.split('/').pop()
-      const storageRef = ref(storage, `images/${filename}`)
-      await uploadBytes(storageRef, blob)
-      const downloadURL = await getDownloadURL(storageRef)
-      return downloadURL
-    })
+    try {
+      const uploadedUrls = { images: [], videos: [] }
 
-    // Wait for all uploads to complete and return their URLs
-    return await Promise.all(uploadPromises)
+      const uploadPromises = files.map(async (file) => {
+        try {
+          console.log('Uploading file:', file.uri)
+
+          const response = await fetch(file.uri)
+          if (!response.ok) throw new Error(`Failed to fetch file: ${file.uri}`)
+
+          const blob = await response.blob()
+          const filename = file.uri.split('/').pop()
+          const fileType = file.type?.startsWith('video') ? 'videos' : 'images'
+
+          console.log(`Uploading to Firebase: ${fileType}/${filename}`)
+
+          const storageRef = ref(storage, `${fileType}/${filename}`)
+          await uploadBytesResumable(storageRef, blob)
+          const downloadURL = await getDownloadURL(storageRef)
+
+          // Append to the correct list
+          uploadedUrls[fileType].push(downloadURL)
+
+          console.log('Uploaded file URL:', downloadURL)
+          return downloadURL
+        } catch (error) {
+          console.error('Upload error:', error)
+          return null
+        }
+      })
+
+      await Promise.all(uploadPromises)
+      console.log('Final uploaded URLs:', uploadedUrls)
+      return uploadedUrls
+    } catch (error) {
+      console.error('Unexpected upload error:', error)
+      return { images: [], videos: [] }
+    }
   }
 
-  // Function to pick multiple images
-  const pickImages = async () => {
+  // 📌 Function to pick multiple files (Images & Videos)
+  const pickFiles = async () => {
     let result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ImagePicker.MediaTypeOptions.All,
-      allowsMultipleSelection: true, // Enable multiple image selection
-      aspect: [4, 3],
+      mediaTypes: ImagePicker.MediaTypeOptions.All, // Allow both images & videos
+      allowsMultipleSelection: true,
       quality: 1,
     })
 
     if (!result.canceled) {
-      const selectedImages = result.assets.map((asset) => asset.uri)
-      setImages((prevImages) => [...prevImages, ...selectedImages]) // Append new images to the existing list
+      // const selectedFiles = result.assets.map((asset) => asset.uri)
+      const selectedFiles: { uri: string; type: 'image' | 'video' }[] =
+        result.assets.map((asset) => ({
+          uri: asset.uri,
+          type: asset.type === 'video' ? 'video' : 'image',
+        }))
+      setFiles((prevFiles) => [...prevFiles, ...selectedFiles])
     }
   }
 
-  // Function to clear all selected images
-  const clearImages = () => {
-    setImages([])
+  // 📌 Function to clear selected files
+  const clearFiles = () => {
+    setFiles([])
+    setUploadedUrls({ images: [], videos: [] })
   }
 
   return {
-    images, // Array of image URIs
-    pickImages,
-    uploadImages,
-    clearImages,
+    files,
+    uploadedUrls,
+    progress,
+    uploading,
+    pickFiles,
+    uploadFiles,
+    clearFiles,
   }
 }
 

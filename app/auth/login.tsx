@@ -99,9 +99,6 @@ const login = () => {
 
   return (
     <View style={styles.container}>
-      <View style={{ zIndex: 99999 }}>
-        <Toast />
-      </View>
       <ImageBackground
         source={require('../../assets/images/background.jpg')} // Add your background image here
         style={styles.overlay}
