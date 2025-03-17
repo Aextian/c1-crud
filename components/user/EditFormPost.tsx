@@ -1,4 +1,5 @@
 import { auth, db } from '@/config'
+import useModeration from '@/hooks/shared/useModerations'
 import useGradeLevel from '@/hooks/useGradeLevel'
 import useHideTabBarOnFocus from '@/hooks/useHideTabBarOnFocus'
 import useRole from '@/hooks/useRole'
@@ -16,23 +17,40 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native'
+import Toast from 'react-native-toast-message'
 import FileView from './FileView'
 
 const EditFormPost = ({ data }: { data: DocumentData }) => {
   useHideTabBarOnFocus()
+
   const router = useRouter()
   const { role } = useRole()
-  const { years, sections } = useGradeLevel<string>()
+  const { years, sections, courses } = useGradeLevel<string>()
   const [post, addPost] = useState(data.post)
   const [year, setYear] = useState(data.year)
   const [section, setSection] = useState(data.section)
+  const [course, setCourse] = useState('')
   const currentUser = auth.currentUser
   const [isLoading, setLoading] = useState(false)
+
+  const { checkContentModeration } = useModeration()
 
   const handleSubmit = async () => {
     setLoading(true) // Start loading before the process starts
 
     try {
+      const result = await checkContentModeration(post)
+
+      if (result.results[0].flagged) {
+        Toast.show({
+          type: 'error', // 'success', 'error', 'info'
+          text1: "Can't save changes",
+          text2: 'Words used are against the system rules.',
+        })
+        setLoading(false)
+        return
+      }
+
       // Update the post in the Firestore
       await updateDoc(doc(db, 'posts', data.id), {
         createdAt: new Date().toISOString(),
@@ -47,6 +65,12 @@ const EditFormPost = ({ data }: { data: DocumentData }) => {
       setLoading(false)
       // Redirect to the posts page
       router.push('/user/posts')
+
+      Toast.show({
+        type: 'success', // 'success', 'error', 'info'
+        text1: 'Success',
+        text2: 'Post updated successfull',
+      })
     } catch (error) {
       console.error('Error updating post: ', error) // Log the error
       alert('Error while updating post. Please try again later.') // Show a more informative error alert
@@ -100,7 +124,35 @@ const EditFormPost = ({ data }: { data: DocumentData }) => {
           {role === 'teacher' && (
             <View className="flex flex-row items-center justify-center gap-2 ">
               <View
-                style={{ width: 150 }}
+                style={{ width: 115 }}
+                className="border flex flex-row  h-12 border-gray-200 outline-none ring-0 rounded-2xl  "
+              >
+                <Picker
+                  selectedValue={course}
+                  onValueChange={(course) => setCourse(course)}
+                  style={{
+                    width: '100%',
+                    height: '100%',
+                    fontSize: 10, // Adjust the font size for the picker
+                  }}
+                >
+                  <Picker.Item
+                    label="Course"
+                    value=""
+                    style={{ fontSize: 10 }} // Adjust font size of this item
+                  />
+                  {courses.map((course: any) => (
+                    <Picker.Item
+                      style={{ fontSize: 10 }} // Adjust font size of this item
+                      key={course.id}
+                      label={course.name}
+                      value={course.name}
+                    />
+                  ))}
+                </Picker>
+              </View>
+              <View
+                style={{ width: 115 }}
                 className="border flex flex-row  h-12 border-gray-200 outline-none ring-0 rounded-2xl  "
               >
                 <Picker
@@ -128,7 +180,7 @@ const EditFormPost = ({ data }: { data: DocumentData }) => {
                 </Picker>
               </View>
               <View
-                style={{ width: 150 }}
+                style={{ width: 115 }}
                 className="border flex flex-row  h-12 border-gray-200 outline-none ring-0 rounded-2xl  "
               >
                 <Picker
@@ -157,6 +209,17 @@ const EditFormPost = ({ data }: { data: DocumentData }) => {
               </View>
             </View>
           )}
+          <View className="flex flex-row mt-5  justify-end gap-5 items-center ">
+            <TouchableOpacity
+              className="bg-blue-400 shadow-[0_4px_10px_rgba(0,0,0,0.8)] shadow-black px-10 py-3 rounded-full flex flex-row items-center gap-5"
+              onPress={handleSubmit}
+              disabled={isLoading || !post}
+            >
+              <Text className="text-white ">
+                {isLoading ? 'Updating...' : 'Update'}
+              </Text>
+            </TouchableOpacity>
+          </View>
         </View>
 
         <View className=" mt-10 bg-white items-center justify-center">

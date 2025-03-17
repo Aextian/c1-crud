@@ -22,6 +22,7 @@ const managePosts = () => {
 
     return () => unsubscribe() // Cleanup the subscription on unmount
   }, [])
+  console.log(posts)
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: 'white' }}>
@@ -40,58 +41,5 @@ const managePosts = () => {
     </SafeAreaView>
   )
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flexGrow: 1,
-    padding: 5,
-    paddingTop: 35,
-    backgroundColor: '#fff',
-  },
-
-  header: {
-    fontSize: 24,
-    marginBottom: 10,
-  },
-
-  contentText: {
-    fontSize: 18,
-    marginBottom: 10,
-  },
-  carousel: {
-    marginTop: 15,
-    flexDirection: 'row',
-  },
-  imageContainer: {
-    // width: 300,
-    height: 200,
-    marginRight: 10,
-  },
-  image: {
-    width: 200,
-    height: 150,
-    borderRadius: 10,
-  },
-
-  cardHeader: {
-    fontSize: 20,
-    fontWeight: 'bold',
-    marginBottom: 8,
-  },
-
-  likeButton: {
-    marginVertical: 10,
-  },
-  likeText: {
-    fontSize: 16,
-  },
-  input: {
-    borderWidth: 1,
-    borderColor: '#ccc',
-    borderRadius: 5,
-    padding: 8,
-    marginBottom: 10,
-  },
-})
 
 export default managePosts

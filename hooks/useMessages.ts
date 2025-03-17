@@ -11,7 +11,8 @@ import {
   updateDoc,
 } from 'firebase/firestore'
 import { useCallback, useEffect, useState } from 'react'
-import { IMessage } from 'react-native-gifted-chat' // Adjust import based on your project structure
+import { GiftedChat, IMessage } from 'react-native-gifted-chat' // Adjust import based on your project structure
+import useModeration from './shared/useModerations'
 import useFileUpload from './useFileUpload'
 
 const useMessages = (id: string) => {
@@ -56,10 +57,32 @@ const useMessages = (id: string) => {
   } = useFileUpload()
 
   const { recordingUri, recording, setRecordingUri } = useRecordingStore()
+  const { checkContentModeration } = useModeration()
 
   const onSend = useCallback(
     async (messages = [] as IMessage[]) => {
       const [messageToSend] = messages
+
+      const result = await checkContentModeration(messageToSend.text)
+
+      if (result.results[0].flagged) {
+        // Append system message in red text
+        const warningMessage = {
+          _id: Math.random().toString(), // Generate unique ID
+          text: '❌ Unable to send: Words used are against the system rules.',
+          createdAt: new Date(),
+          system: true, // Mark as a system message
+          user: {
+            _id: 'system',
+            name: 'System',
+          },
+        }
+
+        setMessages((prevMessages) =>
+          GiftedChat.append(prevMessages, [warningMessage]),
+        )
+        return
+      }
 
       const messagesCollection = collection(db, 'conversations', id, 'messages')
 

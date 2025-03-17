@@ -69,9 +69,15 @@ const Notification = (data: DocumentData) => {
         disabled={isDisabled}
         className="justify-center"
       >
-        <Text className="font-bold text-xs first-letter:uppercase">
-          {user?.name}
-        </Text>
+        {data.type === 'approved' || data.type === 'reject' ? (
+          <Text className="font-bold text-xs first-letter:uppercase">
+            Admin
+          </Text>
+        ) : (
+          <Text className="font-bold text-xs first-letter:uppercase">
+            {user?.name}
+          </Text>
+        )}
         <Text
           className={`${data.isRead ? 'text-gray-500' : 'text-black-500 font-bold'} pr-12 text-ellipsis`}
           numberOfLines={1}

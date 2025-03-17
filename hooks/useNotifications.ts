@@ -33,14 +33,18 @@ async function addNotifications({
           ? liketype === 'like'
             ? 'liked your post!'
             : 'disliked your post!'
-          : type == 'comment'
-            ? 'commented your post!'
-            : 'replied to your comment'
+          : type === 'comment'
+            ? 'commented on your post!'
+            : type === 'reply'
+              ? 'replied to your comment!'
+              : type === 'approved'
+                ? 'your post has been approved! ✅ '
+                : 'your post has been rejected! ❌'
       }`,
 
       createdAt: new Date(),
       isRead: false,
-      postId: postId,
+      postId: postId ?? 'unknown',
     })
 
     console.log('Notifications success')

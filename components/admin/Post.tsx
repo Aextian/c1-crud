@@ -12,6 +12,8 @@ import {
 } from 'firebase/firestore'
 import React, { useEffect } from 'react'
 
+import addNotifications from '@/hooks/useNotifications'
+import { ResizeMode, Video } from 'expo-av'
 import {
   FlatList,
   Image,
@@ -31,7 +33,11 @@ const Post = ({ item, index }: { item: any; index: number }) => {
     try {
       const docRef = doc(db, 'posts', id) // Reference to the document
       await updateDoc(docRef, { status: true }) // Update the status field
-      console.log('Status updated successfully')
+      addNotifications({
+        fromUserId: currentUser?.uid || '',
+        postId: id,
+        type: 'approved',
+      })
     } catch (error) {
       console.error('Error updating status: ', error)
     }
@@ -40,9 +46,14 @@ const Post = ({ item, index }: { item: any; index: number }) => {
   // Function to delete a document
   const handleReject = async (id: string) => {
     try {
+      await addNotifications({
+        fromUserId: currentUser?.uid || '',
+        postId: id,
+        type: 'reject',
+      })
+
       const docRef = doc(db, 'posts', id) // Reference to the document
       await deleteDoc(docRef) // Delete the document
-      console.log('Document deleted successfully')
     } catch (error) {
       console.error('Error deleting document: ', error)
     }
@@ -71,6 +82,8 @@ const Post = ({ item, index }: { item: any; index: number }) => {
   }, [item?.likes, item?.dislikes, item?.id, item?.comments, currentUser?.uid])
 
   const imageUrls = item.imageUrls
+
+  const fileUrls = [...item.videoUrls, ...imageUrls]
 
   return (
     <LinearGradient
@@ -143,16 +156,41 @@ const Post = ({ item, index }: { item: any; index: number }) => {
         </View>
 
         <FlatList
-          data={item.imageUrls} // Your data array
-          keyExtractor={(item) => item}
+          data={fileUrls} // Your data array
+          keyExtractor={(item, index) => index.toString()} // Ensure unique keys
           renderItem={({ item, index }) => (
-            <ImageItem imageUrls={imageUrls} imageUrl={item} index={index} />
+            <View
+              key={index}
+              style={{
+                flex: 1,
+                width: '48%',
+                margin: 5,
+                height: fileUrls.length > 3 ? 250 : 350,
+              }}
+            >
+              {item.includes('images') ? (
+                <ImageItem imageUrls={fileUrls} imageUrl={item} index={index} />
+              ) : (
+                <Video
+                  source={{ uri: item }}
+                  style={{
+                    width: '100%',
+                    height: '100%',
+                    borderRadius: 10, // Optional: Adds rounded corners
+                  }} // Explicit width & height
+                  useNativeControls
+                  resizeMode={ResizeMode.STRETCH}
+                  shouldPlay={false} // Don't autoplay
+                  isLooping={false}
+                />
+              )}
+            </View>
           )}
-          horizontal
+          numColumns={fileUrls.length > 3 ? 3 : 2} // Set number of columns
+          columnWrapperStyle={{ justifyContent: 'space-between' }} // Ensure even spacing
+          contentContainerStyle={{ paddingHorizontal: 5, paddingVertical: 10 }}
           showsHorizontalScrollIndicator={false} // Hides the scrollbar for cleaner look
-          contentContainerStyle={{
-            paddingHorizontal: 5, // Adds padding at the beginning and end of the list
-          }}
+          showsVerticalScrollIndicator={false}
         />
 
         <View className="flex flex-row items-center justify-around gap-5 mt-10">

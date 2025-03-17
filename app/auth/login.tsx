@@ -69,10 +69,12 @@ const login = () => {
             text2: 'Login successful',
           })
 
-          if (data.role === 'admin') {
-            router.replace('/admin/home')
-          } else {
-            router.replace('/user/posts')
+          if (data.role !== undefined) {
+            if (data.role === 'admin') {
+              router.replace('/admin/home')
+            } else {
+              router.replace('/user/posts')
+            }
           }
         }
       }

@@ -11,6 +11,7 @@ import { useRouter } from 'expo-router'
 import { addDoc, collection } from 'firebase/firestore'
 import React, { useState } from 'react'
 import {
+  Alert,
   FlatList,
   Image,
   Text,
@@ -49,63 +50,81 @@ const PostsForm = () => {
   const { checkContentModeration } = useModeration()
 
   const handleSubmit = async () => {
-    setLoading(true)
-    try {
-      const result = await checkContentModeration(post)
-      const { images, videos } = await uploadFiles()
-
-      const hasFile =
-        (images && images.length > 0) || (videos && videos.length > 0)
-
-      await addDoc(collection(db, 'posts'), {
-        createdAt: new Date().toISOString(),
-        authorId: currentUser?.uid, // Store the UID of the author
-        authorName: currentUser?.displayName || 'Anonymous', // Store the author's name
-        authorAvatar: currentUser?.photoURL,
-        post: post,
-        likes: [],
-        likesCount: 0,
-        dislikes: [],
-        dislikesCount: 0,
-        commentCount: 0,
-        status: hasFile ? false : result.results[0].flagged ? false : true,
-        file: {
-          type: fileType,
-          url: filePath,
-          name: fileName,
+    Alert.alert(
+      'Confirm Submission', // Title
+      'Are you sure you want to post this?', // Message
+      [
+        {
+          text: 'Cancel',
+          style: 'cancel',
         },
-        imageUrls: images,
-        videoUrls: videos,
-        year: year,
-        section: section,
-        course: course,
-      })
+        {
+          text: 'Yes, Post It',
+          onPress: async () => {
+            setLoading(true)
+            try {
+              const result = await checkContentModeration(post)
+              const { images, videos } = await uploadFiles()
 
-      addPost('')
-      clearFiles()
-      resetState()
-      setLoading(false)
+              const hasFile =
+                (images && images.length > 0) || (videos && videos.length > 0)
 
-      if (hasFile && result.results[0].flagged) {
-        Toast.show({
-          type: 'info', // 'success', 'error', 'info'
-          text1: 'Review',
-          text2: 'your post is under review',
-        })
-      } else {
-        Toast.show({
-          type: 'success', // 'success', 'error', 'info'
-          text1: 'Success',
-          text2: 'Post has been added successfully',
-        })
-      }
+              await addDoc(collection(db, 'posts'), {
+                createdAt: new Date().toISOString(),
+                authorId: currentUser?.uid, // Store the UID of the author
+                authorName: currentUser?.displayName || 'Anonymous', // Store the author's name
+                authorAvatar: currentUser?.photoURL,
+                post: post,
+                likes: [],
+                likesCount: 0,
+                dislikes: [],
+                dislikesCount: 0,
+                commentCount: 0,
+                status: hasFile
+                  ? false
+                  : result.results[0].flagged
+                    ? false
+                    : true,
+                file: {
+                  type: fileType,
+                  url: filePath,
+                  name: fileName,
+                },
+                imageUrls: images,
+                videoUrls: videos,
+                year: year,
+                section: section,
+                course: course,
+              })
 
-      router.push('/user/posts')
-    } catch (error) {
-      console.error('Error adding post: ', error)
+              addPost('')
+              clearFiles()
+              resetState()
+              setLoading(false)
 
-      setLoading(false)
-    }
+              if (hasFile || result.results[0].flagged) {
+                Toast.show({
+                  type: 'info',
+                  text1: 'Under Review',
+                  text2: 'Your post is under review',
+                })
+              } else {
+                Toast.show({
+                  type: 'success',
+                  text1: 'Success',
+                  text2: 'Post has been added successfully',
+                })
+              }
+
+              router.push('/user/posts')
+            } catch (error) {
+              console.error('Error adding post: ', error)
+              setLoading(false)
+            }
+          },
+        },
+      ],
+    )
   }
 
   const handleClose = () => {
@@ -314,50 +333,6 @@ const PostsForm = () => {
                 showsHorizontalScrollIndicator={false} // Hides the scrollbar for cleaner look
                 showsVerticalScrollIndicator={false}
               />
-              {/* <FlatList
-                data={files} // Change from images to files
-                keyExtractor={(item, index) => index.toString()} // Ensure unique keys
-                numColumns={3} // Set number of columns
-                columnWrapperStyle={{ justifyContent: 'space-between' }} // Ensure even spacing
-                contentContainerStyle={{
-                  paddingHorizontal: 5,
-                  paddingVertical: 10,
-                }}
-                showsHorizontalScrollIndicator={false} // Hides the scrollbar for cleaner look
-                showsVerticalScrollIndicator={false}
-                renderItem={({ item }) => (
-                  <View
-                    style={{
-                      flex: 1,
-                      width: '48%',
-                      height: files.length > 3 ? 250 : 350,
-                    }}
-                  >
-                    {item.type === 'image' ? (
-                      <Image
-                        source={{ uri: item.uri }}
-                        style={{ width: '100%', height: '100%' }}
-                        resizeMode="cover"
-                      />
-                    ) : (
-                      <Video
-                        source={{ uri: item.uri }}
-                        style={{ width: '100%', height: '100%' }} // Explicit width & height
-                        useNativeControls
-                        // resizeMode="contain"
-                        shouldPlay={false} // Don't autoplay
-                        isLooping={false}
-                      />
-                    )}
-                  </View>
-                )}
-                keyExtractor={(item) => item.uri}
-                horizontal
-                showsHorizontalScrollIndicator={false}
-                contentContainerStyle={{
-                  paddingHorizontal: 10, // Adds padding at the beginning and end of the list
-                }}
-              /> */}
             </View>
           )}
         </View>

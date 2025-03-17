@@ -56,6 +56,7 @@ const _layout = () => {
   }, [])
 
   const { loading, user } = useAuth()
+  console.log('user', user)
 
   if (loading) {
     return <LoadingScreen />
