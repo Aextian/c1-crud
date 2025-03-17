@@ -1,12 +1,14 @@
 import { Image } from 'expo-image'
 import { useState } from 'react'
 import {
+  Dimensions,
   Modal,
   Pressable,
   StyleSheet,
   TouchableOpacity,
   View,
 } from 'react-native'
+import ImageZoom from 'react-native-image-pan-zoom'
 
 interface Message {
   _id: string
@@ -54,12 +56,19 @@ const MessageImage = (props: any) => {
         <Modal transparent={true} visible={visible} onRequestClose={hideImage}>
           <View style={styles.modalContainer}>
             <Pressable style={StyleSheet.absoluteFill} onPress={hideImage} />
-            <Image
-              source={{ uri: selectedImage }}
-              style={styles.image}
-              contentFit="contain"
-              transition={1000}
-            />
+            <ImageZoom
+              cropWidth={Dimensions.get('window').width}
+              cropHeight={Dimensions.get('window').height}
+              imageWidth={Dimensions.get('window').width}
+              imageHeight={Dimensions.get('window').height}
+            >
+              <Image
+                source={{ uri: selectedImage }}
+                style={styles.image}
+                contentFit="contain"
+                transition={1000}
+              />
+            </ImageZoom>
           </View>
         </Modal>
       )}
@@ -78,8 +87,8 @@ const styles = StyleSheet.create({
 
   image: {
     // width: '90%',
-    width: '90%',
-    height: '80%',
+    width: '100%',
+    height: '100%',
     borderRadius: 20,
   },
   absoluteFill: {

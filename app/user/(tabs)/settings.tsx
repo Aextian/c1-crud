@@ -1,8 +1,9 @@
 import ModalLoadingScreen from '@/components/shared/ModalLoadingScreen'
-import { auth } from '@/config'
+import { auth, db } from '@/config'
 import { Feather } from '@expo/vector-icons'
 import { Link, useRouter } from 'expo-router'
 import { signOut } from 'firebase/auth'
+import { doc, serverTimestamp, updateDoc } from 'firebase/firestore'
 import React, { useState } from 'react'
 import {
   Image,
@@ -22,6 +23,11 @@ const index = () => {
   const handleSignOut = async () => {
     setIsLoading(true)
     try {
+      const userRef = doc(db, 'users', String(currentUser?.uid))
+      await updateDoc(userRef, {
+        state: 'offline',
+        last_seen: serverTimestamp(),
+      })
       await signOut(auth)
       setIsLoading(false)
       router.replace('/auth/login')

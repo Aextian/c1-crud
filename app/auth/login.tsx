@@ -1,7 +1,9 @@
 import { auth, db } from '@/config'
+import { getDeviceId } from '@/hooks/getDeviceId'
+import AsyncStorage from '@react-native-async-storage/async-storage'
 import { Redirect, useRouter } from 'expo-router'
 import { signInWithEmailAndPassword, signOut } from 'firebase/auth'
-import { doc, getDoc } from 'firebase/firestore'
+import { doc, getDoc, setDoc } from 'firebase/firestore'
 import React, { useEffect, useState } from 'react'
 import {
   Image,
@@ -47,8 +49,19 @@ const login = () => {
   const handleLogin = async () => {
     setLoading(true)
     try {
+      const deviceId = await getDeviceId()
+
       const userCred = await signInWithEmailAndPassword(auth, email, password)
       if (userCred) {
+        const userRef = doc(db, 'activeSessions', userCred.user.uid)
+
+        // Save session to Firestore
+        await setDoc(userRef, { deviceId, timestamp: Date.now() })
+
+        // Store device ID locally
+        await AsyncStorage.setItem('deviceId', String(deviceId))
+        console.log('Login successful!')
+
         const docSnap = await getDoc(doc(db, 'users', userCred.user.uid))
         if (docSnap.exists()) {
           const data = docSnap.data()

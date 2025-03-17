@@ -32,6 +32,7 @@
     "axios": "^1.7.9",
     "event-target-shim": "^6.0.2",
     "expo": "~51.0.36",
+    "expo-application": "^6.0.2",
     "expo-av": "~14.0.7",
     "expo-calendar": "~13.0.5",
     "expo-checkbox": "~3.0.0",

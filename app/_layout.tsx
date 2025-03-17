@@ -1,5 +1,6 @@
 import LoadingScreen from '@/components/shared/loadingScreen'
 import { auth, db } from '@/config'
+import { useActiveSessionListener } from '@/hooks/useActiveListener'
 import useAuth from '@/hooks/useAuth'
 import { Stack } from 'expo-router'
 import { usePreventScreenCapture } from 'expo-screen-capture'
@@ -13,6 +14,9 @@ import '../global.css'
 const _layout = () => {
   // Function to track user presence
   usePreventScreenCapture()
+  useActiveSessionListener()
+
+  const currentUser = auth.currentUser
 
   useEffect(() => {
     const unsubscribeAuth = onAuthStateChanged(auth, async (user) => {
@@ -53,7 +57,7 @@ const _layout = () => {
     })
 
     return () => unsubscribeAuth() // Cleanup auth listener
-  }, [])
+  }, [currentUser])
 
   const { loading, user } = useAuth()
   console.log('user', user)

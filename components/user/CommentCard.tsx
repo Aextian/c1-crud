@@ -1,7 +1,8 @@
 import { db } from '@/config'
+import { commentFormatDate } from '@/utils/date-utils'
 import { Feather } from '@expo/vector-icons'
 import { Link } from 'expo-router'
-import { collection, DocumentData, onSnapshot } from 'firebase/firestore'
+import { DocumentData, collection, onSnapshot } from 'firebase/firestore'
 import React, { useEffect, useState } from 'react'
 import { Image, Text, TouchableOpacity, View } from 'react-native'
 import CommentReply from './CommentReply'
@@ -54,11 +55,11 @@ const CommentCard = ({ postId, comment }: TComment) => {
             params: { id: comment.authorId },
           }}
         >
-          <View className="rounded-full w-8 h-8 border p-3 items-center justify-center">
+          <View className="rounded-full w-8 h-8 border  items-center justify-center">
             {comment?.authorAvatar && comment.authorAvatar !== 'undefined' ? (
               <Image
                 source={{ uri: comment?.authorAvatar }}
-                style={{ width: 30, height: 30, borderRadius: 100 }}
+                style={{ width: '100%', height: '100%', borderRadius: 100 }}
               />
             ) : (
               <Feather name="user" size={24} color="black" />
@@ -68,6 +69,9 @@ const CommentCard = ({ postId, comment }: TComment) => {
 
         <View className="justify-center">
           <Text className="font-bold text-xs">{comment.author}</Text>
+          <Text className="text-[10px] text-slate-400">
+            {commentFormatDate(comment.createdAt)}
+          </Text>
           <Text
             className="text-gray-500 pr-12"
             numberOfLines={showFullComment ? undefined : 1}

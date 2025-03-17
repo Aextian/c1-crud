@@ -1,3 +1,4 @@
+import { commentFormatDate } from '@/utils/date-utils'
 import { Feather } from '@expo/vector-icons'
 import { Link } from 'expo-router'
 import { DocumentData } from 'firebase/firestore'
@@ -15,12 +16,12 @@ const CommentSubReply = ({ commentReply }: { commentReply: DocumentData }) => {
           params: { id: commentReply.authorId },
         }}
       >
-        <View className="rounded-full w-8 h-8 border p-3 items-center justify-center">
+        <View className="rounded-full w-8 h-8 border  items-center justify-center">
           {commentReply?.authorAvatar &&
           commentReply.authorAvatar !== 'undefined' ? (
             <Image
               source={{ uri: commentReply?.authorAvatar }}
-              style={{ width: 30, height: 30, borderRadius: 100 }}
+              style={{ width: '100%', height: '100%', borderRadius: 100 }}
             />
           ) : (
             <Feather name="user" size={24} color="black" />
@@ -30,6 +31,9 @@ const CommentSubReply = ({ commentReply }: { commentReply: DocumentData }) => {
 
       <View className="justify-center">
         <Text className="font-bold text-xs ">{commentReply.author}</Text>
+        <Text className="text-[10px] text-slate-400">
+          {commentFormatDate(commentReply.createdAt)}
+        </Text>
         <Text
           // style={{ wordSpacing: 1, letterSpacing: 0.5 }}
           className="text-gray-500 pr-12  text-sm font-serif "

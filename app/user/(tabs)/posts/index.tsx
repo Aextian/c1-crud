@@ -18,6 +18,7 @@ import Toast from 'react-native-toast-message'
 const index = () => {
   const { posts, fetchPostsAndComments, isLoading, filterPosts } =
     useFetchPosts()
+  // useActiveSessionListener()
 
   // Fetch posts from Firestore
   useEffect(() => {

@@ -8,10 +8,18 @@ import Daily, {
   DailyEvent,
   DailyMediaView,
 } from '@daily-co/react-native-daily-js'
+import { Feather } from '@expo/vector-icons'
 import axios from 'axios'
 import { Stack } from 'expo-router'
 import React, { useEffect, useRef, useState } from 'react'
-import { FlatList, LogBox, StyleSheet, Text, View } from 'react-native'
+import {
+  FlatList,
+  LogBox,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from 'react-native'
 
 // Ignore warnings
 LogBox.ignoreLogs(['new NativeEventEmitter'])
@@ -26,6 +34,9 @@ const meeting = () => {
   const [usingFrontCamera, setUsingFrontCamera] = useState(true)
   const [isLoading, setIsLoading] = useState(false)
   const [type, setType] = useState('')
+  const [isParticipantMuted, setParticipantMuted] = useState<{
+    [key: string]: boolean
+  }>({})
 
   const [roomUrl, setRoomUrl] = useState<string | null>(null)
   const [room, setRoom] = useState<string>('')
@@ -160,9 +171,6 @@ const meeting = () => {
         // Enumerate devices to get a list of all input devices (video and audio)
         const response = await callObject.current.enumerateDevices()
 
-        // Log devices to understand the structure
-        console.log('Devices:', response)
-
         // Access the devices array
         const devices = response.devices
 
@@ -212,6 +220,20 @@ const meeting = () => {
 
     if (!videoTrack || videoTrack === 'undefined') return null
 
+    const toggleMute = () => {
+      if (!participant.local) {
+        const newMutedState = !isParticipantMuted[userId]
+        callObject.current?.updateParticipant(userId, {
+          setAudio: !newMutedState, // Toggle mute state
+        })
+
+        setParticipantMuted((prev) => ({
+          ...prev,
+          [userId]: newMutedState, // Update specific user mute state
+        }))
+      }
+    }
+
     return (
       <View style={styles.videoTile}>
         <DailyMediaView
@@ -227,7 +249,15 @@ const meeting = () => {
             {participant.local ? 'You' : participant.user_name || 'Unknown'}
           </Text>
         </View>
-        <Text className="text-white"></Text>
+        {!participant.local && (
+          <TouchableOpacity style={styles.muteButton} onPress={toggleMute}>
+            {isParticipantMuted[userId] ? (
+              <Feather name="mic-off" color="white" size={20} />
+            ) : (
+              <Feather name="mic" color="white" size={20} />
+            )}
+          </TouchableOpacity>
+        )}
       </View>
     )
   }
@@ -278,6 +308,14 @@ const meeting = () => {
 }
 
 const styles = StyleSheet.create({
+  muteButton: {
+    position: 'absolute',
+    top: 10,
+    right: 10,
+    backgroundColor: 'rgba(0, 0, 0, 0.6)',
+    padding: 8,
+    borderRadius: 20,
+  },
   container: {
     flex: 1,
     backgroundColor: 'white',

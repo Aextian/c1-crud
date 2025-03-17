@@ -40,7 +40,7 @@ const _layout = () => {
       // Cleanup the listener on unmount or when currentUser changes
       return () => unsubscribe()
     }
-  }, []) // Dependency array to run the effect when currentUser changes
+  }, [])
 
   return (
     <Tabs
